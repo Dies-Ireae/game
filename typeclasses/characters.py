@@ -1,6 +1,7 @@
 # typeclasses/characters.py
 from evennia import DefaultCharacter
 from commands.oss.oss_commandset import OssCmdSet
+from world.wod20th.models import Stat
 
 class Character(DefaultCharacter):
     def at_cmdset_get(self, **kwargs):
@@ -21,7 +22,6 @@ class Character(DefaultCharacter):
         self.db.stats[stat_name] = value
     
     def check_stat_value(self, stat_name, value):
-        from world.wod20th.models import Stat  # Import here to avoid circular reference
         stat = Stat.objects.filter(name=stat_name).first()
         if stat and (value in stat.values):
             return True
@@ -30,41 +30,27 @@ class Character(DefaultCharacter):
     @property
     def downtime_hours(self):
         # Calculating downtime hours based on Intelligence, Willpower, and Stamina
-        intelligence = self.get_stat("Intelligence") or 0
-        willpower = self.get_stat("Willpower") or 0
-        stamina = self.get_stat("Stamina") or 0
-        return (intelligence + willpower + stamina) * 4
+        #intelligence = self.get_stat("Intelligence") or 1
+        #willpower = self.get_stat("Willpower") or 1
+        #stamina = self.get_stat("Stamina") or 1
+        #base_hours = (intelligence + willpower + stamina) * 4
+        base_hours = 40
+        
+        # If downtime_hours is not already set, initialize it
+        if self.db.downtime_hours is None:
+            self.db.downtime_hours = base_hours
+        return self.db.downtime_hours
 
     def spend_downtime(self, hours):
-        current_hours = self.db.downtime_hours or self.downtime_hours
+        current_hours = self.downtime_hours  # This will initialize downtime if not set
         if current_hours >= hours:
             self.db.downtime_hours = current_hours - hours
             return True
         return False
 
     def refresh_downtime(self):
-        self.db.downtime_hours = self.downtime_hours
-
-    def add_asset(self, asset):
-        if not hasattr(self.db, "assets"):
-            self.db.assets = []
-        self.db.assets.append(asset)
-
-    def remove_asset(self, asset):
-        if hasattr(self.db, "assets"):
-            self.db.assets.remove(asset)
-
-    def get_assets(self):
-        return self.db.assets if hasattr(self.db, "assets") else []
-
-    def add_influence(self, influence):
-        if not hasattr(self.db, "influence"):
-            self.db.influence = []
-        self.db.influence.append(influence)
-
-    def remove_influence(self, influence):
-        if hasattr(self.db, "influence"):
-            self.db.influence.remove(influence)
-
-    def get_influence(self):
-        return self.db.influence if hasattr(self.db, "influence") else []
+        # Recalculate and set the downtime hours
+        #self.db.downtime_hours = (self.get_stat("Intelligence") or 1) + \
+        #                         (self.get_stat("Willpower") or 1) + \
+        #                         (self.get_stat("Stamina") or 1) * 4
+        self.db.downtime_hours = 40

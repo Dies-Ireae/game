@@ -1,9 +1,14 @@
 # mygame/commands/oss/oss_commandset.py
 
 from evennia.commands.cmdset import CmdSet
-from commands.oss.asset_commands import CmdSearchAssets, CmdReadAsset, CmdUpdateAsset, CmdDeleteAsset
-from commands.oss.actiontemplate_commands import CmdCreateActionTemplate, CmdReadActionTemplate, CmdUpdateActionTemplate, CmdDeleteActionTemplate
-from commands.oss.action_commands import CmdTakeAction
+from commands.oss.asset_commands import (
+    CmdSearchAssets, CmdReadAsset, CmdUpdateAsset, CmdDeleteAsset,
+    CmdCreateAsset, CmdTransferAsset, CmdAssets
+)
+from commands.oss.action_commands import (
+    CmdCreateActionTemplate, CmdReadActionTemplate, CmdUpdateActionTemplate,
+    CmdDeleteActionTemplate, CmdSearchActionTemplates, CmdListActionTemplates, CmdTakeAction, CmdRefreshDowntime, CmdListDowntime
+)
 
 class OssCmdSet(CmdSet):
     """
@@ -16,6 +21,9 @@ class OssCmdSet(CmdSet):
         Populates the CmdSet with commands.
         """
         # Asset commands
+        self.add(CmdCreateAsset())
+        self.add(CmdAssets())
+        self.add(CmdTransferAsset())
         self.add(CmdSearchAssets())
         self.add(CmdReadAsset())
         self.add(CmdUpdateAsset())
@@ -26,7 +34,12 @@ class OssCmdSet(CmdSet):
         self.add(CmdReadActionTemplate())
         self.add(CmdUpdateActionTemplate())
         self.add(CmdDeleteActionTemplate())
+        self.add(CmdSearchActionTemplates())
+        self.add(CmdListActionTemplates())
 
-        # Action commands
+        # Action-taking command
         self.add(CmdTakeAction())
 
+        # OSS Global Commands
+        self.add(CmdRefreshDowntime())
+        self.add(CmdListDowntime())
