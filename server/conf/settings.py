@@ -38,6 +38,9 @@ TELNET_PORTS = [4201]  # Change 4000 to your desired telnet port
 WEBSERVER_PORTS = [(4200, 4005)]  # Change 8000 to your desired webserver port
 WEBSOCKET_CLIENT_PORT = 4202
 
+ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
+
 INSTALLED_APPS += ["world.wod20th"]  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
   # Change 8001 to your desired websocket port
