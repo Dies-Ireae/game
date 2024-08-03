@@ -1,7 +1,6 @@
 # typeclasses/characters.py
 from evennia import DefaultCharacter
 from commands.oss.oss_commandset import OssCmdSet
-from world.wod20th.models import Stat
 
 class Character(DefaultCharacter):
     def at_cmdset_get(self, **kwargs):
@@ -22,6 +21,7 @@ class Character(DefaultCharacter):
         self.db.stats[stat_name] = value
     
     def check_stat_value(self, stat_name, value):
+        from world.wod20th.models import Stat  
         stat = Stat.objects.filter(name=stat_name).first()
         if stat and (value in stat.values):
             return True
