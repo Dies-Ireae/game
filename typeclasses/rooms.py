@@ -15,13 +15,13 @@ class RoomParent(DefaultRoom):
         # Header with room name
         # if the looker is a builder, show the dbref
         if looker.check_permstring("builders"):
-            string = ANSIString.center(ANSIString(f"|y {name}({self.dbref})|n "), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            string = ANSIString.center(ANSIString(f"|y {name}({self.dbref})|n "), width=78, fillchar=ANSIString("|b=|n")) + "\n\n"
         else:
-            string = ANSIString.center(ANSIString(f"|y {name} |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            string = ANSIString.center(ANSIString(f"|y {name} |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n\n"
         
         # Optional: add custom room description here if available
         if desc:
-            string += wrap_ansi(desc, 78) + "\n"
+            string += wrap_ansi(desc, 78) + "\n\n"
 
         # List all characters in the room
         characters = [obj for obj in self.contents if obj.has_account]
@@ -39,17 +39,17 @@ class RoomParent(DefaultRoom):
                 if shortdesc:
                     shortdesc_str = f"{shortdesc}"
                 else:
-                    shortdesc_str = ANSIString("|h|xType '|n+shortdesc <desc>|h|x' to set a short description.|n")
+                    shortdesc_str ="|h|xType '|n+shortdesc <desc>|h|x' to set a short description.|n"
 
                 # Calculate the total length and truncate if necessary and end with elipses.
                 # only replace the last three characters if the string is longer than 50 characters
-                if len(shortdesc_str) > 52:
-                    shortdesc_str = shortdesc_str[:52]
+                if len(shortdesc_str) > 47:
+                    shortdesc_str = shortdesc_str[:47]
                     shortdesc_str = shortdesc_str[:-3] + "..."
                 else:
-                    shortdesc_str = shortdesc_str.ljust(52, ' ')
+                    shortdesc_str = shortdesc_str.ljust(47, ' ')
                 
-                string += f" {character.get_display_name(looker).ljust(20)} {idle_time.rjust(5)} |n{shortdesc_str}\n"
+                string += ANSIString(f" {character.get_display_name(looker).ljust(25)} {idle_time.rjust(7)}|n {shortdesc_str}\n")
 
         # List all exits
         exits = [ex for ex in self.contents if ex.destination]

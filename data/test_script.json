@@ -4,7 +4,7 @@
         "description": "Physical power and muscle.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "physical",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -12,7 +12,7 @@
         "description": "Agility, reflexes, and coordination.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "physical",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -20,7 +20,7 @@
         "description": "Endurance, health, and resilience.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "physical",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -28,7 +28,7 @@
         "description": "Charm, personal magnetism, and influence.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "social",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -36,7 +36,7 @@
         "description": "Ability to influence and deceive.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "social",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -44,7 +44,7 @@
         "description": "Physical attractiveness and ability to impress.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "social",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -52,7 +52,7 @@
         "description": "Awareness and ability to notice details.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "mental",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -60,7 +60,7 @@
         "description": "Cognitive capacity and ability to learn.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "mental",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -68,15 +68,7 @@
         "description": "Quick thinking and mental agility.",
         "game_line": "Vampire: The Masquerade",
         "category": "attributes",
-        "stat_type": "attribute",
+        "stat_type": "mental",
         "values": [1, 2, 3, 4, 5]
-    },
-    {
-        "name": "Alertness",
-        "description": "Knack for things going on around you.",
-        "game_line": "Various",
-        "category": "skills",
-        "stat_type": "skill",
-        "values": [1, 2, 3, 4, 5]
-    }   
+    }
 ]
