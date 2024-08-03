@@ -26,7 +26,9 @@ put secret game- or server-specific settings in secret_settings.py.
 
 # Use the defaults from Evennia unless explicitly overridden
 from evennia.settings_default import *
+import os
 
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
 # Evennia base server config
 ######################################################################
@@ -41,6 +43,11 @@ WEBSOCKET_CLIENT_PORT = 4202
 SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']
+
+if ENVIRONMENT == 'development':
+  WEB_SOCKET_CLIENT_URL = "ws://localhost4005/websocket"
+else:
+  WEBSOCKET_CLIENT_URL = "wss://beta.diesiraemu.com/websocket"
 
 ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']

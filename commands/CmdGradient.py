@@ -20,7 +20,7 @@ class CmdGradientName(Command):
     """
 
     key = "gradientname"
-    locks = "cmd:perm(Admin)"
+    locks = "cmd:perm(Builder)"
     help_category = "Admin"
 
     # Color map (unchanged from previous version)
