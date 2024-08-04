@@ -1,3 +1,6 @@
+#commands/bbs/bbs_builder_commands.py
+
+
 from evennia import default_cmds
 from evennia import create_object
 from typeclasses.bbs_controller import BBSController
