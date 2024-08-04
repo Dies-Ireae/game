@@ -49,7 +49,7 @@ class CmdStats(default_cmds.MuxCommand):
             self.caller.msg("|rUsage: +stats <character>/<stat>=[+-]<value>|n")
             return
 
-        if self.character_name.lower() == 'me':
+        if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
             character = self.caller.search(self.character_name)
@@ -123,7 +123,7 @@ class CmdStats(default_cmds.MuxCommand):
 
         # Validate the new value against the stat's valid values
         valid_values = stat.values
-        if valid_values and new_value not in valid_values:
+        if valid_values and new_value not in valid_values and valid_values != []:
             self.caller.msg(f"|rValue '{new_value}' is not valid for stat '{full_stat_name}'. Valid values are: {valid_values}|n")
             return
 

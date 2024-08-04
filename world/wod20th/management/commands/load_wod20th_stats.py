@@ -59,15 +59,16 @@ class Command(BaseCommand):
                     category = stat_data.get('category')
                     stat_type = stat_data.get('stat_type')
                     values = stat_data.get('values', [])
+                    lock_string = stat_data.get('lock_string', '')
 
                     # Data validation
                     if not game_line or not category or not stat_type:
                         self.stdout.write(self.style.ERROR(f'Invalid data for stat {name}. Skipping entry.'))
                         continue
 
-                    # Ensure values are a list of integers
-                    if not isinstance(values, list) or not all(isinstance(v, int) for v in values):
-                        self.stdout.write(self.style.ERROR(f'Invalid values for stat {name}. Values must be a list of integers. Skipping entry.'))
+                    # Ensure values are a list
+                    if not isinstance(values, list):
+                        self.stdout.write(self.style.ERROR(f'Invalid values for stat {name}. Values must be a list. Skipping entry.'))
                         continue
 
                     # Check if stat already exists
@@ -83,7 +84,8 @@ class Command(BaseCommand):
                         game_line=game_line,
                         category=category,
                         stat_type=stat_type,
-                        values=values
+                        values=values,
+                        lock_string=lock_string
                     )
 
                     try:
