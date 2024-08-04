@@ -39,6 +39,7 @@ WEBSERVER_PORTS = [(4200, 4005)]  # Change 8000 to your desired webserver port
 WEBSOCKET_CLIENT_PORT = 4202
 
 INSTALLED_APPS += ["world.wod20th"]  # Add your app to the list of installed apps
+BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
   # Change 8001 to your desired websocket port
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
