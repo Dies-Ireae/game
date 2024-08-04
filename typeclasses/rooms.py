@@ -1,4 +1,3 @@
-# typeclasses/rooms.py
 from evennia import DefaultRoom
 from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.ansi_utils import wrap_ansi
@@ -13,7 +12,6 @@ class RoomParent(DefaultRoom):
         desc = self.db.desc
 
         # Header with room name
-        # if the looker is a builder, show the dbref
         if looker.check_permstring("builders"):
             string = ANSIString.center(ANSIString(f"|y {name}({self.dbref})|n "), width=78, fillchar=ANSIString("|b=|n")) + "\n\n"
         else:
@@ -29,41 +27,60 @@ class RoomParent(DefaultRoom):
             string += ANSIString.center(ANSIString("|y Characters |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
             for character in characters:
                 idle_time = self.idle_time_display(character.idle_time)
-                # if the looker is the character itself the idle time is 0s.
                 if character == looker:
                     idle_time = self.idle_time_display(0)
 
-
-                # Check for short description
                 shortdesc = character.db.shortdesc
                 if shortdesc:
                     shortdesc_str = f"{shortdesc}"
                 else:
                     shortdesc_str ="|h|xType '|n+shortdesc <desc>|h|x' to set a short description.|n"
 
-                # Calculate the total length and truncate if necessary and end with elipses.
-                # only replace the last three characters if the string is longer than 50 characters
-                if len(shortdesc_str) > 47:
-                    shortdesc_str = shortdesc_str[:47]
-                    shortdesc_str = shortdesc_str[:-3] + "..."
+                if len(ANSIString(shortdesc_str).strip()) > 43:
+                    shortdesc_str = ANSIString(shortdesc_str)[:43]
+                    shortdesc_str = ANSIString(shortdesc_str)[:-3] + "..."
                 else:
-                    shortdesc_str = shortdesc_str.ljust(47, ' ')
+                    shortdesc_str = ANSIString(shortdesc_str).ljust(43, ' ')
                 
-                string += ANSIString(f" {character.get_display_name(looker).ljust(25)} {idle_time.rjust(7)}|n {shortdesc_str}\n")
-
-        # List all exits
-        exits = [ex for ex in self.contents if ex.destination]
-        if exits:
-            string += "\n|wExits|n\n"
-            for exit in exits:
-                string += f"  {exit.get_display_name(looker)} - leads to {exit.destination.get_display_name(looker)}\n"
+                string += ANSIString(f" {character.get_display_name(looker).ljust(25)} {ANSIString(idle_time).rjust(7)}|n {shortdesc_str}\n")
 
         # List all objects in the room
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
         if objects:
-            string += "\n|wObjects|n\n"
+            string += ANSIString.center(ANSIString("|y Objects |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            
+            # get shordesc or dhoe s blsnk string
             for obj in objects:
-                string += f"  {obj.get_display_name(looker)}\n"
+                if obj.db.shortdesc:
+                    shortdesc = obj.db.shortdesc
+                else:
+                    shortdesc = ""
+
+
+            # if looker builder+ show dbref.
+
+                string +=" "+  ANSIString(f"{obj.get_display_name(looker)}").ljust(25) + ANSIString(f"{shortdesc}") .ljust(53, ' ') + "\n"
+
+        # List all exits
+        exits = [ex for ex in self.contents if ex.destination]
+        if exits:
+            string += ANSIString.center(ANSIString("|y Exits |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            exit_strings = []
+            for exit in exits:
+                aliases = exit.aliases.all()
+                exit_name = exit.get_display_name(looker)
+                exit_strings.append(ANSIString(f" <|y{aliases[0].upper()}|n> {exit_name}"))
+
+            # Split into two columns
+            half = (len(exit_strings) + 1) // 2
+            col1 = exit_strings[:half]
+            col2 = exit_strings[half:]
+
+            # Create two-column format
+            for i in range(max(len(col1), len(col2))):
+                col1_str = col1[i] if i < len(col1) else ANSIString("")
+                col2_str = col2[i] if i < len(col2) else ANSIString("")
+                string += f"{col1_str.ljust(38)} {col2_str}\n"
 
         string += ANSIString("|b" + "="*78 + "|n")
 
