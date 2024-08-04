@@ -127,6 +127,16 @@ class BBSController(DefaultObject):
         if board:
             board['access_list'][character_name] = access_level
 
+    def revoke_access(self, board_reference, character_name):
+        """
+        Revoke access for a specific character from a private board.
+        :param board_reference: (str or int) The name or ID of the board.
+        :param character_name: (str) The name of the character to revoke access.
+        """
+        board = self.get_board(board_reference)
+        if board and character_name in board['access_list']:
+            del board['access_list'][character_name]
+
     def has_access(self, board_reference, character_name):
         """
         Check if a character has read access to a board.
@@ -147,3 +157,40 @@ class BBSController(DefaultObject):
             access_level = board['access_list'].get(character_name)
             return access_level == "full_access" or (board['public'] and not board['read_only'])
         return False
+
+    def delete_board(self, board_reference):
+        """
+        Delete an entire board along with its posts.
+        :param board_reference: (str or int) The name or ID of the board to delete.
+        """
+        board = self.get_board(board_reference)
+        if board:
+            del self.db.boards[board['id']]
+            return f"Board '{board['name']}' and all its posts have been deleted."
+        return "Board not found"
+
+    def save_board(self, board_reference, updated_board_data):
+        """
+        Update board data with provided changes.
+        :param board_reference: (str or int) The name or ID of the board to update.
+        :param updated_board_data: (dict) Dictionary containing updated board data.
+        """
+        board = self.get_board(board_reference)
+        if board:
+            # Update the board's dictionary with new values
+            for key, value in updated_board_data.items():
+                board[key] = value
+            return f"Board '{board['name']}' has been updated."
+        return "Board not found"
+
+
+    def lock_board(self, board_reference):
+        """
+        Lock a board to prevent new posts from being made.
+        :param board_reference: (str or int) The name or ID of the board to lock.
+        """
+        board = self.get_board(board_reference)
+        if board:
+            board['locked'] = True
+            return f"Board '{board['name']}' has been locked."
+        return "Board not found"

@@ -16,11 +16,7 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 
 from evennia import default_cmds
 from commands.CmdGradient import CmdGradientName
-from commands.bbs_commands import (
-    CmdCreateBoard, CmdPost, CmdReadBBS, CmdEditPost, 
-    CmdDeletePost, CmdDeleteBoard, CmdRevokeAccess, CmdListAccess, 
-    CmdLockBoard, CmdPinPost, CmdUnpinPost, CmdEditBoard, CmdResetBBS, CmdGrantAccess
-)
+from commands.bbs.bbs_cmdset import BBSCmdSet
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -41,22 +37,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # any commands you add below will overload the default ones.
         #
         self.add(CmdGradientName())
+        self.add(BBSCmdSet)
 
-        # Add BBS commands
-        self.add(CmdCreateBoard())
-        self.add(CmdPost())
-        self.add(CmdReadBBS())
-        self.add(CmdEditPost())
-        self.add(CmdDeletePost())
-        self.add(CmdDeleteBoard())
-        self.add(CmdRevokeAccess())
-        self.add(CmdListAccess())
-        self.add(CmdLockBoard())
-        self.add(CmdPinPost())
-        self.add(CmdUnpinPost())
-        self.add(CmdEditBoard())
-        self.add(CmdResetBBS())
-        self.add(CmdGrantAccess())
+        
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
