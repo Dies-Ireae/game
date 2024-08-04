@@ -18,13 +18,13 @@ class Character(DefaultCharacter):
             return
 
         if msg_self is None:
-            msg_self = f"You say, {message}"
+            msg_self = f"You say, \"{message}\""
         if msg_location is None:
             if self.db.gradient_name:
                 gradient_name = ANSIString(self.db.gradient_name)
-                msg_location = f"{gradient_name} says, {message}"
+                msg_location = f"{gradient_name} says, \"{message}\""
             else:
-                msg_location = f"{self.name} says, {message}"
+                msg_location = f"{self.name} says, \"{message}\""
 
         super().at_say(message, msg_self=msg_self, msg_location=msg_location, 
                        receivers=receivers, msg_receivers=msg_receivers, **kwargs)
