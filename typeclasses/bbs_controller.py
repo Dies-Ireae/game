@@ -8,6 +8,11 @@ class BBSController(DefaultObject):
     It should be placed in the game world and used to handle all BBS-related
     functionality, such as creating boards, posts, and managing access.
     """
+    def at_server_start(self):
+        """
+        Called when the server starts.
+        """
+        return super().at_server_start()
 
     def at_object_creation(self):
         """
