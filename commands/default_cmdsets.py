@@ -57,7 +57,6 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdHeal())
         self.add(mail.CmdMail())
         self.add(mail.CmdMailCharacter())
-      
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):

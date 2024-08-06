@@ -23,7 +23,7 @@ class CmdSheet(MuxCommand):
         except AttributeError:
             self.caller.msg(f"|rCharacter '{name}' not found.|n")
             return
-
+        self.caller.msg(f"|rSplat: {splat}|n")
         if not splat:
             splat = "Mortal"
         if not self.caller.check_permstring("builders"):
@@ -36,14 +36,13 @@ class CmdSheet(MuxCommand):
             return
 
         if self.caller != character:
-            if not character.access(self.caller, 'view'):
+            if not character.access(self.caller, 'edit'):
                 self.caller.msg(f"|rYou can't see the sheet of {character.key}.|n")
                 return
 
         stats = character.db.stats
         if not stats:
-            self.caller.msg(f"|rNo stats found for {character.key}.|n")
-            return
+            character.db.stats = {}
         
         identity_stats = Stat.objects.filter(category='identity')
 
@@ -51,8 +50,9 @@ class CmdSheet(MuxCommand):
         
         bio = []
         for stat in identity_stats:
-            if not stat.splat or stat.can_access(character, 'view'):
+            if stat.can_access(character, 'view') or not stat.lock_string:
                 bio.append(format_stat(stat.name, character.get_stat(stat.category, stat.stat_type, stat.name), default="", width=38))
+
 
         bio.append(format_stat("Splat", splat, default="", width=38))
 

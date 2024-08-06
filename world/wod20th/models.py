@@ -10,7 +10,7 @@ CATEGORIES = [
     ('advantages', 'Advantages'),
     ('backgrounds', 'Backgrounds'),
     ('powers', 'Powers'),
-    {'merits', 'Merits'},
+    ('merits', 'Merits'),
     ('flaws', 'Flaws'),
     ('traits', 'Traits'),
     ('identity', 'Identity'),
