@@ -56,7 +56,7 @@ class RoomParent(DefaultRoom):
 
                 if len(ANSIString(shortdesc_str).strip()) > 43:
                     shortdesc_str = ANSIString(shortdesc_str)[:43]
-                    shortdesc_str = ANSIString(shortdesc_str)[:-3] + "..."
+                    shortdesc_str = ANSIString(shortdesc_str[:-3] + "...|n")
                 else:
                     shortdesc_str = ANSIString(shortdesc_str).ljust(43, ' ')
                 

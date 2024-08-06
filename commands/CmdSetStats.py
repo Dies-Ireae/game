@@ -138,11 +138,13 @@ class CmdStats(default_cmds.MuxCommand):
             return
 
         # Check if the character passes the stat's lock_string
-        lock_handler = LockHandler(stat)
-        if not lock_handler.check(character, 'view'):
-            self.caller.msg(f"|rYou do not have permission to modify the stat '{full_stat_name}' for {character.name}.|n")
-            return
-
+        try:
+            if stat.lockstring and not character.locks.check_lockstring(character, stat.lockstring):
+                self.caller.msg(f"|rYou do not have permission to modify the stat '{full_stat_name}' for {character.name}.|n")
+                return
+        except AttributeError:
+            pass
+        
         # Determine if the stat should be removed
         if self.value_change == '':
             current_stats = character.db.stats.get(stat.category, {}).get(stat.stat_type, {})

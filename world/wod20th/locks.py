@@ -9,6 +9,7 @@ def is_splat(accessing_obj, accessed_obj, *args, **kwargs):
     Check if the accessing_obj has the same splat as the accessed_obj.
     """
     splat = args[0]
+    
     if splat:
         return accessing_obj.get_stat('other', 'splat', 'Splat') == splat
     return False
