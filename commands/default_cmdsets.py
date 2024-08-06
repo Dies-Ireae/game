@@ -24,6 +24,10 @@ from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
 import evennia.contrib.game_systems.mail as mail
 
+from commands.CmdSetStats import CmdStats
+from commands.bbs.bbs_cmdset import BBSCmdSet
+
+
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
     The `CharacterCmdSet` contains general in-game commands like `look`,
@@ -52,6 +56,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(mail.CmdMail())
         self.add(mail.CmdMailCharacter())
       
+        self.add(BBSCmdSet)
+
+        
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
