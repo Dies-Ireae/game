@@ -16,7 +16,9 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 
 from evennia import default_cmds
 from commands.CmdGradient import CmdGradientName
-from commands.bbs.bbs_cmdset import BBSCmdSet
+from commands.CmdShortDesc import CmdShortDesc
+from commands.CmdPose import CmdPose
+from commands.CmdSetStats import CmdStatsfrom commands.bbs.bbs_cmdset import BBSCmdSet
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -37,6 +39,10 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # any commands you add below will overload the default ones.
         #
         self.add(CmdGradientName())
+        self.add(CmdShortDesc())
+        self.add(CmdPose())
+        self.add(CmdStats())
+      
         self.add(BBSCmdSet)
 
         

@@ -35,7 +35,7 @@ class Stat(models.Model):
     game_line = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
     stat_type = models.CharField(max_length=100)
-    values = JSONField(default=list)
+    values = JSONField(default=list, blank=True, null=True)
     lock_string = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
