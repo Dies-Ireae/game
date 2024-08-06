@@ -18,7 +18,8 @@ from evennia import default_cmds
 from commands.CmdGradient import CmdGradientName
 from commands.CmdShortDesc import CmdShortDesc
 from commands.CmdPose import CmdPose
-from commands.CmdSetStats import CmdStats
+from commands.CmdSetStats import CmdStatsfrom commands.bbs.bbs_cmdset import BBSCmdSet
+
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -42,6 +43,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdPose())
         self.add(CmdStats())
       
+        self.add(BBSCmdSet)
+
+        
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
