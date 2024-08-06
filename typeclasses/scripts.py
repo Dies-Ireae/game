@@ -100,4 +100,8 @@ class Script(DefaultScript):
 
     """
 
-    pass
+    def at_server_start(self):
+        """
+        Called when the server starts.
+        """
+        return super().at_server_start()
