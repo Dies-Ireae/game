@@ -1,5 +1,4 @@
-from evennia import Command as MuxCommand
-
+from evennia.commands.default.muxcommand import MuxCommand
 class CmdShortDesc(MuxCommand):
     """
     shortdesc <text>
@@ -23,10 +22,10 @@ class CmdShortDesc(MuxCommand):
         """
         args = self.args.strip()
         if "=" in args:
-            self.target_name, self.shortdesc = [part.strip() for part in args.split("=", 1)]
+            self.target_name, self.shortdesc = [part.strip() for part in args.split("=", 1)].strip()
         else:
             self.target_name = None
-            self.shortdesc = args
+            self.shortdesc = args.strip()
 
     def func(self):
         "Implement the command"

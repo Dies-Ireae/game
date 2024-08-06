@@ -6,9 +6,20 @@ class Character(DefaultCharacter):
         """
         Get the name to display for the character.
         """
+        
+        name = self.key
+        
         if self.db.gradient_name:
-            return ANSIString(self.db.gradient_name)
-        return super().get_display_name(looker, **kwargs)
+            name = ANSIString(self.db.gradient_name)
+            if looker.check_permstring("builders"):
+                name += f"({self.dbref})"
+            return name
+        
+        # If the looker is builder+ show the dbref
+        if looker.check_permstring("builders"):
+            name += f"({self.dbref})"
+
+        return name
 
     def at_say(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
         """
@@ -68,16 +79,27 @@ class Character(DefaultCharacter):
                          receivers=receivers, msg_receivers=msg_receivers, **kwargs)
 
     def get_stat(self, category, stat_type, stat_name, temp=False):
+        """
+        Retrieve the value of a stat, considering instances if applicable.
+        """
         if not hasattr(self.db, "stats") or not self.db.stats:
             self.db.stats = {}
+
         category_stats = self.db.stats.get(category, {})
         type_stats = category_stats.get(stat_type, {})
-        stat = type_stats.get(stat_name, None)
-        if stat:
-            return stat['temp'] if temp else stat['perm']
+
+        for full_stat_name, stat in type_stats.items():
+            # Check if the base stat name matches the given stat_name
+            if full_stat_name.startswith(stat_name):
+                return stat['temp'] if temp else stat['perm']
         return None
 
+
+
     def set_stat(self, category, stat_type, stat_name, value, temp=False):
+        """
+        Set the value of a stat, considering instances if applicable.
+        """
         if not hasattr(self.db, "stats") or not self.db.stats:
             self.db.stats = {}
         if category not in self.db.stats:
@@ -92,6 +114,9 @@ class Character(DefaultCharacter):
             self.db.stats[category][stat_type][stat_name]['perm'] = value
             
     def check_stat_value(self, category, stat_type, stat_name, value, temp=False):
+        """
+        Check if a value is valid for a stat, considering instances if applicable.
+        """
         from world.wod20th.models import Stat  
         stat = Stat.objects.filter(name=stat_name, category=category, stat_type=stat_type).first()
         if stat:
