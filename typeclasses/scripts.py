@@ -98,10 +98,5 @@ class Script(DefaultScript):
       at_server_shutdown() - called at a full server shutdown.
       at_server_start()
 
-    """
-
-    def at_server_start(self):
-        """
-        Called when the server starts.
-        """
-        return super().at_server_start()
+    """  
+    pass
