@@ -66,6 +66,10 @@ class CmdSheet(MuxCommand):
             string += f"{bio[-1]}\n"
 
         string += header("Attributes", width=78, color="|y")
+        string += " " + divider("Physical", width=25, fillchar=" ") + " "
+        string += divider("Social", width=25, fillchar=" ") + " "
+        string += divider("Mental", width=25, fillchar=" ") + "\n"
+
         string += format_stat("Strength", character.get_stat('attributes', 'physical', 'Strength'), default=1, tempvalue=character.get_stat('attributes', 'physical', 'Strength', temp=True)) + " "
         string += format_stat("Charisma", character.get_stat('attributes', 'social', 'Charisma'), default=1, tempvalue=character.get_stat('attributes', 'social', 'Charisma', temp=True)) + " "
         string += format_stat("Perception", character.get_stat('attributes', 'mental', 'Perception'), default=1, tempvalue=character.get_stat('attributes', 'mental', 'Perception', temp=True)) + "\n"
@@ -85,9 +89,9 @@ class CmdSheet(MuxCommand):
         knowledges = [knowledge for knowledge in knowledges if not knowledge.lock_string or character.check_permstring(knowledge.lock_string)]
 
         string += header("Abilities", width=78, color="|y")
-        string += " " + divider("Talents", width=25) + " "
-        string += divider("Skills", width=25) + " "
-        string += divider("Knowledges", width=25) + "\n"
+        string += " " + divider("Talents", width=25, fillchar=" ") + " "
+        string += divider("Skills", width=25, fillchar=" ") + " "
+        string += divider("Knowledges", width=25, fillchar=" ") + "\n"
 
         formatted_talents = []
         for talent in talents:
@@ -141,9 +145,9 @@ class CmdSheet(MuxCommand):
             string += header("Advantages", width=78, color="|y")
 
             if character.db.splat == "Vampire":
-                string += divider("Disciplines", width=25) + " "
-                string += divider("Backgrounds", width=25) + " "
-                string += divider("Virtues", width=25) + "\n"
+                string += divider("Disciplines", width=25, fillchar=" ") + " "
+                string += divider("Backgrounds", width=25, fillchar=" ") + " "
+                string += divider("Virtues", width=25, fillchar=" ") + "\n"
 
                 max_len = max(len(disciplines), len(backgrounds), len(virtues))
                 while len(disciplines) < max_len:
@@ -157,9 +161,9 @@ class CmdSheet(MuxCommand):
                     string += f"{discipline} {background} {virtue}\n"
 
         string += header("Other", width=78, color="|y")
-        string += divider("Merits", width=25) + " "
-        string += divider("Pools", width=25) + " " 
-        string += divider("Health & Status", width=25) + "\n"
+        string += divider("Merits", width=25, fillchar=" " ) + " "
+        string += divider("Pools", width=25, fillchar=" ") + " " 
+        string += divider("Health & Status", width=25, fillchar=" ") + "\n"
 
         merits = []
         for category, merits_dict in character.db.stats.get('merits', {}).items():
