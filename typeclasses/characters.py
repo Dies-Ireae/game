@@ -124,7 +124,7 @@ class Character(DefaultCharacter):
             if language:
                 # Preserve the tilde in the message
                 masked_message = self.mask_language(message, language)
-                msg_self = f'You say in, "{message} << in {language} >>"'
+                msg_self = f'You say, "{message} << in {language} >>"'
                 msg_understand = f'{name} says, "{message} << in {language} >>"'
                 msg_not_understand = f'{name} says, "{masked_message}"'
             else:
