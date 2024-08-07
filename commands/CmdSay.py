@@ -41,8 +41,9 @@ class CmdSay(MuxCommand):
 
         msg_self, msg_understand, msg_not_understand, language = caller.prepare_say(speech)
 
-        # Send messages to receivers
-        for receiver in caller.location.contents:
+        # Send messages to receivers.  Filter out everything but connected players.
+        receivers = [char for char in caller.location.contents if char.has_account]
+        for receiver in receivers:
             if receiver != caller:
                 if language and language in receiver.get_languages():
                     receiver.msg(msg_understand)
