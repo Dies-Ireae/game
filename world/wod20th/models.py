@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import JSONField  # Use the built-in JSONField
 from evennia.locks.lockhandler import LockHandler
 
+
+
 # Define predefined categories and extended stat types
 CATEGORIES = [
     ('attributes', 'Attributes'),
@@ -72,6 +74,9 @@ class Stat(models.Model):
     hidden = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     instanced = models.BooleanField(default=False, null=True)
+    # add a field for the default value of the stat
+    default = models.CharField(max_length=100, blank=True, null=True, default=None)
+
 
     
     def __str__(self):

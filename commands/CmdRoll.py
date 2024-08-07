@@ -65,6 +65,10 @@ class CmdRoll(default_cmds.MuxCommand):
                     dice_pool += stat_value if sign == '+' else -stat_value
                     description.append(f"{sign}|n |w{full_name}|n")
                     detailed_description.append(f"{sign} |w{full_name} ({stat_value})|n")
+                elif stat_value == 0 and full_name:
+                    description.append(f"{sign} |w{full_name}|n")
+                    detailed_description.append(f"{sign} |w{full_name} (0)|n")
+                    warnings.append(f"|rWarning: Stat '{full_name}' not found or has no value. Treating as 0.|n")
                 else:
                     description.append(f"{sign} |h|x{full_name}|n")
                     detailed_description.append(f"{sign} |h|x{full_name} (0)|n")

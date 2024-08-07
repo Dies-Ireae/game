@@ -15,7 +15,7 @@ def roll_dice(dice_pool: int, difficulty: int) -> Tuple[List[int], int, int]:
         - Number of successes
         - Number of ones (potential botches)
     """
-    rolls = [randint(1, 10) for _ in range(max(1, dice_pool))]
+    rolls = [randint(1, 10) for _ in range(max(0, dice_pool))]
     successes = sum(1 for roll in rolls if roll >= difficulty)
     ones = sum(1 for roll in rolls if roll == 1)
     successes = successes - ones
@@ -55,11 +55,15 @@ def interpret_roll_results(successes, ones, diff=6, rolls=None):
         rolls.sort( reverse=True )
         for roll in rolls:
             if roll == 1:
-                msg += f" |r{roll}|n"
+                msg += f"|r{roll}|n"
             elif roll >= diff:
-                msg += f" |g{roll}|n"
+                msg += f"|g{roll}|n"
             else:
-                msg += f" |y{roll}|n"
+                msg += f"|y{roll}|n"
+            
+            if roll != rolls[-1]:
+                msg += " "
+
 
     msg += "|w)|n"
     return msg
