@@ -1,12 +1,14 @@
 from evennia import DefaultCharacter
 from evennia.utils.ansi import ANSIString
+from world.wod20th.models import Stat
+import re
+import random
 
 class Character(DefaultCharacter):
     def get_display_name(self, looker, **kwargs):
         """
         Get the name to display for the character.
         """
-        
         name = self.key
         
         if self.db.gradient_name:
@@ -21,61 +23,181 @@ class Character(DefaultCharacter):
 
         return name
 
+    def get_languages(self):
+        """
+        Get the character's known languages from their merits.
+        """
+        return_langs = []
+        merits = self.db.stats.get('merits', {}).get('social', {})
+        for merit in merits:
+            if merit.startswith('Language'):
+                return_langs.append(merit.split('(')[1].split(')')[0])
+        return return_langs
+
+    def set_speaking_language(self, language_name):
+        """
+        Set the character's currently speaking language.
+        """
+        if language_name.lower().strip() == "none":
+            self.db.speaking_language = None
+            return
+        # Check if the character knows the language case insensitively.  Lowercasse the language name
+        language_name = language_name.lower().strip()
+        # use get_languages() to get the list of languages and lowercase them
+        languages = [lang.lower() for lang in self.get_languages()]
+
+        if language_name in languages:
+            self.db.speaking_language = language_name.capitalize()
+        else:
+            raise ValueError(f"You don't know the language: {language_name}")
+
+    def get_speaking_language(self):
+        """
+        Get the character's currently speaking language.
+        """
+        return self.db.speaking_language
+
+    def detect_tone(self, message):
+        """
+        Detect the tone of the message based on punctuation and keywords.
+        """
+        if message.endswith('!'):
+            return "excitedly"
+        elif message.endswith('?'):
+            return "questioningly"
+        elif any(word in message.lower() for word in ['hello', 'hi', 'hey', 'greetings']):
+            return "in greeting"
+        elif any(word in message.lower() for word in ['goodbye', 'bye', 'farewell']):
+            return "in farewell"
+        elif any(word in message.lower() for word in ['please', 'thank', 'thanks']):
+            return "politely"
+        elif any(word in message.lower() for word in ['sorry', 'apologize']):
+            return "apologetically"
+        else:
+            return None  # No specific tone detected
+
+    def mask_language(self, message, language):
+        """
+        Mask the language in the message with more dynamic responses.
+        """
+        words = len(message.split())
+        tone = self.detect_tone(message)
+
+        if words <= 3:
+            options = [
+                f"<< mutters a few words in {language} >>",
+                f"<< something brief in {language} >>",
+                f"<< speaks a short {language} phrase >>",
+            ]
+        elif words <= 10:
+            options = [
+                f"<< speaks a sentence in {language} >>",
+                f"<< a {language} phrase >>",
+                f"<< conveys a short message in {language} >>",
+            ]
+        else:
+            options = [
+                f"<< gives a lengthy explanation in {language} >>",
+                f"<< engages in an extended {language} dialogue >>",
+                f"<< speaks at length in {language} >>",
+            ]
+
+        masked = random.choice(options)
+        
+        if tone:
+            masked = f"{masked[:-3]}, {tone} >>"
+
+        return masked
+
+    def prepare_say(self, message):
+        """
+        Prepare the messages for the say command, handling tilde-based language switching.
+        """
+        use_language = message.lstrip().startswith('~')
+        name = self.db.gradient_name if self.db.gradient_name else self.name
+        
+        if use_language:
+            # strip the tilde from the message
+            message = message[1:].lstrip()
+            
+            language = self.get_speaking_language()
+            if language:
+                # Preserve the tilde in the message
+                masked_message = self.mask_language(message, language)
+                msg_self = f'You say in, "{message} << in {language} >>"'
+                msg_understand = f'{name} says, "{message} << in {language} >>"'
+                msg_not_understand = f'{name} says, "{masked_message}"'
+            else:
+                msg_self = f'You say, "{message}"'
+                msg_understand = f'{name} says, "{message}"'
+                msg_not_understand = msg_understand
+                language = None
+        else:
+            msg_self = f'You say, "{message}"'
+            msg_understand = f'{name} says, "{message}"'
+            msg_not_understand = msg_understand
+            language = None
+
+        return msg_self, msg_understand, msg_not_understand, language
+
+
+
     def at_say(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
         """
-        Override the default say method to use the gradient name.
+        Hook method for the say command. This method is called by the say command,
+        but doesn't handle the actual message distribution.
         """
-        if not self.location:
-            return
-
-        if msg_self is None:
-            msg_self = f"You say, \"{message}\""
-        if msg_location is None:
-            if self.db.gradient_name:
-                gradient_name = ANSIString(self.db.gradient_name)
-                msg_location = f"{gradient_name} says, \"{message}\""
-            else:
-                msg_location = f"{self.name} says, \"{message}\""
-
-        super().at_say(message, msg_self=msg_self, msg_location=msg_location, 
-                       receivers=receivers, msg_receivers=msg_receivers, **kwargs)
+        # This method can be empty or contain any additional logic you want to run when a character speaks
+        pass
 
     def at_pose(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
         """
-        Override the default pose method to use the gradient name.
+        Override the default pose method to use the gradient name and language masking.
         """
         if not self.location:
             return
 
-        if msg_self is None:
-            msg_self = f"You pose: {message}"
-        if msg_location is None:
-            if self.db.gradient_name:
-                gradient_name = ANSIString(self.db.gradient_name)
-                msg_location = f"{gradient_name} {message}"
-            else:
-                msg_location = f"{self.name} {message}"
+        speaking_language = self.get_speaking_language()
+        masked_message = re.sub(r'~(.*?)~', lambda m: self.mask_language(m.group(1), speaking_language), message)
 
-        super().at_pose(message, msg_self=msg_self, msg_location=msg_location, 
-                        receivers=receivers, msg_receivers=msg_receivers, **kwargs)
+        if msg_self is None:
+            msg_self = f"You pose: {message}"  # The poser always understands themselves
+
+        name = self.db.gradient_name if self.db.gradient_name else self.name
+
+        # Create different messages for those who understand and those who don't
+        msg_understand = f"{name} {message}"
+        msg_not_understand = f"{name} {masked_message}"
+
+        # Send messages to receivers
+        for receiver in self.location.contents:
+            if receiver != self:
+                if speaking_language in receiver.get_languages():
+                    receiver.msg(msg_understand)
+                else:
+                    receiver.msg(msg_not_understand)
+
+        self.msg(msg_self)
 
     def at_emote(self, emote, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
         """
-        Override the default emote method to use the gradient name.
+        Override the default emote method to use the gradient name and language masking.
         """
         if not self.location:
             return
 
+        masked_emote = re.sub(r'"([^"]*)"', lambda m: f'"{self.mask_language(m.group(1))}"', emote)
+
         if msg_self is None:
-            msg_self = f"You emote: {emote}"
+            msg_self = f"You emote: {masked_emote}"
         if msg_location is None:
             if self.db.gradient_name:
                 gradient_name = ANSIString(self.db.gradient_name)
-                msg_location = f"{gradient_name} {emote}"
+                msg_location = f"{gradient_name} {masked_emote}"
             else:
-                msg_location = f"{self.name} {emote}"
+                msg_location = f"{self.name} {masked_emote}"
 
-        super().at_emote(emote, msg_self=msg_self, msg_location=msg_location, 
+        super().at_emote(masked_emote, msg_self=msg_self, msg_location=msg_location, 
                          receivers=receivers, msg_receivers=msg_receivers, **kwargs)
 
     def get_stat(self, category, stat_type, stat_name, temp=False):
@@ -92,9 +214,11 @@ class Character(DefaultCharacter):
             # Check if the base stat name matches the given stat_name
             if full_stat_name.startswith(stat_name):
                 return stat['temp'] if temp else stat['perm']
+        
+        stat = Stat.objects.filter(name=stat_name, category=category, stat_type=stat_type).first()
+        if stat:
+            return stat.default
         return None
-
-
 
     def set_stat(self, category, stat_type, stat_name, value, temp=False):
         """

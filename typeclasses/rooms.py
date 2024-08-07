@@ -85,9 +85,12 @@ class RoomParent(DefaultRoom):
             string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
             exit_strings = []
             for exit in exits:
-                aliases = exit.aliases.all()
+                aliases = exit.aliases.all() or []
                 exit_name = exit.get_display_name(looker)
-                exit_strings.append(ANSIString(f" <|y{aliases[0].upper()}|n> {exit_name}"))
+                # get the shortest alias in the array.
+                short = min(aliases, key=len)[0] if aliases else ""
+                
+                exit_strings.append(ANSIString(f" <|y{short.upper()}|n> {exit_name}"))
 
             # Split into two columns
             half = (len(exit_strings) + 1) // 2

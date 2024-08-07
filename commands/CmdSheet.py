@@ -1,7 +1,6 @@
 from evennia.commands.default.muxcommand import MuxCommand
 from world.wod20th.models import Stat
-from evennia.utils.ansi import ANSIString
-from world.wod20th.utils.damage import format_damage, format_status, format_damage_stacked
+from world.wod20th.utils.damage import format_damage_stacked
 from world.wod20th.utils.formatting import format_stat, header, footer, divider
 
 class CmdSheet(MuxCommand):
@@ -21,9 +20,10 @@ class CmdSheet(MuxCommand):
         try:
             splat = character.get_stat('other', 'splat', 'Splat')
         except AttributeError:
-            self.caller.msg(f"|rCharacter '{name}' not found.|n")
+            # report that they don't ahve a splat set.
+            self.caller.msg(f"|r{name} does not have a splat set.|n")
             return
-        self.caller.msg(f"|rSplat: {splat}|n")
+
         if not splat:
             splat = "Mortal"
         if not self.caller.check_permstring("builders"):

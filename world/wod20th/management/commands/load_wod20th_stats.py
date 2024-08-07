@@ -60,6 +60,12 @@ class Command(BaseCommand):
                     stat_type = stat_data.get('stat_type')
                     values = stat_data.get('values', [])
                     lock_string = stat_data.get('lock_string', '')
+                    default = stat_data.get('default', '')
+                    instanceed = stat_data.get('instanced', False)
+                    splat = stat_data.get('splat', None)
+                    hidden = stat_data.get('hidden', False)
+                    locked = stat_data.get('locked', False)
+
 
                     # Data validation
                     if not game_line or not category or not stat_type:
@@ -85,7 +91,12 @@ class Command(BaseCommand):
                         category=category,
                         stat_type=stat_type,
                         values=values,
-                        lock_string=lock_string
+                        lock_string=lock_string,
+                        default=default,
+                        instanced=instanceed,
+                        splat=splat,
+                        hidden=hidden,
+                        locked=locked
                     )
 
                     try:

@@ -22,7 +22,11 @@ from commands.CmdSetStats import CmdStats, CmdSpecialty
 from commands.CmdSheet import CmdSheet
 from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
+from commands.CmdLanguage import CmdLanguage
 import evennia.contrib.game_systems.mail as mail
+from  commands.CmdRoll import CmdRoll
+from commands.CmdSay import CmdSay
+
 
 from commands.bbs.bbs_cmdset import BBSCmdSet
 
@@ -57,6 +61,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdHeal())
         self.add(mail.CmdMail())
         self.add(mail.CmdMailCharacter())
+        self.add(CmdRoll())
+        self.add(CmdLanguage())
+        self.add(CmdSay())
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):

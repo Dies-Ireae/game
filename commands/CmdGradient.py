@@ -99,7 +99,6 @@ COLOR_MAP = {
 }
 
 from evennia import Command
-from evennia.utils import ansi
 from evennia import search_object
 import re
 
