@@ -1,37 +1,86 @@
-from evennia import Command as BaseCommand
 from evennia import default_cmds
+from evennia.utils import ansi
+import re
 
-class CmdEmote(default_cmds.MuxCommand):
+class CmdEmit(default_cmds.MuxCommand):
     """
-    Emote something
+    @emit - Send a message to the room without your name attached.
+
     Usage:
-      emote <message>
+      @emit <message>
+      @emit/language <message>
+
+    Switches:
+      /language - Use this to emit a message in your character's set language.
+
+    Examples:
+      @emit A cool breeze blows through the room.
+      @emit "~Bonjour, mes amis!" A voice calls out in French.
+      @emit/language The entire message is in the set language.
+
+    Use quotes with a leading tilde (~) for speech in your set language.
+    This will be understood only by those who know the language.
     """
 
-    key = "emote"
-    aliases = ["em", "@emit"]
+    key = "@emit"
+    aliases = ["@remit", "\\\\"]
     locks = "cmd:all()"
-    arg_regex = r"\s|$"
+    help_category = "Storytelling"
 
     def func(self):
-        "Perform the emote"
+        """Execute the @emit command"""
+        caller = self.caller
 
         if not self.args:
-            self.caller.msg("Emote what?")
+            caller.msg("Usage: @emit <message>")
             return
 
-        # Determine the name to use
-        emoter_name = self.caller.attributes.get('gradient_name', default=self.caller.key)
+        # Check if the language switch is used
+        use_language = 'language' in self.switches
 
-        # Construct the emote message
-        emote_message = f"{emoter_name} {self.args}"
+        # Get the character's speaking language
+        speaking_language = caller.get_speaking_language()
 
-        # Announce the emote to the room
-        self.caller.location.msg_contents(emote_message, exclude=self.caller)
-        self.caller.msg(f"{emote_message}")
+        message = self.args.strip()
 
-# Add the command to your Command set
-class CharacterCmdSet(default_cmds.CharacterCmdSet):
-    def at_cmdset_creation(self):
-        "Populate the cmdset"
-        self.add(CmdEmote())
+        def process_speech(match):
+            content = match.group(1)
+            if content.startswith('~'):
+                content = content[1:]  # Remove the tilde
+                _, msg_understand, msg_not_understand, _ = caller.prepare_say(content, language_only=True)
+                return f'"{msg_understand}" << in {speaking_language} >>', f'"{msg_not_understand}"'
+            else:
+                return f'"{content}"', f'"{content}"'
+
+        # Process the message
+        parts_understand = []
+        parts_not_understand = []
+        last_end = 0
+        for match in re.finditer(r'"(.*?)"', message):
+            parts_understand.append(message[last_end:match.start()])
+            parts_not_understand.append(message[last_end:match.start()])
+            
+            understand, not_understand = process_speech(match)
+            parts_understand.append(understand)
+            parts_not_understand.append(not_understand)
+            
+            last_end = match.end()
+        
+        parts_understand.append(message[last_end:])
+        parts_not_understand.append(message[last_end:])
+
+        emit_understand = "".join(parts_understand)
+        emit_not_understand = "".join(parts_not_understand)
+
+        # Send the message to the room
+        for receiver in [char for char in caller.location.contents if char.has_account]:
+            if receiver != caller:
+                if speaking_language and speaking_language in receiver.get_languages():
+                    receiver.msg(emit_understand)
+                else:
+                    receiver.msg(emit_not_understand)
+            else:
+                receiver.msg(f"{emit_understand}")
+
+        # Log the emit
+        caller.location.msg_contents(f"{message}", exclude=caller)

@@ -109,33 +109,47 @@ class Character(DefaultCharacter):
 
         return masked
 
-    def prepare_say(self, message):
+    def prepare_say(self, message, language_only=False):
         """
         Prepare the messages for the say command, handling tilde-based language switching.
         """
         use_language = message.lstrip().startswith('~')
         name = self.db.gradient_name if self.db.gradient_name else self.name
+        language = self.get_speaking_language()
         
         if use_language:
             # strip the tilde from the message
             message = message[1:].lstrip()
             
-            language = self.get_speaking_language()
-            if language:
+                       
+            if language and not language_only:
                 # Preserve the tilde in the message
                 masked_message = self.mask_language(message, language)
-                msg_self = f'You say, "{message} << in {language} >>"'
-                msg_understand = f'{name} says, "{message} << in {language} >>"'
+                msg_self = f'You say, "{message} |w<< in {language} >>|n"'
+                msg_understand = f'{name} says, "{message} |w<< in {language} >>|n"'
                 msg_not_understand = f'{name} says, "{masked_message}"'
             else:
                 msg_self = f'You say, "{message}"'
                 msg_understand = f'{name} says, "{message}"'
                 msg_not_understand = msg_understand
-                language = None
+               
         else:
             msg_self = f'You say, "{message}"'
             msg_understand = f'{name} says, "{message}"'
             msg_not_understand = msg_understand
+           
+        
+        if language_only and language:
+            msg_self = f'{message} |w<< in {language} >>|n'
+            msg_understand = f'{message} |w<< in {language} >>|n'
+            msg_not_understand = f'{self.mask_language(message, language)}'    
+        elif language_only:
+            msg_self = f'{message}'
+            msg_understand = f'{message}'
+            msg_not_understand = f'{message}'
+            language = None
+
+        else:
             language = None
 
         return msg_self, msg_understand, msg_not_understand, language
@@ -152,32 +166,41 @@ class Character(DefaultCharacter):
 
     def at_pose(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
         """
-        Override the default pose method to use the gradient name and language masking.
+        Override the default pose method to use the gradient name, selective language masking, and quote handling.
         """
         if not self.location:
             return
 
         speaking_language = self.get_speaking_language()
-        masked_message = re.sub(r'~(.*?)~', lambda m: self.mask_language(m.group(1), speaking_language), message)
+        name = self.db.gradient_name if self.db.gradient_name else self.name
+        
+        def mask_quotes(match):
+            content = match.group(1)
+            if content.startswith('~'):
+                return f'"{self.mask_language(content[1:], speaking_language)}"'
+            return f'"{content}"'
+
+        # Use regex to find and process quoted text
+        processed_message = re.sub(r'"(.*?)"', mask_quotes, message)
 
         if msg_self is None:
-            msg_self = f"You pose: {message}"  # The poser always understands themselves
+            msg_self = f"{name} {message}"  # The poser always understands themselves
 
-        name = self.db.gradient_name if self.db.gradient_name else self.name
 
         # Create different messages for those who understand and those who don't
         msg_understand = f"{name} {message}"
-        msg_not_understand = f"{name} {masked_message}"
+        msg_not_understand = f"{name} {processed_message}"
 
         # Send messages to receivers
         for receiver in self.location.contents:
             if receiver != self:
-                if speaking_language in receiver.get_languages():
+                if speaking_language and speaking_language in receiver.get_languages():
                     receiver.msg(msg_understand)
                 else:
                     receiver.msg(msg_not_understand)
+            else:
+                receiver.msg(msg_self)
 
-        self.msg(msg_self)
 
     def at_emote(self, emote, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
         """
@@ -247,3 +270,13 @@ class Character(DefaultCharacter):
             stat_values = stat.values
             return value in stat_values['temp'] if temp else value in stat_values['perm']
         return False
+
+
+    def colorize_name(self, message):
+        """
+        Replace instances of the character's name with their gradient name in the message.
+        """
+        if self.db.gradient_name:
+            gradient_name = ANSIString(self.db.gradient_name)
+            return message.replace(self.name, str(gradient_name))
+        return message
