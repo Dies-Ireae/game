@@ -88,7 +88,7 @@ class RoomParent(DefaultRoom):
                 aliases = exit.aliases.all() or []
                 exit_name = exit.get_display_name(looker)
                 # get the shortest alias in the array.
-                short = min(aliases, key=len)[0] if aliases else ""
+                short = min(aliases, key=len) if aliases else ""
                 
                 exit_strings.append(ANSIString(f" <|y{short.upper()}|n> {exit_name}"))
 

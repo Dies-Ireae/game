@@ -23,14 +23,14 @@ class CmdLanguage(Command):
         if not self.args:
             languages = self.caller.get_languages()
             current = self.caller.get_speaking_language()
-            self.caller.msg(f"Known languages: {', '.join(languages)}")
-            self.caller.msg(f"Currently speaking: {current if current else 'None'}")
+            self.caller.msg(f"|cLANGUAGE>|n Known languages: |w{', '.join(languages)}|n")
+            self.caller.msg(f"|cLANGUAGE>|n Currently speaking: |w{current if current else 'None'}|n")
         elif self.args.lower() == "none":
             self.caller.set_speaking_language(None)
-            self.caller.msg("You are no longer speaking in any specific language.")
+            self.caller.msg("|cLANGUAGE>|n You are no longer speaking in any specific language.")
         else:
             try:
-                self.caller.set_speaking_language(self.args)
-                self.caller.msg(f"Now speaking in {self.args.capitalize()}.")
+                self.caller.set_speaking_language(self.args.lower().capitalize())
+                self.caller.msg(f"|cLANGUAGE>|n Now speaking in |w{self.args.lower().capitalize()}|n.")
             except ValueError as e:
                 self.caller.msg(str(e))
