@@ -48,7 +48,7 @@ class CmdEmit(default_cmds.MuxCommand):
             if content.startswith('~'):
                 content = content[1:]  # Remove the tilde
                 _, msg_understand, msg_not_understand, _ = caller.prepare_say(content, language_only=True)
-                return f'"{msg_understand}" << in {speaking_language} >>', f'"{msg_not_understand}"'
+                return f'"{msg_understand}"', f'"{msg_not_understand}"'
             else:
                 return f'"{content}"', f'"{content}"'
 
