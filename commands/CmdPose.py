@@ -2,6 +2,8 @@
 from evennia import default_cmds
 import re
 
+from typeclasses.characters import Character
+
 class CmdPose(default_cmds.MuxCommand):
     """
     Pose an action to the room, with support for mixed content and language tags.
@@ -83,7 +85,7 @@ class CmdPose(default_cmds.MuxCommand):
         pose_not_understand = f"{poser_name}{pose_not_understand}"
 
         # Announce the pose to the room
-        for receiver in [char for char in self.caller.location.contents if char.has_account]:
+        for receiver in [char for char in self.caller.location.contents if char.has_account and type(char) is Character]: 
             if receiver != self.caller:
                 if receiver.get_languages() and speaking_language and speaking_language in receiver.get_languages():
                     receiver.msg(pose_understand)
