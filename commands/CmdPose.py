@@ -85,7 +85,7 @@ class CmdPose(default_cmds.MuxCommand):
         # Announce the pose to the room
         for receiver in [char for char in self.caller.location.contents if char.has_account]:
             if receiver != self.caller:
-                if speaking_language and speaking_language in receiver.get_languages():
+                if receiver.get_languages() and speaking_language and speaking_language in receiver.get_languages():
                     receiver.msg(pose_understand)
                 else:
                     receiver.msg(pose_not_understand)
