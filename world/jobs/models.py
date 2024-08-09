@@ -1,5 +1,7 @@
 from django.db import models
 from evennia.utils.utils import lazy_property
+from evennia.objects.models import ObjectDB  # Assuming objects are instances of ObjectDB
+from django.utils import timezone
 
 class Job(models.Model):
     title = models.CharField(max_length=255)
@@ -11,47 +13,73 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     closed_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, choices=[('open', 'Open'), ('claimed', 'Claimed'), ('closed', 'Closed')], default='open')
-    attached_objects = models.JSONField(default=list, blank=True)  # Or use ManyToManyField with custom object manager
+    status = models.CharField(max_length=20, choices=[('open', 'Open'), ('claimed', 'Claimed'), ('closed', 'Closed'), ('rejected', 'Rejected')], default='open')
     template_args = models.JSONField(default=dict)  # Actual values of the args provided during job creation
+    approved = models.BooleanField(default=False)
+    comments = models.JSONField(default=list)
+    due_date = models.DateTimeField(null=True, blank=True)
+    attached_objects = models.ManyToManyField(ObjectDB, through='JobAttachment', related_name="attached_jobs", blank=True)
+
 
     def claim(self, user):
         if self.status == 'open':
             self.assignee = user
             self.status = 'claimed'
             self.save()
+            # Check if the user has an active session
+            if hasattr(user, 'sessions') and user.sessions.count():
+                user.msg(f"You have been assigned to the job: {self.title}")
+
+    def assign_to(self, user):
+        self.assignee = user
+        self.status = 'claimed'
+        self.save()
+        # Check if the user has an active session
+        if hasattr(user, 'sessions') and user.sessions.count():
+            user.msg(f"You have been reassigned to the job: {self.title}")
+
 
     def close(self):
-        if self.status == 'claimed' and self.assignee:
-            self.status = 'closed'
-            self.closed_at = timezone.now()
+        if self.approved:
+            self.status = "closed"
+            self.closed_at = timezone.now()  # Correctly set the closed_at field
             self.save()
             self.execute_close_commands()
+        else:
+            self.status = "rejected"
+            self.save()
 
     def execute_close_commands(self):
         if not self.assignee:
-            # If there's no assignee, there's no one to execute commands
             self.msg("Cannot execute close commands: no assignee.")
             return
 
-        for command_template in self.queue.jobtemplate.close_commands:
-            try:
-                # Populate the template string with the provided arguments
-                filled_command = command_template.format(**self.template_args)
-                
-                # Execute the filled command with the assignee as the caller
-                # This assumes Evennia's `self.assignee` object has a method to interpret commands, like `execute_cmd`.
-                self.assignee.execute_cmd(filled_command)
+        try:
+            if not hasattr(self.queue, 'jobtemplate') or not self.queue.jobtemplate:
+                return
 
-            except KeyError as e:
-                # Handle missing template argument
-                if hasattr(self.assignee, 'msg'):
-                    self.assignee.msg(f"Error executing command: missing argument {str(e)}")
-            except Exception as e:
-                # Catch any other errors in command execution
-                if hasattr(self.assignee, 'msg'):
-                    self.assignee.msg(f"Error executing command: {str(e)}")
+            for command_template in self.queue.jobtemplate.close_commands:
+                try:
+                    filled_command = command_template.format(**self.template_args)
+                    self.assignee.execute_cmd(filled_command)
 
+                except KeyError as e:
+                    if hasattr(self.assignee, 'msg'):
+                        self.assignee.msg(f"Error executing command: missing argument {str(e)}")
+                except Exception as e:
+                    if hasattr(self.assignee, 'msg'):
+                        self.assignee.msg(f"Error executing command: {str(e)}")
+
+        except Exception as e:
+            self.msg(f"Unexpected error during command execution: {str(e)}")
+
+class JobAttachment(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    object = models.ForeignKey(ObjectDB, on_delete=models.CASCADE)
+    attached_to_arg = models.CharField(max_length=255, null=True, blank=True)  # Stores the template arg if applicable
+
+    def __str__(self):
+        return f"Attachment: {self.object.key} to Job #{self.job.job_number} (Arg: {self.attached_to_arg or 'None'})"
 
 class Queue(models.Model):
     name = models.CharField(max_length=255)

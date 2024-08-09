@@ -98,3 +98,38 @@ class Character(DefaultCharacter):
             stat_values = stat.values
             return value in stat_values['temp'] if temp else value in stat_values['perm']
         return False
+
+
+    def at_post_login(self):
+        """
+        This hook is called every time the character logs in.
+        """
+        print("at_post_login is being called")
+        super().at_post_login()
+
+        # Check if the character has staff permissions
+        if self.locks.check_lockstring(self, "perm(Admin) or perm(Builder) or perm(Immortal)"):
+            print("Staff permissions detected")
+            self.msg("Welcome back, staff member!")
+            
+            # List jobs assigned to this character
+            account = self.account if hasattr(self, 'account') else self
+            jobs = Job.objects.filter(assignee=account, status__in=['open', 'claimed'])
+
+            if jobs.exists():
+                self.msg("Jobs assigned to you:")
+                table = evtable.EvTable("ID", "Title", "Status", "Requester", "Queue")
+                for job in jobs:
+                    table.add_row(
+                        job.id, job.title, job.status,
+                        job.requester.key, job.queue.name if job.queue else "None"
+                    )
+                self.msg(table)
+            else:
+                self.msg("You have no assigned jobs.")
+        else:
+            print("No staff permissions detected")
+
+        # Automatically run the +queue/list command
+        self.execute_cmd("+queue/list")
+        self.msg("Queue list has been displayed.")

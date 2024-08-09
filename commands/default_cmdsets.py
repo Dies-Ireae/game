@@ -20,6 +20,7 @@ from commands.CmdShortDesc import CmdShortDesc
 from commands.CmdPose import CmdPose
 from commands.CmdSetStats import CmdStats
 from commands.bbs.bbs_cmdset import BBSCmdSet
+from commands.jobs.jobs_cmdset import JobSystemCmdSet
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -45,6 +46,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdStats())
       
         self.add(BBSCmdSet)
+        self.add(JobSystemCmdSet)
 
         
 
