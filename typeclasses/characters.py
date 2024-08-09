@@ -28,6 +28,8 @@ class Character(DefaultCharacter):
         Get the character's known languages from their merits.
         """
         return_langs = []
+        if not hasattr(self.db, "stats") or not self.db.stats: # Check if the character has stats
+            self.db.stats = {}
         merits = self.db.stats('merits', {}).get('social', {}).get('Merits', [])
         for merit in merits:
             if merit.startswith('Language'):
