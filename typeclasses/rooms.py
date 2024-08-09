@@ -119,17 +119,19 @@ class RoomParent(DefaultRoom):
         else:
             time_str = f"{idle_time // 3600}h"
 
-        # Color code based on idle time intervals
-        if idle_time < 900:  # less than 15 minutes
-            color = "|g"  # green
-        elif idle_time < 1800:  # 15-30 minutes
-            color = "|y"  # yellow
-        elif idle_time < 2700:  # 30-45 minutes
-            color = "|o"  # orange
-        elif idle_time < 3600:
-            color = "|r"  # red
+        # Color code based on idle time intervals  well use Xterm 256 colors |[[0-255]
+        # We'll go with the most natural time interval for now.
+        # Maybe something that slowly increases.  1m (bright green) 5m (Dark green) 15m (Yellow) 30m (red) 1h+ (bright grey)
+
+        if idle_time < 60:
+            color = "|g"
+        elif idle_time < 300:
+            color = "|G"
+        elif idle_time < 900:
+            color = "|y"
+        elif idle_time < 1800:
+            color = "|r"
         else:
             color = "|h|x"
-        
 
         return f"{color}{time_str}|n"

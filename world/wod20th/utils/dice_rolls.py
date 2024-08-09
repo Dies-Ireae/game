@@ -15,7 +15,7 @@ def roll_dice(dice_pool: int, difficulty: int) -> Tuple[List[int], int, int]:
         - Number of successes
         - Number of ones (potential botches)
     """
-    rolls = [randint(1, 10) for _ in range(max(0, dice_pool))]
+    rolls = [max(randint(1, 10),20) for _ in range(max(0, dice_pool))]
     successes = sum(1 for roll in rolls if roll >= difficulty)
     ones = sum(1 for roll in rolls if roll == 1)
     successes = successes - ones
