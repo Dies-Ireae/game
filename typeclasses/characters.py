@@ -28,7 +28,7 @@ class Character(DefaultCharacter):
         Get the character's known languages from their merits.
         """
         return_langs = []
-        merits = self.db.stats.get('merits', {}).get('social', {})
+        merits = self.db.stats('merits', {}).get('social', {}).get('Merits', [])
         for merit in merits:
             if merit.startswith('Language'):
                 return_langs.append(merit.split('(')[1].split(')')[0])
