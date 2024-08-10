@@ -41,7 +41,7 @@ class Character(DefaultCharacter):
         return_langs = []
         if not hasattr(self.db, "stats") or not self.db.stats: # Check if the character has stats
             self.db.stats = {}
-        merits = self.db.stats('merits', {}).get('social', {}).get('Merits', [])
+        merits = self.db.stats.get('merits', {}).get('social', {}).get('Merits', [])
         for merit in merits:
             if merit.startswith('Language'):
                 return_langs.append(merit.split('(')[1].split(')')[0])
