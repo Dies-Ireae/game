@@ -85,12 +85,12 @@ class CmdPose(default_cmds.MuxCommand):
         pose_not_understand = f"{poser_name}{pose_not_understand}"
 
         # get all good objects  where type is not NoneType and typeclass is Character
-        good_objs = [char for char in self.caller.location.contents if char.has_account and type(char) is Character]
 
         # Announce the pose to the room
-        for receiver in [char for char in self.caller.location.contents if char.has_account and type(char) is Character]: 
+        for receiver in [char for char in self.caller.location.contents if char.has_account and hasattr(char, 'get_languages')]: 
             if receiver != self.caller:
-                if receiver.get_languages() and speaking_language and speaking_language in receiver.get_languages():
+                
+                if speaking_language in receiver.get_languages():
                     receiver.msg(pose_understand)
                 else:
                     receiver.msg(pose_not_understand)

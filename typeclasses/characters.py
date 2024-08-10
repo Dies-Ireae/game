@@ -1,10 +1,21 @@
-from evennia import DefaultCharacter
+from evennia.objects.objects import DefaultCharacter
 from evennia.utils.ansi import ANSIString
 from world.wod20th.models import Stat
 import re
 import random
 
 class Character(DefaultCharacter):
+    
+
+    def at_object_creation(self):
+        """
+        Called only when first created.
+        """
+        self.db.speaking_language = None
+        self.db.stats = {}
+        self.db.gradient_name = None
+
+    
     def get_display_name(self, looker, **kwargs):
         """
         Get the name to display for the character.

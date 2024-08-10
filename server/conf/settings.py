@@ -42,7 +42,7 @@ LOCK_FUNC_MODULES = [
     "evennia.locks.lockfuncs",
     "world.wod20th.locks", 
 ]
-
+SITE_ID = 2
 SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']
