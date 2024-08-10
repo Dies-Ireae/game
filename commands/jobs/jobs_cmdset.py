@@ -6,7 +6,7 @@ from commands.jobs.jobs_commands import (
     CmdApproveJob, CmdRejectJob, CmdListJobs, CmdAttachObject,
     CmdRemoveObject, CmdCreateJobTemplate, CmdEditJobTemplate,
     CmdDeleteJobTemplate, CmdListQueues, CmdDeleteQueue, CmdEditQueue, CmdCreateQueue,
-    CmdReassignJob, CmdViewQueueJobs, CmdViewJob
+    CmdReassignJob, CmdViewQueueJobs, CmdViewJob, CmdListJobsWithObject
 )
 
 class JobSystemCmdSet(CmdSet):
@@ -38,4 +38,5 @@ class JobSystemCmdSet(CmdSet):
         self.add(CmdReassignJob())
         self.add(CmdViewQueueJobs())
         self.add(CmdViewJob())
+        self.add(CmdListJobsWithObject())
         

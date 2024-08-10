@@ -759,3 +759,40 @@ class CmdViewQueueJobs(Command):
 
         except Queue.DoesNotExist:
             self.msg(f"No queue found with the name '{queue_name}'.")
+
+class CmdListJobsWithObject(Command):
+    key = "+job/list_with_object"
+    locks = "cmd:all()"
+    help_category = "Jobs"
+
+    def parse(self):
+        """
+        Parse the command arguments.
+        Expected format: <object_name>
+        """
+        self.object_name = self.args.strip()
+
+    def func(self):
+        """
+        Find and list all jobs that have the specified object attached.
+        """
+        if not self.object_name:
+            self.caller.msg("Usage: +job/list_with_object <object_name>")
+            return
+
+        # Search for job attachments with the specified object name
+        attachments = JobAttachment.objects.filter(object__db_key__iexact=self.object_name)
+
+        if not attachments.exists():
+            self.caller.msg(f"No jobs found with the object '{self.object_name}' attached.")
+            return
+
+        # Create a list of jobs from the attachments
+        jobs = set(attachment.job for attachment in attachments)
+
+        # Output the list of jobs
+        if jobs:
+            job_list = "\n".join([f"Job #{job.id}: {job.title}" for job in jobs])
+            self.caller.msg(f"Jobs with the object '{self.object_name}' attached:\n{job_list}")
+        else:
+            self.caller.msg(f"No jobs found with the object '{self.object_name}' attached.")

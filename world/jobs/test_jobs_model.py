@@ -27,7 +27,7 @@ class TestJobModel(unittest.TestCase):
 
         self.job = Job.objects.create(
             title="Test Job",
-            description="Test Job Descriptsion",
+            description="Test Job Description",
             requester=self.requester,
             queue=self.queue
         )
