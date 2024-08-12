@@ -30,6 +30,7 @@ from commands.CmdEmit import CmdEmit
 
 
 from commands.bbs.bbs_cmdset import BBSCmdSet
+from commands.jobs.jobs_cmdset import JobSystemCmdSet
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -55,6 +56,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdStats())
         self.add(CmdEmit())
         self.add(BBSCmdSet)
+        self.add(JobSystemCmdSet)
 
         self.add(CmdSpecialty())
         self.add(CmdSheet())

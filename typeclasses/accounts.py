@@ -23,9 +23,41 @@ several more options for customizing the Guest account system.
 """
 
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-
+from world.jobs.models import Job
+from evennia.utils import evtable
 
 class Account(DefaultAccount):
+    def at_post_login(self, session=None):
+        """
+        Called at the end of the login process, after the user
+        has been authenticated and assigned a character.
+
+        Args:
+            session (Session, optional): The session that just logged in.
+        """
+        super().at_post_login(session=session)
+
+        # Check if the account has staff permissions
+        if self.locks.check_lockstring(self, "perm(Admin) or perm(Builder) or perm(Immortal)"):
+            self.msg("Welcome back, staff member!")
+            
+            # List jobs assigned to this account
+            jobs = Job.objects.filter(assignee=self, status__in=['open', 'claimed'])
+
+            if jobs.exists():
+                self.msg("Jobs assigned to you:")
+                table = evtable.EvTable("ID", "Title", "Status", "Requester", "Queue")
+                for job in jobs:
+                    table.add_row(
+                        job.id, job.title, job.status,
+                        job.requester.key, job.queue.name if job.queue else "None"
+                    )
+                self.msg(table)
+            else:
+                self.msg("You have no assigned jobs.")
+
+            # Automatically run the +queue/list command
+            self.execute_cmd("+queue/list")
     """
     An Account is the actual OOC player entity. It doesn't exist in the game,
     but puppets characters.
