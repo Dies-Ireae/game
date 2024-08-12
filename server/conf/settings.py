@@ -32,14 +32,17 @@ ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
 # Evennia base server config
 ######################################################################
-
-# This is the name of your game. Make it catchy!
 SERVERNAME = "Dies Irae"
 
-TELNET_PORTS = [4201]  # Change 4000 to your desired telnet port
-WEBSERVER_PORTS = [(4200, 4005)]  # Change 8000 to your desired webserver port
+TELNET_PORTS = [4201]  
+WEBSERVER_PORTS = [(4200, 4005)] 
 WEBSOCKET_CLIENT_PORT = 4202
-
+EVENNIA_ADMIN=False
+LOCK_FUNC_MODULES = [
+    "evennia.locks.lockfuncs",
+    "world.wod20th.locks", 
+]
+SITE_ID = 2
 SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']

@@ -11,9 +11,9 @@
         "name": "Splat",
         "description": "What spehre does the character belong to?",
         "game_line": "Various",
-        "category": "identity",
+        "category": "other",
         "stat_type": "splat",
-        "values": ["Vampire"]
+        "values": ["Vampire", "Shifter"]
     },
         {
         "name": "Age",
@@ -54,7 +54,7 @@
         "category": "identity",
         "stat_type": "lineage",
         "values": ["Gangrel", "Malkavian", "Nosferatu", "Toreador", "Tremere", "Ventrue", "Caitiff", "Assamite", "Lasombra", "Ravnos", "Tzimisce", "Setite"],
-        "lock_string": "is_splat(character, 'vampire')"
+        "splat": "Vampire"
     },
         {
         "name": "Generation",
@@ -63,7 +63,7 @@
         "category": "identity",
         "stat_type": "lineage",
         "values": ["8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th"],
-        "lock_string": "is_splat(character, 'vampire')"
+        "splat": "Vampire"
     },
         {
         "name": "Sire",
@@ -72,6 +72,7 @@
         "category": "identity",
         "stat_type": "lineage",
         "values": [],
-        "lock_string": "is_splat(character, 'vampire')"
+        "splat": "Vampire"
+
     }
 ]

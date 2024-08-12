@@ -1,8 +1,28 @@
 from evennia import DefaultRoom
 from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.ansi_utils import wrap_ansi
+from world.wod20th.utils.formatting import header, footer, divider
 
 class RoomParent(DefaultRoom):
+
+    def get_display_name(self, looker, **kwargs):
+        """
+        Get the name to display for the character.
+        """
+        
+        name = self.key
+        
+        if self.db.gradient_name:
+            name = ANSIString(self.db.gradient_name)
+            if looker.check_permstring("builders"):
+                name += f"({self.dbref})"
+            return name
+        
+        # If the looker is builder+ show the dbref
+        if looker.check_permstring("builders"):
+            name += f"({self.dbref})"
+
+        return name
 
     def return_appearance(self, looker, **kwargs):
         if not looker:
@@ -12,19 +32,17 @@ class RoomParent(DefaultRoom):
         desc = self.db.desc
 
         # Header with room name
-        if looker.check_permstring("builders"):
-            string = ANSIString.center(ANSIString(f"|y {name}({self.dbref})|n "), width=78, fillchar=ANSIString("|b=|n")) + "\n\n"
-        else:
-            string = ANSIString.center(ANSIString(f"|y {name} |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n\n"
+        
+        string = header(name, width=78, bcolor="|r", fillchar=ANSIString("|r-|n")) + "\n"
         
         # Optional: add custom room description here if available
         if desc:
-            string += wrap_ansi(desc, 78) + "\n\n"
+            string += wrap_ansi(desc, 78, left_padding=1) + "\n\n"
 
         # List all characters in the room
         characters = [obj for obj in self.contents if obj.has_account]
         if characters:
-            string += ANSIString.center(ANSIString("|y Characters |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            string += divider("Characters", width=78, fillchar=ANSIString("|r-|n")) + "\n"
             for character in characters:
                 idle_time = self.idle_time_display(character.idle_time)
                 if character == looker:
@@ -38,7 +56,7 @@ class RoomParent(DefaultRoom):
 
                 if len(ANSIString(shortdesc_str).strip()) > 43:
                     shortdesc_str = ANSIString(shortdesc_str)[:43]
-                    shortdesc_str = ANSIString(shortdesc_str)[:-3] + "..."
+                    shortdesc_str = ANSIString(shortdesc_str[:-3] + "...|n")
                 else:
                     shortdesc_str = ANSIString(shortdesc_str).ljust(43, ' ')
                 
@@ -47,7 +65,7 @@ class RoomParent(DefaultRoom):
         # List all objects in the room
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
         if objects:
-            string += ANSIString.center(ANSIString("|y Objects |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            string += divider("Objects", width=78, fillchar=ANSIString("|r-|n")) + "\n"
             
             # get shordesc or dhoe s blsnk string
             for obj in objects:
@@ -64,12 +82,15 @@ class RoomParent(DefaultRoom):
         # List all exits
         exits = [ex for ex in self.contents if ex.destination]
         if exits:
-            string += ANSIString.center(ANSIString("|y Exits |n"), width=78, fillchar=ANSIString("|b=|n")) + "\n"
+            string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
             exit_strings = []
             for exit in exits:
-                aliases = exit.aliases.all()
+                aliases = exit.aliases.all() or []
                 exit_name = exit.get_display_name(looker)
-                exit_strings.append(ANSIString(f" <|y{aliases[0].upper()}|n> {exit_name}"))
+                # get the shortest alias in the array.
+                short = min(aliases, key=len) if aliases else ""
+                
+                exit_strings.append(ANSIString(f" <|y{short.upper()}|n> {exit_name}"))
 
             # Split into two columns
             half = (len(exit_strings) + 1) // 2
@@ -82,7 +103,7 @@ class RoomParent(DefaultRoom):
                 col2_str = col2[i] if i < len(col2) else ANSIString("")
                 string += f"{col1_str.ljust(38)} {col2_str}\n"
 
-        string += ANSIString("|b" + "="*78 + "|n")
+        string += footer(width=78, fillchar=ANSIString("|r-|n"))
 
         return string
 
@@ -98,17 +119,19 @@ class RoomParent(DefaultRoom):
         else:
             time_str = f"{idle_time // 3600}h"
 
-        # Color code based on idle time intervals
-        if idle_time < 900:  # less than 15 minutes
-            color = "|g"  # green
-        elif idle_time < 1800:  # 15-30 minutes
-            color = "|y"  # yellow
-        elif idle_time < 2700:  # 30-45 minutes
-            color = "|o"  # orange
-        elif idle_time < 3600:
-            color = "|r"  # red
+        # Color code based on idle time intervals  well use Xterm 256 colors |[[0-255]
+        # We'll go with the most natural time interval for now.
+        # Maybe something that slowly increases.  1m (bright green) 5m (Dark green) 15m (Yellow) 30m (red) 1h+ (bright grey)
+
+        if idle_time < 60:
+            color = "|g"
+        elif idle_time < 300:
+            color = "|G"
+        elif idle_time < 900:
+            color = "|y"
+        elif idle_time < 1800:
+            color = "|r"
         else:
             color = "|h|x"
-        
 
         return f"{color}{time_str}|n"
