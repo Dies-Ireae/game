@@ -1,19 +1,35 @@
 from evennia import CmdSet
-from commands.oss.oss_commands import CmdCreateDistrict, CmdCreateSector, CmdCreateNeighborhood, CmdCreateSite, CmdCreateEvent, CmdEditEvent, CmdShowHierarchy
+from commands.oss.oss_commands import (
+    CmdShowHierarchy,
+    CmdOssSetSector,
+    CmdOssSetNeighborhood,
+    CmdOssSetSite,
+    CmdOssSetCurrentRoom,
+    CmdOssSetDistrict,
+    CmdSetResolve,
+    CmdSetInfrastructure,
+    CmdSetOrder,
+    CmdInitializeHierarchy
+)
 
 class OSSCmdSet(CmdSet):
     """
-    Command set containing building-related commands specifically for
-    off-screen systems (OSS).
+    This CmdSet groups all the OSS (Open Source Simulation) commands together.
     """
-    key = "OssCmdSet"
+    key = "OSS Commands"
     priority = 1
 
     def at_cmdset_creation(self):
-        self.add(CmdCreateDistrict())
-        self.add(CmdCreateSector())
-        self.add(CmdCreateNeighborhood())
-        self.add(CmdCreateSite())
-        self.add(CmdCreateEvent())
-        self.add(CmdEditEvent())
+        """
+        Called once at creation. Populates the CmdSet with commands.
+        """
         self.add(CmdShowHierarchy())
+        self.add(CmdOssSetSector())
+        self.add(CmdOssSetNeighborhood())
+        self.add(CmdOssSetSite())
+        self.add(CmdOssSetCurrentRoom())
+        self.add(CmdOssSetDistrict())
+        self.add(CmdSetResolve())
+        self.add(CmdSetInfrastructure())
+        self.add(CmdSetOrder())
+        self.add(CmdInitializeHierarchy())
