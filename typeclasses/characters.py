@@ -301,3 +301,59 @@ class Character(DefaultCharacter):
             gradient_name = ANSIString(self.db.gradient_name)
             return message.replace(self.name, str(gradient_name))
         return message
+
+    def execute_dice_pool(self, expression):
+            """
+            Execute the dice pool expression and return the roll results.
+            """
+            components = re.findall(r'([+-])?\s*(\w+|\d+)', expression)
+            dice_pool = 0
+
+            for sign, value in components:
+                sign = sign or '+'  # Default to '+' if no sign is given
+                if value.isdigit():
+                    modifier = int(value)
+                    dice_pool += modifier if sign == '+' else -modifier
+                else:
+                    stat_value, full_name = self.get_stat_value_and_name(value)
+                    dice_pool += stat_value if sign == '+' else -stat_value
+
+            rolls, successes, ones = self.roll_dice(dice_pool)
+            result = self.interpret_roll_results(successes, ones, rolls=rolls)
+            return result
+
+    def roll_dice(self, dice_pool, difficulty=6):
+        """
+        Roll the dice based on the dice pool and difficulty.
+        """
+        rolls = [random.randint(1, 10) for _ in range(dice_pool)]
+        successes = sum(1 for roll in rolls if roll >= difficulty)
+        ones = sum(1 for roll in rolls if roll == 1)
+        return rolls, successes, ones
+
+    def interpret_roll_results(self, successes, ones, rolls):
+        """
+        Interpret the results of the roll and return a string description.
+        """
+        if successes <= ones:
+            return f"Botch! Rolls: {rolls}"
+        elif successes == 0:
+            return f"Failure. Rolls: {rolls}"
+        else:
+            return f"Successes: {successes}. Rolls: {rolls}"
+
+    def get_stat_value_and_name(self, stat_name):
+        """
+        Retrieve the value and full name of a stat for the character by querying the Stat model.
+        Returns (0, capitalized_input) if the stat doesn't exist or has a non-numeric value.
+        """
+        stat = Stat.objects.filter(name__icontains=stat_name).first()
+        value = self.get_stat(stat.category, stat.stat_type, stat.name)
+        
+        if value is not None:
+            try:
+                return int(value), stat.name
+            except ValueError:
+                return 0, stat.name
+
+        return 0, stat_name.capitalize()

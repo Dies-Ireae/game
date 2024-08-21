@@ -31,6 +31,7 @@ from commands.CmdShift import CmdShift
 
 
 from commands.bbs.bbs_cmdset import BBSCmdSet
+from commands.oss.oss_cmdset import OSSCmdSet
 
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -56,6 +57,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdStats())
         self.add(CmdEmit())
         self.add(BBSCmdSet)
+        self.add(OSSCmdSet)
 
         self.add(CmdSpecialty())
         self.add(CmdSheet())
