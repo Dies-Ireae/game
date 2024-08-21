@@ -47,6 +47,8 @@ SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']
 
+
+
 if ENVIRONMENT == 'development':
   WEB_SOCKET_CLIENT_URL = "ws://localhost4005/websocket"
 else:

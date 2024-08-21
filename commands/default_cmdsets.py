@@ -27,6 +27,7 @@ import evennia.contrib.game_systems.mail as mail
 from  commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
 from commands.CmdEmit import CmdEmit
+from commands.CmdShift import CmdShift
 
 
 from commands.bbs.bbs_cmdset import BBSCmdSet
@@ -65,6 +66,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdRoll())
         self.add(CmdLanguage())
         self.add(CmdSay())
+        self.add(CmdShift())
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
