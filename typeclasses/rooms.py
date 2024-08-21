@@ -135,3 +135,169 @@ class RoomParent(DefaultRoom):
             color = "|h|x"
 
         return f"{color}{time_str}|n"
+
+
+    def initialize(self):
+        """
+        Initialize default attributes if they haven't been set yet.
+        This method can be called on already created objects.
+        """
+        if not self.attributes.has("initialized"):
+            # Initialize attributes
+            self.db.location_type = None  # "District", "Sector", "Neighborhood", or "Site"
+            self.db.order = 0
+            self.db.infrastructure = 0
+            self.db.resolve = 0
+            self.db.resources = {}  # Empty dict for resources
+            self.db.owners = []
+            self.db.sub_locations = []
+            self.db.initialized = True  # Mark this room as initialized
+            self.save()  # Save immediately to avoid ID-related issues
+
+    def at_object_creation(self):
+        """
+        Called when the object is first created. Initialize is deferred until after saving.
+        """
+        self.initialize()
+
+    def set_as_district(self):
+        self.initialize()
+        self.db.location_type = "District"
+
+    def set_as_sector(self):
+        self.initialize()
+        self.db.location_type = "Sector"
+
+    def set_as_neighborhood(self):
+        self.initialize()
+        self.db.location_type = "Neighborhood"
+        self.db.order = 5
+        self.db.infrastructure = 5
+        self.db.resolve = 5
+
+    def set_as_site(self):
+        self.initialize()
+        self.db.location_type = "Site"
+
+    def add_sub_location(self, sub_location):
+        """
+        Add a sub-location to this room. Automatically sets the type of the sub-location.
+        """
+        self.initialize()
+        sub_location.initialize()
+
+        if self.db.location_type == "District":
+            sub_location.set_as_sector()
+        elif self.db.location_type == "Sector":
+            sub_location.set_as_neighborhood()
+        elif self.db.location_type == "Neighborhood":
+            sub_location.set_as_site()
+
+        self.db.sub_locations.append(sub_location)
+        sub_location.db.parent_location = self
+        self.save()  # Ensure changes are saved
+
+    def remove_sub_location(self, sub_location):
+        """
+        Remove a sub-location from this room.
+        """
+        self.initialize()
+        sub_location.initialize()
+        if sub_location in self.db.sub_locations:
+            self.db.sub_locations.remove(sub_location)
+            sub_location.db.parent_location = None
+            self.save()  # Ensure changes are saved
+
+    def get_sub_locations(self):
+        self.initialize()
+        return self.db.sub_locations
+
+    def update_values(self):
+        """
+        Update the Order, Infrastructure, and Resolve values based on the averages of sub-locations.
+        Only applies if this room is a District or Sector.
+        """
+        self.initialize()
+        if self.db.location_type in ["District", "Sector"]:
+            sub_locations = self.get_sub_locations()
+            if sub_locations:
+                averages = {
+                    "avg_order": sum(loc.db.order for loc in sub_locations) / len(sub_locations),
+                    "avg_infrastructure": sum(loc.db.infrastructure for loc in sub_locations) / len(sub_locations),
+                    "avg_resolve": sum(loc.db.resolve for loc in sub_locations) / len(sub_locations),
+                }
+                self.db.order = averages['avg_order']
+                self.db.infrastructure = averages['avg_infrastructure']
+                self.db.resolve = averages['avg_resolve']
+            else:
+                self.db.order = 0
+                self.db.infrastructure = 0
+                self.db.resolve = 0
+            self.save()
+
+    def save(self, *args, **kwargs):
+        """
+        Overriding save to ensure initialization happens after the object is fully created.
+        """
+        super().save(*args, **kwargs)
+        self.initialize()
+        if self.db.location_type in ["Sector", "Neighborhood"] and hasattr(self.db, "parent_location"):
+            self.db.parent_location.update_values()
+
+    def increase_order(self, amount=1):
+        self.db.order += amount
+        self.save()
+
+    def decrease_order(self, amount=1):
+        self.db.order = max(0, self.db.order - amount)
+        self.save()
+
+    def set_order(self, value):
+        self.db.order = value
+        self.save()
+
+    def increase_infrastructure(self, amount=1):
+        self.db.infrastructure += amount
+        self.save()
+
+    def decrease_infrastructure(self, amount=1):
+        self.db.infrastructure = max(0, self.db.infrastructure - amount)
+        self.save()
+
+    def set_infrastructure(self, value):
+        self.db.infrastructure = value
+        self.save()
+
+    def increase_resolve(self, amount=1):
+        self.db.resolve += amount
+        self.save()
+
+    def decrease_resolve(self, amount=1):
+        self.db.resolve = max(0, self.db.resolve - amount)
+        self.save()
+
+    def set_resolve(self, value):
+        self.db.resolve = value
+        self.save()
+
+    def add_owner(self, owner):
+        self.initialize()
+        if owner not in self.db.owners:
+            self.db.owners.append(owner)
+            self.save()
+
+    def remove_owner(self, owner):
+        self.initialize()
+        if owner in self.db.owners:
+            self.db.owners.remove(owner)
+            self.save()
+
+    def display_hierarchy(self, depth=0):
+        """
+        Display the hierarchy of locations.
+        """
+        self.initialize()
+        indent = "  " * depth
+        self.msg(f"{indent}- {self.key} ({self.db.location_type})")
+        for sub_loc in self.get_sub_locations():
+            sub_loc.display_hierarchy(depth + 1)
