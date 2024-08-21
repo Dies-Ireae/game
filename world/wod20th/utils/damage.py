@@ -70,7 +70,9 @@ def apply_damage_or_healing(character, change, damage_type):
                 new_agg -= heal_amount
 
     total_damage = new_bashing + new_lethal + new_agg
-    new_injury_level = calculate_injury_level(total_damage, health_levels, new_agg, char_type)
+    new_injury_level = calculate_injury_level(
+        total_damage, health_levels, new_agg, char_type
+    )
 
     # Update character attributes
     character.db.bashing = new_bashing
@@ -79,6 +81,7 @@ def apply_damage_or_healing(character, change, damage_type):
     character.db.injury_level = new_injury_level
 
     return new_injury_level
+
 
 def calculate_injury_level(total_damage, health_levels, agg_damage, char_type):
     if char_type == "vampire":
@@ -89,7 +92,7 @@ def calculate_injury_level(total_damage, health_levels, agg_damage, char_type):
     else:
         if agg_damage >= health_levels + 1:
             return "Dead"
-    
+
     if total_damage >= health_levels:
         return "Incapacitated"
     elif total_damage >= health_levels - 1:
@@ -104,6 +107,7 @@ def calculate_injury_level(total_damage, health_levels, agg_damage, char_type):
         return "Bruised"
     return "Healthy"
 
+
 def format_damage(character):
     health_levels = character.db.health_levels or 7
     agg = min(character.db.agg or 0, health_levels + 1)
@@ -112,13 +116,13 @@ def format_damage(character):
 
     string = ""
 
-    for i in range(agg):
+    for _ in range(agg):
         string += ANSIString("|h|r[*]|n")
-    for i in range(lethal):
+    for _ in range(lethal):
         string += ANSIString("|r[X]|n")
-    for i in range(bashing):
+    for _ in range(bashing):
         string += ANSIString("|y[/]|n")
-    for i in range(health_levels - agg - lethal - bashing):
+    for _ in range(health_levels - agg - lethal - bashing):
         string += ANSIString("|g[ ]|n")
 
     return string
@@ -148,7 +152,7 @@ def format_damage_stacked(character):
 
     # Adjust the health levels list based on the character's health levels
     extra_bruised_levels = [(ANSIString("Bruised"), ANSIString("|g[ ]|n"), "")] * (health_levels_count - 7)
-    health_levels =  extra_bruised_levels + base_health_levels[:7]  + base_health_levels[7:]
+    health_levels = extra_bruised_levels + base_health_levels[:7] + base_health_levels[7:]
 
     agg = character.db.agg or 0
     lethal = character.db.lethal or 0
@@ -174,7 +178,6 @@ def format_damage_stacked(character):
         output.append(f"{level:<15} {marker} {penalty}")
 
     return output
-
 
 
 def format_status(character):
