@@ -28,7 +28,7 @@ from  commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
 from commands.CmdEmit import CmdEmit
 from commands.CmdShift import CmdShift
-
+from commands.where import CmdWhere
 
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.oss.oss_cmdset import OSSCmdSet
@@ -58,7 +58,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdEmit())
         self.add(BBSCmdSet)
         self.add(OSSCmdSet)
-
+        self.add(CmdWhere())
         self.add(CmdSpecialty())
         self.add(CmdSheet())
         self.add(CmdHurt())

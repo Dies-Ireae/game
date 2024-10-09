@@ -44,9 +44,8 @@ LOCK_FUNC_MODULES = [
     "world.wod20th.locks", 
 ]
 SITE_ID = 2
-SERVERNAME = "beta.diesiraemu.com"
-TELNET_INTERFACES = ['0.0.0.0']
-WEBSERVER_INTERFACES = ['0.0.0.0']
+
+MAX_CHARACTERS_PER_ACCOUNT = 5
 
 COLOR_ANSI_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
 COLOR_XTERM256_EXTRA_FG = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
@@ -55,13 +54,11 @@ COLOR_XTERM256_EXTRA_GFG = color_markups.MUX_COLOR_XTERM256_EXTRA_GFG
 COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
-if ENVIRONMENT == 'development':
-  WEB_SOCKET_CLIENT_URL = "ws://localhost4005/websocket"
-else:
-  WEBSOCKET_CLIENT_URL = "wss://beta.diesiraemu.com/websocket"
 
-ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
+WEBSOCKET_CLIENT_URL = "ws://localhost:4005/websocket"
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000']
 
 INSTALLED_APPS += ["world.wod20th"]  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
@@ -73,3 +70,16 @@ try:
     from server.conf.secret_settings import *
 except ImportError:
     print("secret_settings.py file not found or failed to import.")
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(GAME_DIR, 'evennia.db3'),
+    }
+}
+
+# Maximum number of accounts that can be created
+MAX_ACCOUNTS = 10000  # Adjust this number as needed
+
+# Maximum number of characters per account
+MAX_CHARACTERS_PER_ACCOUNT = 5  # Adjust this number as needed

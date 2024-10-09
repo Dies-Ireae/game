@@ -1,9 +1,7 @@
 # mygame/server/conf/models.py
 from django.db import models
-from django.db.models import JSONField  # Use the built-in JSONField
 from evennia.locks.lockhandler import LockHandler
 from django.core.exceptions import ValidationError
-from django.contrib.postgres.fields import JSONField
 import re
 
 

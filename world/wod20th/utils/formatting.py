@@ -31,7 +31,7 @@ def format_stat(stat, value, width=25, default=None, tempvalue=None):
 
 
 def header(title, width=78,  color="|y", fillchar=ANSIString("|b-|n"), bcolor="|b"):
-    return ANSIString.center(ANSIString(f"{bcolor}<|n {color} {title} |n{bcolor}>|n"), width=width, fillchar=ANSIString(fillchar)) + "\n"
+    return ANSIString.center(ANSIString(f"{bcolor}<|n{color} {title} |n{bcolor}>|n"), width=width, fillchar=ANSIString(fillchar)) + "\n"
 
 def footer(width=78, fillchar=ANSIString("|b-|n")):
     return ANSIString(fillchar) * width + "\n"

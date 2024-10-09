@@ -1,4 +1,4 @@
-from evennia import DefaultRoom
+from evennia.objects.objects import DefaultRoom
 from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
