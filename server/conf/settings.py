@@ -55,7 +55,7 @@ COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diesiraemu.com']
-CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000', 'https://diesiraemu.com']
+
 
 INSTALLED_APPS += ["world.wod20th"]  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
