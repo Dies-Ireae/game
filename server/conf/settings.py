@@ -43,7 +43,8 @@ LOCK_FUNC_MODULES = [
     "evennia.locks.lockfuncs",
     "world.wod20th.locks", 
 ]
-SITE_ID = 2
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000', 'https://diesiraemu.com']
 
 MAX_CHARACTERS_PER_ACCOUNT = 5
 
