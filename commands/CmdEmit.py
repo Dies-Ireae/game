@@ -49,13 +49,18 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
         # Check if the language switch is used
         use_language = 'language' in self.switches
 
-        # Prepare the emit message
-        emit_message = processed_args
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            obj for obj in caller.location.contents
+            if obj.has_account and obj.db.in_umbra == caller.db.in_umbra
+        ]
+
+        # Send pose break before the message
+        self.send_pose_break()
 
         if use_language:
             # Handle language-specific emit
             speaking_language = caller.get_speaking_language()
-
             message = processed_args.strip()
 
             def process_speech(match):
@@ -80,28 +85,22 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
                 parts_not_understand.append(not_understand)
                 
                 last_end = match.end()
-            
             parts_understand.append(message[last_end:])
             parts_not_understand.append(message[last_end:])
 
             emit_understand = "".join(parts_understand)
             emit_not_understand = "".join(parts_not_understand)
 
-            # Send the message to the room
-            for receiver in [char for char in caller.location.contents if char.has_account]:
+            # Send language-specific emits
+            for receiver in filtered_receivers:
                 if receiver != caller:
                     if speaking_language and speaking_language in receiver.get_languages():
                         receiver.msg(emit_understand)
                     else:
                         receiver.msg(emit_not_understand)
                 else:
-                    receiver.msg(f"{emit_understand}")
-
-            # Log the emit
-            caller.location.msg_contents(f"{message}", exclude=caller)
+                    receiver.msg(emit_understand)
         else:
-            # Send the emit message to the room, including the pose break
-            pose_break = f"\n|y{'=' * 30}> |w{caller.name}|n |y<{'=' * 30}|n"
-            full_message = f"{pose_break}\n{emit_message}"
-            caller.location.msg_contents(full_message, exclude=caller)
-            caller.msg(f"{pose_break}\n{emit_message}")
+            # Send non-language emits
+            for receiver in filtered_receivers:
+                receiver.msg(processed_args)

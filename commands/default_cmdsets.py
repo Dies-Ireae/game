@@ -40,10 +40,14 @@ from commands.where import CmdWhere
 from commands.chargen import CmdCharGen
 from commands.CmdSelfStat import CmdSelfStat
 from commands.CmdShift import CmdShift
-
+from commands.CmdStaff import CmdStaff
+from commands.unfindable import CmdUnfindable
+from commands.CmdChangelingInteraction import CmdChangelingInteraction
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.oss.oss_cmdset import OssCmdSet
-
+from commands.CmdWeather import CmdWeather
+from commands.CmdFaeDesc import CmdFaeDesc
+from commands.CmdLook import CmdLook
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
     The `CharacterCmdSet` contains general in-game commands like `look`,
@@ -68,6 +72,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdEmit())
         self.add(BBSCmdSet)
         self.add(OssCmdSet)
+        self.add(CmdFaeDesc())
 
         self.add(CmdSpecialty())
         self.add(CmdSheet())
@@ -77,7 +82,10 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(mail.CmdMailCharacter())
         self.add(CmdRoll())
         self.add(CmdShift())
-
+        self.add(CmdWeather())
+        self.add(CmdChangelingInteraction())
+        self.add(CmdLook())
+        
         self.add(CmdUmbraInteraction())
         self.add(CmdMeet())
         self.add(CmdPlusIc())
@@ -88,6 +96,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdWhere())
         self.add(CmdCharGen())
         self.add(CmdSelfStat())
+        self.add(CmdStaff())
+        self.add(CmdUnfindable())
+
 class AccountCmdSet(default_cmds.AccountCmdSet):
     """
     This is the cmdset available to the Account at all times. It is

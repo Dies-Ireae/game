@@ -4,6 +4,7 @@ from evennia.utils.ansi import ANSIString
 from evennia.utils.search import search_channel
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
+from datetime import datetime
 import random
 
 class RoomParent(DefaultRoom):
@@ -371,14 +372,17 @@ class RoomParent(DefaultRoom):
             self.db.resources = {}  # Empty dict for resources
             self.db.owners = []
             self.db.sub_locations = []
+            self.db.roll_log = []  # Initialize an empty list for roll logs
             self.db.initialized = True  # Mark this room as initialized
             self.save()  # Save immediately to avoid ID-related issues
 
     def at_object_creation(self):
         """
-        Called when the object is first created. Initialize is deferred until after saving.
+        Called when the room is first created.
         """
-        self.initialize()
+        super().at_object_creation()
+        self.db.unfindable = False  # Add this line
+        self.db.fae_desc = ""
 
     def set_as_district(self):
         self.initialize()
@@ -521,3 +525,41 @@ class RoomParent(DefaultRoom):
         self.msg(f"{indent}- {self.key} ({self.db.location_type})")
         for sub_loc in self.get_sub_locations():
             sub_loc.display_hierarchy(depth + 1)
+
+    def log_roll(self, roller, roll_description, result):
+        """
+        Log a roll made in this room.
+        """
+        self.initialize()
+        
+        # Use the game time if available, otherwise use the current system time
+        if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
+            timestamp = self.db.gametime.time()
+        else:
+            timestamp = datetime.now()
+
+        log_entry = {
+            "roller": roller,
+            "description": roll_description,
+            "result": result,
+            "timestamp": timestamp
+        }
+        self.db.roll_log.append(log_entry)
+        if len(self.db.roll_log) > 10:
+            self.db.roll_log.pop(0)  # Remove the oldest entry if we have more than 10
+        self.save()
+
+    def get_roll_log(self):
+        """
+        Return the roll log for this room.
+        """
+        self.initialize()
+        return self.db.roll_log
+
+    def get_fae_description(self):
+        """Get the fae description of the room."""
+        return self.db.fae_desc or "This place has no special fae aspect."
+
+    def set_fae_description(self, description):
+        """Set the fae description of the room."""
+        self.db.fae_desc = description

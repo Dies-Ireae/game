@@ -63,7 +63,18 @@ class CmdOOC(MuxCommand):
             message = f"|r<|n|yOOC|n|r>|n {self.caller.name} says, \"{ooc_message}\""
             self_message = f"|r<|n|yOOC|n|r>|n You say, \"{ooc_message}\""
 
-        location.msg_contents(message, exclude=self.caller)
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            obj for obj in location.contents
+            if obj.has_account and obj.db.in_umbra == self.caller.db.in_umbra
+        ]
+
+        # Send the message to filtered receivers
+        for receiver in filtered_receivers:
+            if receiver != self.caller:
+                receiver.msg(message)
+
+        # Send the message to the caller
         self.caller.msg(self_message)
 
 class CmdPlusIc(MuxCommand):

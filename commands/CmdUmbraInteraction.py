@@ -26,20 +26,21 @@ class CmdUmbraInteraction(MuxCommand):
 
     def do_step(self):
         """Handle stepping into or out of the Umbra."""
-        if self.caller.tags.get("in_umbra", category="state"):
-            if self.caller.location.return_from_umbra(self.caller):
+        if self.caller.db.in_umbra:
+            if self.caller.return_from_umbra():
                 self.caller.msg("You have returned to the material world.")
             else:
                 self.caller.msg("You failed to return from the Umbra.")
         else:
-            if self.caller.location.step_sideways(self.caller):
+            if self.caller.step_sideways():
+                self.caller.db.in_umbra = True
                 self.caller.msg("You have stepped sideways into the Umbra.")
             else:
                 self.caller.msg("You failed to step sideways into the Umbra.")
 
     def do_peek(self):
         """Handle peeking across the Gauntlet."""
-        if self.caller.tags.get("in_umbra", category="state"):
+        if self.caller.db.in_umbra:
             self.caller.msg("You're already in the Umbra. Use +step to return to the material world.")
         else:
             result = self.caller.location.peek_umbra(self.caller)

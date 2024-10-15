@@ -5,6 +5,7 @@ from world.wod20th.models import Stat
 from world.wod20th.utils.dice_rolls import roll_dice, interpret_roll_results
 import re
 from difflib import get_close_matches
+from datetime import datetime
 
 class CmdRoll(default_cmds.MuxCommand):
     """
@@ -12,15 +13,19 @@ class CmdRoll(default_cmds.MuxCommand):
 
     Usage:
       +roll <expression> [vs <difficulty>]
+      +roll/log
 
     Examples:
       +roll strength+dexterity+3-2
       +roll stre+dex+3-2 vs 7
+      +roll/log
 
     This command allows you to roll dice based on your character's stats
     and any modifiers. You can specify stats by their full name or abbreviation.
     The difficulty is optional and defaults to 6 if not specified.
     Stats that don't exist or have non-numeric values are treated as 0.
+
+    Use +roll/log to view the last 10 rolls made in the current location.
     """
 
     key = "+roll"
@@ -29,6 +34,10 @@ class CmdRoll(default_cmds.MuxCommand):
     help_category = "Game"
 
     def func(self):
+        if self.switches and "log" in self.switches:
+            self.display_roll_log()
+            return
+
         if not self.args:
             self.caller.msg("Usage: +roll <expression> [vs <difficulty>]")
             return
@@ -102,6 +111,10 @@ class CmdRoll(default_cmds.MuxCommand):
                 else:
                     obj.msg(public_output)
 
+        # After processing the roll, log it
+        log_description = f"{private_description} vs {difficulty}"
+        self.caller.location.log_roll(self.caller.key, log_description, result)
+
     def get_stat_value_and_name(self, stat_name):
         """
         Retrieve the value and full name of a stat for the character by searching the character's stats.
@@ -144,3 +157,27 @@ class CmdRoll(default_cmds.MuxCommand):
 
         # If no matching stat is found, return 0 and the capitalized input
         return 0, stat_name.capitalize()
+
+    def display_roll_log(self):
+        """
+        Display the roll log for the current room.
+        """
+        room = self.caller.location
+        roll_log = room.get_roll_log()
+
+        if not roll_log:
+            self.caller.msg("No rolls have been logged in this location yet.")
+            return
+
+        header = "|yRecent rolls in this location:|n"
+        log_entries = []
+        for entry in roll_log:
+            timestamp = entry['timestamp']
+            if isinstance(timestamp, datetime):
+                timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                # Assume it's already a string or has a string representation
+                timestamp_str = str(timestamp)
+            log_entries.append(f"{timestamp_str} - {entry['roller']}: {entry['description']} => {entry['result']}")
+
+        self.caller.msg(header + "\n" + "\n".join(log_entries))

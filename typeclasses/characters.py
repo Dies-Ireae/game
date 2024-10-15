@@ -25,6 +25,12 @@ class Character(BaseCharacter):
         """
         super().at_object_creation()
         self.tags.add("in_material", category="state")
+        self.db.unfindable = False  # Add this line
+        self.db.fae_desc = ""
+        self.db.languages = ["English"]  # Default language
+        self.db.speaking_language = None
+        self.db.approved = False
+        self.db.in_umbra = False  # Use a persistent attribute instead of a tag
 
     @lazy_property
     def notes(self):
@@ -85,31 +91,20 @@ class Character(BaseCharacter):
 
     def get_languages(self):
         """
-        Get the character's known languages from their merits.
+        Get the character's known languages.
         """
-        return_langs = []
-        merits = self.db.stats.get('merits', {}).get('social', {})
-        for merit in merits:
-            if merit.startswith('Language'):
-                return_langs.append(merit.split('(')[1].split(')')[0])
-        return return_langs
+        return self.db.languages or []  # Return an empty list if None
 
-    def set_speaking_language(self, language_name):
+    def set_speaking_language(self, language):
         """
         Set the character's currently speaking language.
         """
-        if language_name.lower().strip() == "none":
+        if language is None:
             self.db.speaking_language = None
-            return
-        # Check if the character knows the language case insensitively.  Lowercasse the language name
-        language_name = language_name.lower().strip()
-        # use get_languages() to get the list of languages and lowercase them
-        languages = [lang.lower() for lang in self.get_languages()]
-
-        if language_name in languages:
-            self.db.speaking_language = language_name.capitalize()
+        elif language in self.db.languages:
+            self.db.speaking_language = language
         else:
-            raise ValueError(f"You don't know the language: {language_name}")
+            raise ValueError(f"You don't know the language: {language}")
 
     def get_speaking_language(self):
         """
@@ -215,30 +210,31 @@ class Character(BaseCharacter):
         return msg_self, msg_understand, msg_not_understand, language
 
     def step_sideways(self):
-        """
-        Attempt to step sideways into the Umbra.
-        """
-        if self.tags.get("in_umbra", category="state"):
+        """Attempt to step sideways into the Umbra."""
+        if self.db.in_umbra:
             self.msg("You are already in the Umbra.")
             return False
         
         if self.location:
-            return self.location.step_sideways(self)
+            success = self.location.step_sideways(self)
+            if success:
+                self.db.in_umbra = True
+                self.msg("You have stepped sideways into the Umbra.")
+                self.location.msg_contents(f"{self.name} shimmers and fades from view as they step into the Umbra.", exclude=[self], from_obj=self)
+            return success
         else:
             self.msg("You can't step sideways here.")
             return False
 
     def return_from_umbra(self):
-        """
-        Return from the Umbra to the material world.
-        """
-        if not self.tags.get("in_umbra", category="state"):
+        """Return from the Umbra to the material world."""
+        if not self.db.in_umbra:
             self.msg("You are not in the Umbra.")
             return False
         
-        self.tags.remove("in_umbra", category="state")
+        self.db.in_umbra = False
         self.msg("You step back into the material world.")
-        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=self, from_obj=self)
+        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self], from_obj=self)
         return True
 
     def return_appearance(self, looker, **kwargs):
@@ -311,64 +307,72 @@ class Character(BaseCharacter):
         self.location.msg_contents(string, exclude=[self], from_obj=self)
 
     def at_say(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
-        """
-        Hook method for the say command. This method is called by the say command,
-        but doesn't handle the actual message distribution.
-        """
-        # Filter receivers based on Umbra status
-        in_umbra = self.tags.get("in_umbra", category="state")
-        filtered_receivers = [r for r in receivers if r.tags.get("in_umbra", category="state") == in_umbra]
-        
-        # Call the parent method with filtered receivers
-        super().at_say(message, msg_self=msg_self, msg_location=msg_location, 
-                       receivers=filtered_receivers, msg_receivers=msg_receivers, **kwargs)
-
-    def at_pose(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
-        """
-        Override the default pose method to use the gradient name, selective language masking, and quote handling.
-        """
+        """Hook method for the say command."""
         if not self.location:
             return
 
-        speaking_language = self.get_speaking_language()
-        name = self.db.gradient_name if self.db.gradient_name else self.name
-        
-        def mask_quotes(match):
-            content = match.group(1)
-            if content.startswith('~'):
-                return f'"{self.mask_language(content[1:], speaking_language)}"'
-            return f'"{content}"'
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            r for r in self.location.contents 
+            if hasattr(r, 'has_account') and r.has_account and r.db.in_umbra == self.db.in_umbra
+        ]
 
-        # Use regex to find and process quoted text
-        processed_message = re.sub(r'"(.*?)"', mask_quotes, message)
-
-        if msg_self is None:
-            msg_self = f"{name} {message}"  # The poser always understands themselves
-
-
-        # Create different messages for those who understand and those who don't
-        msg_understand = f"{name} {message}"
-        msg_not_understand = f"{name} {processed_message}"
+        # Prepare the say messages
+        msg_self, msg_understand, msg_not_understand, language = self.prepare_say(message)
 
         # Send messages to receivers
-        for receiver in self.location.contents:
+        for receiver in filtered_receivers:
             if receiver != self:
-                if speaking_language and speaking_language in receiver.get_languages():
+                if language and language in receiver.get_languages():
                     receiver.msg(msg_understand)
                 else:
                     receiver.msg(msg_not_understand)
-            else:
-                receiver.msg(msg_self)
 
-    def at_emote(self, emote, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
-        """
-        Override the default emote method to filter receivers based on Umbra status.
-        """
-        in_umbra = self.tags.get("in_umbra", category="state")
-        filtered_receivers = [r for r in receivers if r.tags.get("in_umbra", category="state") == in_umbra]
+        # Send message to the speaker
+        self.msg(msg_self)
+
+    def at_pose(self, pose_understand, pose_not_understand, pose_self, speaking_language):
+        if not self.location:
+            return
+
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            r for r in self.location.contents 
+            if hasattr(r, 'has_account') and r.has_account and r.db.in_umbra == self.db.in_umbra
+        ]
+
+        # Send messages to receivers
+        for receiver in filtered_receivers:
+            if receiver != self:
+                if speaking_language and speaking_language in receiver.get_languages():
+                    receiver.msg(pose_understand)
+                else:
+                    receiver.msg(pose_not_understand)
+
+        # Send message to the poser
+        self.msg(pose_self)
+
+        # Log the pose (only visible to those in the same realm)
+        self.location.msg_contents(pose_understand, exclude=filtered_receivers + [self], from_obj=self)
+
+    def at_emote(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
+        """Display an emote to the room."""
+        if not self.location:
+            return
+
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            r for r in self.location.contents 
+            if hasattr(r, 'has_account') and r.has_account and r.db.in_umbra == self.db.in_umbra
+        ]
         
-        super().at_emote(emote, msg_self=msg_self, msg_location=msg_location, 
-                         receivers=filtered_receivers, msg_receivers=msg_receivers, **kwargs)
+        # Send the emote to filtered receivers
+        for receiver in filtered_receivers:
+            if receiver != self:
+                receiver.msg(message)
+        
+        # Send the emote to the emitter
+        self.msg(msg_self or message)
 
     def get_stat(self, category, stat_type, stat_name, temp=False):
         """
@@ -458,3 +462,18 @@ class Character(BaseCharacter):
         if self.character_sheet:
             return self.character_sheet.change_note_status(name, is_public)
         return False
+
+    def get_fae_description(self):
+        """Get the fae description of the character."""
+        return self.db.fae_desc or f"{self.name} has no visible fae aspect."
+
+    def set_fae_description(self, description):
+        """Set the fae description of the character."""
+        self.db.fae_desc = description
+
+    def is_fae_perceiver(self):
+        """Check if the character is a Changeling or Kinain."""
+        if not self.db.stats or 'other' not in self.db.stats or 'splat' not in self.db.stats['other']:
+            return False
+        splat = self.db.stats['other']['splat'].get('Splat', {}).get('perm', '')
+        return splat in ['Changeling', 'Kinain']

@@ -1,6 +1,7 @@
 from evennia.commands.default.muxcommand import MuxCommand
+from commands.CmdPose import PoseBreakMixin
 
-class CmdSay(MuxCommand):
+class CmdSay(PoseBreakMixin, MuxCommand):
     """
     speak as your character
 
@@ -39,18 +40,25 @@ class CmdSay(MuxCommand):
             # to differentiate between 'say ~message' and 'say ~ message'
             speech = speech.rstrip()
 
+        # Send pose break before the message
+        self.send_pose_break()
+
+        # Prepare the say messages
         msg_self, msg_understand, msg_not_understand, language = caller.prepare_say(speech)
 
-        # Send messages to receivers.  Filter out everything but connected players.
-        receivers = [char for char in caller.location.contents if char.has_account]
-        for receiver in receivers:
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            obj for obj in caller.location.contents
+            if obj.has_account and obj.db.in_umbra == caller.db.in_umbra
+        ]
+
+        # Send messages to receivers
+        for receiver in filtered_receivers:
             if receiver != caller:
                 if language and language in receiver.get_languages():
                     receiver.msg(msg_understand)
                 else:
                     receiver.msg(msg_not_understand)
-            else:
-                receiver.msg(msg_self)
 
-        # Call the at_say hook
-        caller.at_say(speech)
+        # Send message to the speaker
+        caller.msg(msg_self)

@@ -6,8 +6,21 @@ class PoseBreakMixin:
     A mixin to add pose breaks before commands.
     """
     def send_pose_break(self, exclude=None):
-        pose_break = f"\n|y{'=' * 30}> |w{self.caller.name}|n |y<{'=' * 30}|n"
-        self.caller.location.msg_contents(pose_break, exclude=exclude)
+        caller = self.caller
+        pose_break = f"\n|y{'=' * 30}> |w{caller.name}|n |y<{'=' * 30}|n"
+        
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            obj for obj in caller.location.contents
+            if obj.has_account and obj.db.in_umbra == caller.db.in_umbra
+        ]
+        
+        for receiver in filtered_receivers:
+            if receiver != caller and (not exclude or receiver not in exclude):
+                receiver.msg(pose_break)
+        
+        # Always send the pose break to the caller
+        caller.msg(pose_break)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
@@ -62,8 +75,9 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
 
     def func(self):
         "Perform the pose"
+        caller = self.caller
         if not self.args:
-            self.caller.msg("Pose what?")
+            caller.msg("Pose what?")
             return
 
         # Send pose break before processing the message
@@ -73,51 +87,21 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         processed_args = self.process_special_characters(self.args)
 
         # Determine the name to use
-        poser_name = self.caller.attributes.get('gradient_name', default=self.caller.key)
+        poser_name = caller.attributes.get('gradient_name', default=caller.key)
 
         # Get the character's speaking language
-        speaking_language = self.caller.get_speaking_language()
+        speaking_language = caller.get_speaking_language()
 
-        def process_speech(match):
-            content = match.group(1)
-            if content.startswith('~'):
-                content = content[1:]  # Remove the tilde
-                msg_self, msg_understand, msg_not_understand, _ = self.caller.prepare_say(content, language_only=True)
-                return f'"{msg_understand}"', f'"{msg_not_understand}"'
-            else:
-                return f'"{content}"', f'"{content}"'
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            obj for obj in caller.location.contents
+            if obj.has_account and obj.db.in_umbra == caller.db.in_umbra
+        ]
 
-        # Process the pose message
-        pose_parts_understand = []
-        pose_parts_not_understand = []
-        last_end = 0
-        for match in re.finditer(r'"(.*?)"', processed_args):
-            pose_parts_understand.append(processed_args[last_end:match.start()])
-            pose_parts_not_understand.append(processed_args[last_end:match.start()])
-            
-            understand, not_understand = process_speech(match)
-            pose_parts_understand.append(understand)
-            pose_parts_not_understand.append(not_understand)
-            
-            last_end = match.end()
-        
-        pose_parts_understand.append(processed_args[last_end:])
-        pose_parts_not_understand.append(processed_args[last_end:])
+        # Construct the pose message
+        pose_message = f"{poser_name} {processed_args}"
 
-        pose_understand = "".join(pose_parts_understand)
-        pose_not_understand = "".join(pose_parts_not_understand)
+        # Send the pose to filtered receivers
+        for receiver in filtered_receivers:
+            receiver.msg(pose_message)
 
-        # Construct the final pose messages
-        pose_self = f"{poser_name}{pose_understand}"
-        pose_understand = f"{poser_name}{pose_understand}"
-        pose_not_understand = f"{poser_name}{pose_not_understand}"
-
-        # Announce the pose to the room
-        for receiver in [char for char in self.caller.location.contents if char.has_account]:
-            if receiver != self.caller:
-                if speaking_language and speaking_language in receiver.get_languages():
-                    receiver.msg(pose_understand)
-                else:
-                    receiver.msg(pose_not_understand)
-            else:
-                receiver.msg(pose_self)
