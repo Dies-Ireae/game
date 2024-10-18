@@ -925,5 +925,134 @@
         "stat_type": "physical",
         "values": [3, 4, 5],
         "splat": "Changeling"
+    },
+    {
+        "name": "Flow of Ki",
+        "description": "You can directly channel your mana to aid in physical actions.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [3]
+    },
+    {
+        "name": "Faction Favorite",
+        "description": "You have a special relationship with one of the Factions.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [2]
+    },
+    {
+        "name": "Force of Spirit",
+        "description": "You can directly call upon mana to aid in social interactions.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [2]
+    },
+    {
+        "name": "Ritual Congregation",
+        "description": "You are able to bring together a group of 100 or more people to perform rituals. If all members are present, they provide an automatic success on all rituals.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [4]
+    },
+    {
+        "name": "Srength of Psyche",
+        "description": "You are able to expend Mana to aid in mental actions.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [2]
+    },
+    {
+        "name": "Detached",
+        "description": "You ignore wound penalties when rolling your phenomena, psychic, faithful, or sorcerous. You are also able to utilize all psychic phenomena when astrally projecting without penalty.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [4]
+    },
+    {
+        "name": "Rote Sorcerer",
+        "description": "You know one specific spell or Rote that can be used as though you were a full Mage, with variable costs.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+        "name": "Psychic Ritual",
+        "description": "You are able to perform rituals with other psychics, allowing you to create lasting psychic effects.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2]
+    },
+    {
+        "name": "Style Sleeper",
+        "description": "You count as a witness to vulgar magic for all sorcery or magick that is outside of your fellowship or paradigm.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2]
+    },
+    {
+        "name": "Positive Wild Talent",
+        "description": "You have a psychic phenomeon that is out of your control. Choose this Merit if you have a net positive effect from this power.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4]
+    },
+    {
+        "name": "Negative Wild Talent",
+        "description": "You have a psychic phenomeon that is out of your control. Choose this Merit if you have a net negative effect from this power.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4]
+    },
+    {
+        "name": "Struggling Awake",
+        "description": "You occasionally manifest powers similar to True Magick, but are unable to control them. This gives you a single moment to use one Sphere of reality, but are no closer to Awakening.",
+        "game_line": "Sorcerer",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5]
+    },
+    {
+        "name": "Psychic Feedback",
+        "description": "You experience feedback from using your psychic powers due to exhaustion and strain.",
+        "game_line": "Sorcerer",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 6]
+    },
+    {
+        "name": "Unsettling Effect",
+        "description": "There is a signature that can be detected when you use your powers which is mildly unsettling. For one point it affects one power, for three, it affects all of them.",
+        "game_line": "Sorcerer",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 3]
+    },
+    {
+        "name": "Psi Focus",
+        "description": "You require some kind of focus, either a gesture, phrase, incanation, or object to use your psychic powers.",
+        "game_line": "Sorcerer",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3, 5]
+    },
+    {
+        "name": "Ritual Sleeper",
+        "description": "You cannot use instantaneous spells, you must cast all of your magic using rituals. Even spells that would otherwise be instantaneous require a ritual to cast them.",
+        "game_line": "Sorcerer",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5]
     }
+    
 ]

@@ -120,10 +120,17 @@ class Stat(models.Model):
         # Perform the access check
         return temp_lock_handler.check(accessing_obj, access_type)
 
+    class Meta:
+        app_label = 'wod20ths'
+
 class CharacterSheet(SharedMemoryModel):
     account = models.OneToOneField(AccountDB, related_name='character_sheet', on_delete=models.CASCADE, null=True)
     character = models.OneToOneField(ObjectDB, related_name='character_sheet', on_delete=models.CASCADE, null=True, unique=True)
     db_object = models.OneToOneField('objects.ObjectDB', related_name='db_character_sheet', on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        app_label = 'wod20th'
+
 
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
@@ -142,6 +149,7 @@ class Note(SharedMemoryModel):
 
     class Meta:
         unique_together = ('character', 'name')
+        app_label = 'wod20th'
 
 def calculate_willpower(character):
     courage = character.get_stat('virtues', 'moral', 'Courage', temp=False)
@@ -207,6 +215,7 @@ class ShapeshifterForm(models.Model):
         verbose_name = "Shapeshifter Form"
         verbose_name_plural = "Shapeshifter Forms"
         ordering = ['shifter_type', 'name']
+        app_label = 'wod20th'   
 
     def __str__(self):
         return f"{self.shifter_type.capitalize()} - {self.name}"
@@ -251,8 +260,11 @@ class Asset(models.Model):
     status = models.CharField(max_length=50, default='Active')
     traits = models.JSONField(default=dict, blank=True, null=True)
 
-    def __str__(self):
+    def __str__(self):  
         return f"{self.name} ({self.get_asset_type_display()})"
+
+    class Meta:
+        app_label = 'wod20th'
 
     @property
     def owner(self):
@@ -273,6 +285,8 @@ class ActionTemplate(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        app_label = 'wod20th'   
 
 class Action(models.Model):
     STATUS_CHOICES = [
@@ -291,6 +305,9 @@ class Action(models.Model):
 
     def __str__(self):
         return f"{self.character_id} - {self.template.name} targeting {self.target_asset} ({self.get_status_display()})"
+
+    class Meta:
+        app_label = 'wod20th'
 
     @property
     def character(self):

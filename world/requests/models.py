@@ -1,5 +1,3 @@
-# in mygame/world/requests/models.py
-
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
 from evennia.accounts.models import AccountDB
@@ -18,7 +16,9 @@ class Request(SharedMemoryModel):
         ('XP', 'Experience Points'),
         ('WIKI', 'Wiki'),
         ('GENERAL', 'General'),
-        ('INFLUENCE', 'Influence'),
+        ('INF', 'Influence'),
+        ('SPLAT', 'Splat'),
+        ()
     ]
 
     STATUS_CHOICES = [
@@ -26,6 +26,7 @@ class Request(SharedMemoryModel):
         ('OPEN', 'Open'),
         ('PENDING', 'Pending'),
         ('CLOSED', 'Closed'),
+        ('CANCELLED', 'Cancelled'),
     ]
 
     category = models.CharField(max_length=10, choices=CATEGORIES)
@@ -36,6 +37,7 @@ class Request(SharedMemoryModel):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='NEW')
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+    additional_players = models.ManyToManyField('accounts.AccountDB', related_name='accessible_requests', blank=True)
 
     def __str__(self):
         return f"{self.id}: {self.title}"
@@ -48,3 +50,17 @@ class Comment(SharedMemoryModel):
 
     def __str__(self):
         return f"Comment on {self.request} by {self.author}"
+
+class ArchivedRequest(SharedMemoryModel):
+    original_id = models.IntegerField()
+    category = models.CharField(max_length=20)
+    title = models.CharField(max_length=100)
+    text = models.TextField()
+    requester = models.ForeignKey('accounts.AccountDB', related_name='archived_requests_created', on_delete=models.SET_NULL, null=True)
+    handler = models.ForeignKey('accounts.AccountDB', related_name='archived_requests_handled', on_delete=models.SET_NULL, null=True)
+    date_created = models.DateTimeField()
+    date_closed = models.DateTimeField()
+    comments = models.TextField()
+
+    class Meta:
+        app_label = "requests"

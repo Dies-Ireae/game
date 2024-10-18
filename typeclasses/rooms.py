@@ -563,3 +563,6 @@ class RoomParent(DefaultRoom):
     def set_fae_description(self, description):
         """Set the fae description of the room."""
         self.db.fae_desc = description
+
+class Room(RoomParent):
+    pass
