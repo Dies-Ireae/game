@@ -4,6 +4,8 @@ from evennia.utils import inherits_from
 from world.wod20th.models import Stat
 from world.wod20th.utils.dice_rolls import roll_dice, interpret_roll_results
 import re
+from difflib import get_close_matches
+from datetime import datetime
 
 class CmdRoll(default_cmds.MuxCommand):
     """
@@ -11,15 +13,19 @@ class CmdRoll(default_cmds.MuxCommand):
 
     Usage:
       +roll <expression> [vs <difficulty>]
+      +roll/log
 
     Examples:
       +roll strength+dexterity+3-2
       +roll stre+dex+3-2 vs 7
+      +roll/log
 
     This command allows you to roll dice based on your character's stats
     and any modifiers. You can specify stats by their full name or abbreviation.
     The difficulty is optional and defaults to 6 if not specified.
     Stats that don't exist or have non-numeric values are treated as 0.
+
+    Use +roll/log to view the last 10 rolls made in the current location.
     """
 
     key = "+roll"
@@ -28,6 +34,10 @@ class CmdRoll(default_cmds.MuxCommand):
     help_category = "Game"
 
     def func(self):
+        if self.switches and "log" in self.switches:
+            self.display_roll_log()
+            return
+
         if not self.args:
             self.caller.msg("Usage: +roll <expression> [vs <difficulty>]")
             return
@@ -101,30 +111,73 @@ class CmdRoll(default_cmds.MuxCommand):
                 else:
                     obj.msg(public_output)
 
+        # After processing the roll, log it
+        log_description = f"{private_description} vs {difficulty}"
+        self.caller.location.log_roll(self.caller.key, log_description, result)
+
     def get_stat_value_and_name(self, stat_name):
         """
-        Retrieve the value and full name of a stat for the character by querying the Stat model.
-        Returns (0, capitalized_input) if the stat doesn't exist or has a non-numeric value.
+        Retrieve the value and full name of a stat for the character by searching the character's stats.
+        Returns the closest matching stat if an exact match is not found.
+        Uses 'temp' value if available and non-zero, otherwise uses 'perm'.
         """
         if not inherits_from(self.caller, "typeclasses.characters.Character"):
             self.caller.msg("Error: This command can only be used by characters.")
             return 0, stat_name.capitalize()
 
-        # Query the Stat model for the given stat name
-        stat = Stat.objects.filter(name__icontains=stat_name).first()
+        character_stats = self.caller.db.stats or {}
+        all_stats = []
 
+        # Flatten the nested dictionary structure
+        for category in character_stats.values():
+            for stat_type in category.values():
+                all_stats.extend(stat_type.keys())
 
-        value = self.caller.get_stat(stat.category, stat.stat_type, stat.name)
+        # Find the closest matching stat name
+        closest_matches = get_close_matches(stat_name.lower(), [s.lower() for s in all_stats], n=1, cutoff=0.6)
         
-        try:
-            if value is not None:
-                try:
-                    return int(value), stat.name
-                except ValueError:
-                    # If the value can't be converted to an integer, treat it as 0
-                    return 0, stat.name
+        if closest_matches:
+            closest_match = next(s for s in all_stats if s.lower() == closest_matches[0])
+            
+            # Find the category and stat_type for the matched stat
+            for category, cat_stats in character_stats.items():
+                for stat_type, stats in cat_stats.items():
+                    if closest_match in stats:
+                        stat_data = stats[closest_match]
+                        temp_value = stat_data.get('temp', 0)
+                        perm_value = stat_data.get('perm', 0)
+                        
+                        # Use temp value if it's non-zero, otherwise use perm value
+                        value = temp_value if temp_value != 0 else perm_value
+                        
+                        try:
+                            return int(value), closest_match
+                        except ValueError:
+                            return 0, closest_match
 
-            # If no matching stat is found or its value is None, return 0 and the capitalized input
-            return 0, stat.name.capitalize()
-        except AttributeError:
-            return 0, stat_name
+        # If no matching stat is found, return 0 and the capitalized input
+        return 0, stat_name.capitalize()
+
+    def display_roll_log(self):
+        """
+        Display the roll log for the current room.
+        """
+        room = self.caller.location
+        roll_log = room.get_roll_log()
+
+        if not roll_log:
+            self.caller.msg("No rolls have been logged in this location yet.")
+            return
+
+        header = "|yRecent rolls in this location:|n"
+        log_entries = []
+        for entry in roll_log:
+            timestamp = entry['timestamp']
+            if isinstance(timestamp, datetime):
+                timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                # Assume it's already a string or has a string representation
+                timestamp_str = str(timestamp)
+            log_entries.append(f"{timestamp_str} - {entry['roller']}: {entry['description']} => {entry['result']}")
+
+        self.caller.msg(header + "\n" + "\n".join(log_entries))

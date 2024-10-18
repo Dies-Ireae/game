@@ -27,12 +27,29 @@ import evennia.contrib.game_systems.mail as mail
 from  commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
 from commands.CmdEmit import CmdEmit
-from commands.CmdShift import CmdShift
-from commands.where import CmdWhere
-
+from commands.CmdNotes import CmdNotes
 from commands.bbs.bbs_cmdset import BBSCmdSet
-from commands.oss.oss_cmdset import OSSCmdSet
-
+from commands.building import CmdSetRoomResources, CmdSetRoomType, CmdSetUmbraDesc, CmdSetGauntlet, CmdUmbraInfo
+#from commands.requests import CmdRequests
+from commands.CmdUmbraInteraction import CmdUmbraInteraction
+from commands.communication import CmdMeet, CmdPlusIc, CmdPlusOoc, CmdOOC, CmdSummon, CmdJoin
+from commands.admin import CmdApprove, CmdUnapprove
+from commands.CmdPump import CmdPump
+from commands.CmdSpendGain import CmdSpendGain
+from commands.where import CmdWhere
+from commands.chargen import CmdCharGen
+from commands.CmdSelfStat import CmdSelfStat
+from commands.CmdShift import CmdShift
+from commands.CmdStaff import CmdStaff
+from commands.unfindable import CmdUnfindable
+from commands.CmdChangelingInteraction import CmdChangelingInteraction
+from commands.bbs.bbs_cmdset import BBSCmdSet
+from commands.oss.oss_cmdset import OssCmdSet
+from commands.CmdWeather import CmdWeather
+from commands.CmdFaeDesc import CmdFaeDesc
+from commands.CmdLook import CmdLook
+from commands.CmdEvents import CmdEvents
+from commands.jobs.jobs_cmdset import JobSystemCmdSet
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -57,18 +74,35 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdStats())
         self.add(CmdEmit())
         self.add(BBSCmdSet)
-        self.add(OSSCmdSet)
-        self.add(CmdWhere())
+        self.add(OssCmdSet)
+        self.add(CmdFaeDesc())
+
         self.add(CmdSpecialty())
         self.add(CmdSheet())
         self.add(CmdHurt())
         self.add(CmdHeal())
+        self.add(CmdEvents())
         self.add(mail.CmdMail())
         self.add(mail.CmdMailCharacter())
         self.add(CmdRoll())
-        self.add(CmdLanguage())
-        self.add(CmdSay())
         self.add(CmdShift())
+        self.add(CmdWeather())
+        self.add(CmdChangelingInteraction())
+        self.add(CmdLook())
+
+        self.add(CmdUmbraInteraction())
+        self.add(CmdMeet())
+        self.add(CmdPlusIc())
+        self.add(CmdPlusOoc())
+        self.add(CmdOOC())
+        self.add(CmdPump())
+        self.add(CmdSpendGain())
+        self.add(CmdWhere())
+        self.add(CmdCharGen())
+        self.add(CmdSelfStat())
+        self.add(CmdStaff())
+        self.add(CmdUnfindable())
+        self.add(JobSystemCmdSet)
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
@@ -89,7 +123,19 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-
+        self.add(CmdSetRoomResources())
+        self.add(CmdSetRoomType())
+        self.add(CmdSetUmbraDesc())
+        self.add(CmdSetGauntlet())
+        self.add(CmdUmbraInfo())
+        self.add(CmdLanguage())
+        self.add(CmdSay())
+        self.add(CmdNotes())
+        #self.add(CmdRequests())
+        self.add(CmdSummon())
+        self.add(CmdJoin())
+        self.add(CmdApprove())
+        self.add(CmdUnapprove())
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """
@@ -129,3 +175,45 @@ class SessionCmdSet(default_cmds.SessionCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
+class CmdTab(default_cmds.MuxCommand):
+    key = "|-"
+    aliases = ["^t"]
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        caller = self.caller
+        # Insert the command logic that |- would perform
+        caller.msg("Executing the |- command logic.")
+
+# In your default cmdset
+from evennia import CmdSet
+
+class DefaultCmdSet(CmdSet):
+    def at_cmdset_creation(self):
+        self.add(CmdCustom())
+
+# Add or update the command alias mapping in the settings file
+from evennia import Command
+
+class CmdRet(default_cmds.MuxCommand):
+    key = "|/"
+    aliases = ["^r"]
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        caller = self.caller
+        message = self.args.strip()
+        if not message:
+            caller.msg("Say what?")
+            return
+        caller.msg(f'You say, "{message}"')
+        caller.location.msg_contents(f'{caller.name} says, "{message}"', exclude=caller)
+
+# In your default cmdset
+from evennia import CmdSet
+
+class DefaultCmdSet(CmdSet):
+    def at_cmdset_creation(self):
+        self.add(CmdSay())

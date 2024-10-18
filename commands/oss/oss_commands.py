@@ -1,6 +1,7 @@
 from evennia import Command
 from evennia.utils.evmenu import EvMenu
 from evennia.utils.evtable import EvTable
+from evennia.objects.models import ObjectDB
 from typeclasses.rooms import RoomParent
 
 class CmdShowHierarchy(Command):
@@ -402,7 +403,6 @@ class CmdInitializeHierarchy(Command):
 
         # Output the table
         self.caller.msg(str(table))
-
 
 
 

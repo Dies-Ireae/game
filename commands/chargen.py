@@ -1,8 +1,8 @@
-# commands/CmdCharGen.py
+# commands/chargen.py
 
 from evennia import Command
 from evennia.utils.evmenu import EvMenu
-from world.wod20th.models import Stat
+from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, SHIFTER_RENOWN, CLAN, MAGE_FACTION, MAGE_SPHERES, TRADITION, TRADITION_SUBFACTION, CONVENTION, METHODOLOGIES, NEPHANDI_FACTION, SEEMING, KITH, SEELIE_LEGACIES, UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road
 from typeclasses.characters import Character
 
 class CmdCharGen(Command):
@@ -28,9 +28,12 @@ class CmdCharGen(Command):
         """
         Called when character generation is complete.
         """
-        caller.msg("Character generation complete!")
-        # Additional logic to finalize character creation
-        _apply_chargen_data(caller)
+        try:
+            _apply_chargen_data(caller)
+            caller.msg("Character generation complete! Your character has been created and is ready to play.")
+        except Exception as e:
+            caller.msg(f"An error occurred during character generation: {str(e)}")
+            caller.msg("Please contact an admin for assistance.")
 
     def at_post_cmd(self):
         """
@@ -41,36 +44,97 @@ class CmdCharGen(Command):
             self.caller.msg("|wUse 'look' to see the character creation menu again.")
             self.caller.msg("Use 'quit' to exit character creation.")
 
-def _apply_chargen_data(self, caller):
-        """Apply all chargen data to the character."""
-        chargen_data = caller.db.chargen
-        
-        # Apply basic information
-        caller.db.concept = chargen_data.get('concept', '')
-        caller.db.nature = chargen_data.get('nature', '')
-        caller.db.demeanor = chargen_data.get('demeanor', '')
-        caller.db.clan = chargen_data.get('clan', '')
+def _apply_chargen_data(caller):
+    chargen_data = caller.db.chargen
+    
+    if not chargen_data:
+        caller.msg("Error: No character generation data found.")
+        return
 
-        # Apply attributes
-        for category, attributes in chargen_data.get('attributes', {}).items():
-            for attr, value in attributes.items():
-                caller.set_stat(category, 'attribute', attr, value)
+    # Initialize stats if it doesn't exist
+    if not caller.db.stats:
+        caller.db.stats = {}
 
-        # Apply abilities
-        for category, abilities in chargen_data.get('abilities', {}).items():
-            for ability, value in abilities.items():
-                caller.set_stat(category, 'ability', ability, value)
+    # Apply splat
+    splat = chargen_data.get('splat', '')
+    caller.db.stats['other'] = {'splat': {'Splat': {'perm': splat}}}
 
-        # Apply disciplines
+    # Apply basic information
+    caller.db.concept = chargen_data.get('concept', '')
+    caller.db.nature = chargen_data.get('nature', '')
+    caller.db.demeanor = chargen_data.get('demeanor', '')
+    caller.db.clan = chargen_data.get('clan', '')
+
+    # Apply attributes
+    for category, attributes in chargen_data.get('attributes', {}).items():
+        for attr, value in attributes.items():
+            caller.set_stat(category, 'attribute', attr, value)
+
+    # Apply abilities
+    for category, abilities in chargen_data.get('abilities', {}).items():
+        for ability, value in abilities.items():
+            caller.set_stat(category, 'ability', ability, value)
+
+    # Apply disciplines or other splat-specific powers
+    splat = caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+    if splat.lower() == 'vampire':
         for discipline, value in chargen_data.get('disciplines', {}).items():
             caller.set_stat('powers', 'discipline', discipline, value)
+    elif splat.lower() == 'mage':
+        for sphere, value in chargen_data.get('spheres', {}).items():
+            caller.set_stat('powers', 'sphere', sphere, value)
+    elif splat.lower() == 'changeling':
+        for art, value in chargen_data.get('arts', {}).items():
+            caller.set_stat('powers', 'art', art, value)
+        for realm, value in chargen_data.get('realms', {}).items():
+            caller.set_stat('powers', 'realm', realm, value)
+    elif splat.lower() == 'shifter':
+        for gift, value in chargen_data.get('gifts', {}).items():
+            caller.set_stat('powers', 'gift', gift, value)
 
-        # Apply backgrounds
-        for background, value in chargen_data.get('backgrounds', {}).items():
-            caller.set_stat('backgrounds', 'background', background, value)
+    # Apply backgrounds
+    for background, value in chargen_data.get('backgrounds', {}).items():
+        caller.set_stat('backgrounds', 'background', background, value)
 
-        # Clear chargen data
-        caller.attributes.remove('chargen')
+    # Apply virtues
+    for virtue, value in chargen_data.get('virtues', {}).items():
+        caller.set_stat('virtues', 'moral', virtue, value)
+
+    # Apply splat-specific stats
+    if splat.lower() == 'vampire':
+        caller.set_stat('pools', 'dual', 'Blood', 10, temp=False)
+        caller.set_stat('pools', 'dual', 'Blood', 10, temp=True)
+    elif splat.lower() == 'shifter':
+        caller.set_stat('pools', 'dual', 'Gnosis', 1, temp=False)
+        caller.set_stat('pools', 'dual', 'Gnosis', 1, temp=True)
+        caller.set_stat('pools', 'dual', 'Rage', 1, temp=False)
+        caller.set_stat('pools', 'dual', 'Rage', 1, temp=True)
+    elif splat.lower() == 'mage':
+        caller.set_stat('pools', 'dual', 'Quintessence', 1, temp=False)
+        caller.set_stat('pools', 'dual', 'Quintessence', 1, temp=True)
+        caller.set_stat('pools', 'dual', 'Paradox', 0, temp=False)
+        caller.set_stat('pools', 'dual', 'Paradox', 0, temp=True)
+        caller.set_stat('other', 'advantage', 'Arete', 1, temp=False)
+    elif splat.lower() == 'changeling':
+        caller.set_stat('pools', 'dual', 'Glamour', 1, temp=False)
+        caller.set_stat('pools', 'dual', 'Glamour', 1, temp=True)
+        caller.set_stat('pools', 'dual', 'Banality', 5, temp=False)
+        caller.set_stat('pools', 'dual', 'Banality', 5, temp=True)
+
+    # Calculate and set Willpower
+    new_willpower = calculate_willpower(caller)
+    caller.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=False)
+    caller.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=True)
+
+    # Calculate and set Road (for Vampires)
+    if splat.lower() == 'vampire':
+        new_road = calculate_road(caller)
+        caller.set_stat('pools', 'moral', 'Road', new_road, temp=False)
+
+    # Clear chargen data
+    caller.attributes.remove('chargen')
+
+    caller.msg("Your character has been fully created and is ready to play!")
 
 # Menu nodes
 
@@ -79,12 +143,13 @@ def node_start(caller):
     options = (
         {"key": "1", "desc": "Choose your character concept", "goto": "node_concept"},
         {"key": "2", "desc": "Select your character's nature and demeanor", "goto": "node_nature_demeanor"},
-        {"key": "3", "desc": "Choose your character's clan", "goto": "node_clan"},
+        {"key": "3", "desc": "Choose your character's splat", "goto": "node_splat"},
         {"key": "4", "desc": "Assign Attributes", "goto": "node_attributes"},
         {"key": "5", "desc": "Assign Abilities", "goto": "node_abilities"},
-        {"key": "6", "desc": "Choose Disciplines", "goto": "node_disciplines"},
+        {"key": "6", "desc": "Choose Powers", "goto": "node_powers"},
         {"key": "7", "desc": "Select Backgrounds", "goto": "node_backgrounds"},
-        {"key": "8", "desc": "Review and Finish", "goto": "node_review"},
+        {"key": "8", "desc": "Assign Virtues", "goto": "node_virtues"},
+        {"key": "9", "desc": "Review and Finish", "goto": "node_review"},
     )
     return text, options
 
@@ -145,8 +210,38 @@ def _set_demeanor(caller, raw_string):
     caller.msg(f"Demeanor set to: {demeanor}")
     return "node_nature_demeanor"
 
-def node_clan(caller):
-    text = "Choose your character's clan:"
+def node_splat(caller):
+    text = "Choose your character type:"
+    options = [
+        {"key": "1", "desc": "Vampire", "goto": "node_vampire_clan"},
+        {"key": "2", "desc": "Shifter", "goto": "node_shifter_type"},
+        {"key": "3", "desc": "Mage", "goto": "node_mage_faction"},
+        {"key": "4", "desc": "Changeling", "goto": "node_changeling_kith"},
+        {"key": "0", "desc": "Return to main menu", "goto": "node_start"}
+    ]
+    return text, options
+
+def _set_splat(caller, raw_string, **kwargs):
+    splat = kwargs.get("splat")
+    caller.db.chargen["splat"] = splat
+    caller.msg(f"Splat set to: {splat}")
+    
+    # Set up splat-specific chargen data
+    if splat == "Vampire":
+        return "node_vampire_clan"
+    elif splat == "Shifter":
+        return "node_shifter_type"
+    elif splat == "Mage":
+        return "node_mage_faction"
+    elif splat == "Changeling":
+        return "node_changeling_kith"
+    else:
+        return "node_start"
+
+# Add nodes for splat-specific choices (vampire clan, shifter type, mage faction, changeling kith)
+
+def node_vampire_clan(caller):
+    text = "Choose your vampire clan:"
     clans = Stat.objects.filter(category="identity", stat_type="lineage", name="Clan")
     options = [{"key": str(i+1), "desc": clan, "goto": (_set_clan, {"clan": clan})} 
                for i, clan in enumerate(clans[0].values)]
@@ -159,569 +254,893 @@ def _set_clan(caller, raw_string, **kwargs):
     caller.msg(f"Clan set to: {clan}")
     return "node_start"
 
-def node_attributes(caller):
-    if "attributes" not in caller.db.chargen:
-        caller.db.chargen["attributes"] = {
-            "physical": {"Strength": 1, "Dexterity": 1, "Stamina": 1},
-            "social": {"Charisma": 1, "Manipulation": 1, "Appearance": 1},
-            "mental": {"Perception": 1, "Intelligence": 1, "Wits": 1}
-        }
-    
-    if "attribute_priority" not in caller.db.chargen:
-        caller.db.chargen["attribute_priority"] = None
-    
-    text = "Assign your character's Attributes. Choose the priority order for Physical, Social, and Mental attributes:\n"
-    text += "Primary (7 points), Secondary (5 points), and Tertiary (3 points).\n"
-    text += f"Current priority: {caller.db.chargen['attribute_priority'] or 'Not set'}\n"
-    
-    options = [
-        {"key": "1", "desc": "PMS (Physical, Mental, Social)", "goto": (_set_attribute_priority, {"priority": "PMS"})},
-        {"key": "2", "desc": "PSM (Physical, Social, Mental)", "goto": (_set_attribute_priority, {"priority": "PSM"})},
-        {"key": "3", "desc": "SMP (Social, Mental, Physical)", "goto": (_set_attribute_priority, {"priority": "SMP"})},
-        {"key": "4", "desc": "SPM (Social, Physical, Mental)", "goto": (_set_attribute_priority, {"priority": "SPM"})},
-        {"key": "5", "desc": "MPS (Mental, Physical, Social)", "goto": (_set_attribute_priority, {"priority": "MPS"})},
-        {"key": "6", "desc": "MSP (Mental, Social, Physical)", "goto": (_set_attribute_priority, {"priority": "MSP"})},
-        {"key": "7", "desc": "Assign Points", "goto": "assign_attribute_points"},
-        {"key": "0", "desc": "Return to main menu", "goto": "node_start"},
-    ]
+def node_shifter_type(caller):
+    text = "Choose your shifter type:"
+    options = [{"key": str(i+1), "desc": shifter_type, "goto": (_set_shifter_type, {"shifter_type": shifter_type})} 
+               for i, shifter_type in enumerate(SHIFTER_IDENTITY_STATS.keys())]
+    options.append({"key": "0", "desc": "Return to splat selection", "goto": "node_splat"})
     return text, options
 
-def set_primary_attributes(caller):
-    return _set_attribute_priority(caller, "primary")
+def _set_shifter_type(caller, raw_string, **kwargs):
+    shifter_type = kwargs.get("shifter_type")
+    caller.db.chargen["shifter_type"] = shifter_type
+    caller.msg(f"Shifter type set to: {shifter_type}")
+    return "node_shifter_details"
 
-def set_secondary_attributes(caller):
-    return _set_attribute_priority(caller, "secondary")
-
-def set_tertiary_attributes(caller):
-    return _set_attribute_priority(caller, "tertiary")
-
-def _set_attribute_priority(caller, raw_string, **kwargs):
-    priority = kwargs.get('priority')
-    if priority:
-        caller.db.chargen["attribute_priority"] = priority
-        caller.msg(f"Attribute priority set to: {priority}")
-    else:
-        caller.msg("Error: No priority specified.")
-    return "node_attributes"
-
-def _assign_priority(caller, raw_string, priority, category):
-    caller.db.chargen["attribute_priority"][priority] = category
-    caller.msg(f"{category.capitalize()} set as {priority} attribute category.")
-    return "node_attributes"
-
-def assign_attribute_points(caller):
-    priority = caller.db.chargen["attribute_priority"]
-    if not priority:
-        caller.msg("You must set attribute priorities before assigning points.")
-        return "node_attributes"
+def node_shifter_details(caller):
+    shifter_type = caller.db.chargen.get("shifter_type")
+    if not shifter_type:
+        caller.msg("Error: Shifter type not set.")
+        return "node_shifter_type"
     
-    categories = {
-        'P': 'physical',
-        'S': 'social',
-        'M': 'mental'
-    }
-    
-    points = {'P': 7, 'S': 5, 'M': 3}
-    
-    # Determine which category we're currently assigning
-    for cat in priority:
-        category = categories[cat]
-        total_points = points[cat] + 3  # Adding 3 because each attribute starts at 1
-        if sum(caller.db.chargen['attributes'][category].values()) < total_points:
-            break
-    else:
-        # If we've completed all categories, move to the next step
-        caller.msg("You've completed assigning all attribute points.")
-        return "node_abilities"  # Move to abilities after completing attributes
-    
-    text = f"Assign points to {category.capitalize()} attributes. You have {points[cat]} points to spend.\n"
-    text += "Format: <attribute> <value> (e.g., 'strength 3' or 'charisma 4')\n"
-    
-    for attr, value in caller.db.chargen['attributes'][category].items():
-        text += f"{attr}: {value}\n"
-    
-    options = [
-        {"key": "_default", "goto": (_process_attribute_input, {"category": category, "points": points[cat], "priority": priority})},
-        {"key": "0", "desc": "Return to attributes menu", "goto": "node_attributes"}
-    ]
-    
+    text = f"Set details for your {shifter_type}:"
+    options = [{"key": str(i+1), "desc": stat, "goto": (_set_shifter_detail, {"stat": stat})} 
+               for i, stat in enumerate(SHIFTER_IDENTITY_STATS[shifter_type])]
+    options.append({"key": "0", "desc": "Return to shifter type selection", "goto": "node_shifter_type"})
     return text, options
 
-def _assign_attributes(caller, category, points):
-    attributes = caller.db.chargen['attributes'][category]
-    total_points = points + 3  # Adding 3 because each attribute starts at 1
-    used_points = sum(attributes.values())
-    remaining_points = total_points - used_points
-
-    text = f"Assign points to {category.capitalize()} attributes. You have {remaining_points} points left.\n"
-    text += "Format: <attribute> <value> (e.g., 'str 3' or 'dex 4')\n"
-    for attr, value in attributes.items():
-        text += f"{attr}: {value}\n"
-
-    options = [
-        {"key": "_default", "goto": (_process_attribute_input, {"category": category, "points": points})}
-    ]
-    options.append({"key": "0", "desc": "Return to attributes menu", "goto": "node_attributes"})
-
+def _set_shifter_detail(caller, raw_string, **kwargs):
+    stat = kwargs.get("stat")
+    text = f"Enter the value for {stat}:"
+    options = (
+        {"key": "_default", "goto": (_save_shifter_detail, {"stat": stat})},
+    )
     return text, options
 
-def _process_attribute_input(caller, raw_string, **kwargs):
-    category = kwargs.get('category')
-    points = kwargs.get('points')
-    priority = kwargs.get('priority')
+def _save_shifter_detail(caller, raw_string, **kwargs):
+    stat = kwargs.get("stat")
+    value = raw_string.strip()
+    if "shifter_details" not in caller.db.chargen:
+        caller.db.chargen["shifter_details"] = {}
+    caller.db.chargen["shifter_details"][stat] = value
+    caller.msg(f"{stat} set to: {value}")
+    return "node_shifter_details"
+
+def node_shifter_renown(caller):
+    shifter_type = caller.db.chargen.get("shifter_type")
+    if not shifter_type:
+        caller.msg("Error: Shifter type not set.")
+        return "node_shifter_type"
     
+    if shifter_type not in SHIFTER_RENOWN or not SHIFTER_RENOWN[shifter_type]:
+        caller.msg(f"{shifter_type} do not use Renown.")
+        return "node_start"
+    
+    text = f"Set Renown for your {shifter_type}:"
+    options = [{"key": str(i+1), "desc": renown, "goto": (_set_renown, {"renown": renown})} 
+               for i, renown in enumerate(SHIFTER_RENOWN[shifter_type])]
+    options.append({"key": "0", "desc": "Return to shifter details", "goto": "node_shifter_details"})
+    return text, options
+
+def _set_renown(caller, raw_string, **kwargs):
+    renown = kwargs.get("renown")
+    text = f"Enter the value for {renown} Renown (1-5):"
+    options = (
+        {"key": "_default", "goto": (_save_renown, {"renown": renown})},
+    )
+    return text, options
+
+def _save_renown(caller, raw_string, **kwargs):
+    renown = kwargs.get("renown")
     try:
-        attr, value = raw_string.split()
-        attr = attr.capitalize()
-        value = int(value)
-
-        if attr not in caller.db.chargen['attributes'][category]:
-            caller.msg(f"Invalid attribute: {attr}. Please use a valid attribute name.")
-            return "assign_attribute_points"
-
-        current_value = caller.db.chargen['attributes'][category][attr]
-        total_points = points + 3  # Adding 3 because each attribute starts at 1
-        used_points = sum(caller.db.chargen['attributes'][category].values())
-        remaining_points = total_points - used_points + current_value  # Add back the current value
-
-        if value < 1 or value > 5:
-            caller.msg("Attribute value must be between 1 and 5.")
-        elif value - current_value > remaining_points:
-            caller.msg(f"Not enough points. You have {remaining_points} points available.")
-        else:
-            caller.db.chargen['attributes'][category][attr] = value
-            caller.msg(f"{attr} set to {value}")
-
-        # Check if we've spent all points for this category
-        if sum(caller.db.chargen['attributes'][category].values()) == total_points:
-            # Move to the next category or finish if all are done
-            categories = {'P': 'physical', 'S': 'social', 'M': 'mental'}
-            current_index = priority.index(next(key for key, value in categories.items() if value == category))
-            if current_index < len(priority) - 1:
-                next_category = categories[priority[current_index + 1]]
-                caller.msg(f"You've completed assigning {category} attributes. Moving to {next_category} attributes.")
-            else:
-                caller.msg("You've completed assigning all attribute points.")
-                return "node_abilities"  # Move to abilities after completing attributes
-
-    except ValueError:
-        caller.msg("Invalid input. Format should be: <attribute> <value> (e.g., 'strength 3' or 'charisma 4')")
-
-    return "assign_attribute_points"
-
-def _modify_attribute(caller, raw_string, **kwargs):
-    category = kwargs.get('category')
-    attribute = kwargs.get('attribute')
-    points = kwargs.get('points')
-    
-    if not all([category, attribute, points]):
-        caller.msg("Error: Missing information for attribute modification.")
-        return "node_attributes"
-    
-    caller.msg(f"Current value of {attribute}: {caller.db.chargen['attributes'][category][attribute]}")
-    caller.msg(f"Enter new value for {attribute} (1-5):")
-    
-    # Return None to wait for user input, then process it with _set_attribute
-    return None, {"node": (_set_attribute, {"category": category, "attribute": attribute, "points": points})}
-
-def _set_attribute(caller, raw_string, **kwargs):
-    category = kwargs.get('category')
-    attribute = kwargs.get('attribute')
-    points = kwargs.get('points')
-    
-    if not all([category, attribute, points]):
-        caller.msg("Error: Missing information for setting attribute.")
-        return "node_attributes"
-    
-    try:
-        value = int(raw_string)
+        value = int(raw_string.strip())
         if 1 <= value <= 5:
-            current = caller.db.chargen['attributes'][category][attribute]
-            total = sum(caller.db.chargen['attributes'][category].values())
-            if total - current + value <= points:
-                caller.db.chargen['attributes'][category][attribute] = value
-                caller.msg(f"{attribute} set to {value}")
-            else:
-                caller.msg("Not enough points available.")
+            if "renown" not in caller.db.chargen:
+                caller.db.chargen["renown"] = {}
+            caller.db.chargen["renown"][renown] = value
+            caller.msg(f"{renown} Renown set to: {value}")
         else:
             caller.msg("Value must be between 1 and 5.")
     except ValueError:
-        caller.msg("Please enter a number.")
-    
-    # Return to the attribute assignment menu
-    return _assign_attributes(caller, category, points)
+        caller.msg("Please enter a valid number.")
+    return "node_shifter_renown"
 
-def _get_remaining_points(caller, category, priority):
-    total_points = {"primary": 7, "secondary": 5, "tertiary": 3}[priority]
-    used_points = sum(caller.db.chargen['attributes'][category].values())
-    return total_points - used_points + 3  # +3 because each attribute starts at 1
+def node_mage_faction(caller):
+    text = "Choose your mage faction:"
+    factions = ["Traditions", "Technocracy", "Nephandi"]
+    options = [{"key": str(i+1), "desc": faction, "goto": (_set_mage_faction, {"faction": faction})} 
+               for i, faction in enumerate(factions)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_mage_faction(caller, raw_string, **kwargs):
+    faction = kwargs.get("faction")
+    caller.db.chargen["mage_faction"] = faction
+    caller.msg(f"Mage faction set to: {faction}")
+    if faction == "Traditions":
+        return "node_mage_tradition"
+    elif faction == "Technocracy":
+        return "node_mage_convention"
+    else:
+        return "node_nephandi_faction"
+
+def node_mage_tradition(caller):
+    text = "Choose your mage tradition:"
+    traditions = Stat.objects.filter(category="identity", stat_type="lineage", name="Tradition")
+    if not traditions.exists():
+        caller.msg("No traditions found in the database. Please contact an admin.")
+        return "node_start"
+    
+    options = []
+    for i, tradition in enumerate(traditions.first().values):
+        options.append({
+            "key": str(i+1),
+            "desc": tradition,
+            "goto": (_set_tradition, {"tradition": tradition})
+        })
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_tradition(caller, raw_string, **kwargs):
+    tradition = kwargs.get("tradition")
+    caller.db.chargen["tradition"] = tradition
+    caller.msg(f"Tradition set to: {tradition}")
+    return "node_mage_subfaction"
+
+def node_mage_subfaction(caller):
+    tradition = caller.db.chargen.get("tradition")
+    if not tradition:
+        caller.msg("Error: Tradition not set.")
+        return "node_start"
+    
+    text = f"Choose your subfaction within the {tradition}:"
+    subfactions = Stat.objects.filter(category="identity", stat_type="lineage", name="Tradition Subfaction")
+    if not subfactions.exists():
+        caller.msg("No subfactions found in the database. Please contact an admin.")
+        return "node_start"
+    
+    options = []
+    for i, subfaction in enumerate(subfactions.first().values):
+        if subfaction.startswith(tradition):
+            options.append({
+                "key": str(len(options) + 1),
+                "desc": subfaction,
+                "goto": (_set_subfaction, {"subfaction": subfaction})
+            })
+    options.append({"key": "0", "desc": "Return to tradition selection", "goto": "node_mage_tradition"})
+    return text, options
+
+def _set_subfaction(caller, raw_string, **kwargs):
+    subfaction = kwargs.get("subfaction")
+    caller.db.chargen["mage_subfaction"] = subfaction
+    caller.msg(f"Subfaction set to: {subfaction}")
+    return "node_start"
+
+def node_mage_convention(caller):
+    text = "Choose your Technocratic Convention:"
+    conventions = Stat.objects.filter(category="identity", stat_type="lineage", name="Convention")
+    if not conventions.exists():
+        caller.msg("No conventions found in the database. Please contact an admin.")
+        return "node_start"
+    
+    options = []
+    for i, convention in enumerate(conventions.first().values):
+        options.append({
+            "key": str(i+1),
+            "desc": convention,
+            "goto": (_set_convention, {"convention": convention})
+        })
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_convention(caller, raw_string, **kwargs):
+    convention = kwargs.get("convention")
+    caller.db.chargen["convention"] = convention
+    caller.msg(f"Convention set to: {convention}")
+    return "node_mage_methodology"
+
+def node_mage_methodology(caller):
+    convention = caller.db.chargen.get("convention")
+    if not convention:
+        caller.msg("Error: Convention not set.")
+        return "node_start"
+    
+    text = f"Choose your methodology within {convention}:"
+    methodologies = Stat.objects.filter(category="identity", stat_type="lineage", name="Methodology")
+    if not methodologies.exists():
+        caller.msg("No methodologies found in the database. Please contact an admin.")
+        return "node_start"
+    
+    options = []
+    for i, methodology in enumerate(methodologies.first().values):
+        if methodology.startswith(convention):
+            options.append({
+                "key": str(len(options) + 1),
+                "desc": methodology,
+                "goto": (_set_methodology, {"methodology": methodology})
+            })
+    options.append({"key": "0", "desc": "Return to convention selection", "goto": "node_mage_convention"})
+    return text, options
+
+def _set_methodology(caller, raw_string, **kwargs):
+    methodology = kwargs.get("methodology")
+    caller.db.chargen["methodology"] = methodology
+    caller.msg(f"Methodology set to: {methodology}")
+    return "node_start"
+
+def node_nephandi_faction(caller):
+    text = "Choose your Nephandi faction:"
+    factions = Stat.objects.filter(category="identity", stat_type="lineage", name="Nephandi Faction")
+    if not factions.exists():
+        caller.msg("No Nephandi factions found in the database. Please contact an admin.")
+        return "node_start"
+    
+    options = []
+    for i, faction in enumerate(factions.first().values):
+        options.append({
+            "key": str(i+1),
+            "desc": faction,
+            "goto": (_set_nephandi_faction, {"faction": faction})
+        })
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_nephandi_faction(caller, raw_string, **kwargs):
+    faction = kwargs.get("faction")
+    caller.db.chargen["nephandi_faction"] = faction
+    caller.msg(f"Nephandi faction set to: {faction}")
+    return "node_start"
+
+def node_changeling_kith(caller):
+    text = "Choose your changeling kith:"
+    kiths = Stat.objects.filter(category="identity", stat_type="lineage", name="Kith")
+    options = [{"key": str(i+1), "desc": kith, "goto": (_set_kith, {"kith": kith})} 
+               for i, kith in enumerate(kiths[0].values)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_kith(caller, raw_string, **kwargs):
+    kith = kwargs.get("kith")
+    caller.db.chargen["kith"] = kith
+    caller.msg(f"Kith set to: {kith}")
+    return "node_changeling_seeming"
+
+def node_changeling_seeming(caller):
+    text = "Choose your changeling seeming:"
+    seemings = Stat.objects.filter(category="identity", stat_type="lineage", name="Seeming")
+    options = [{"key": str(i+1), "desc": seeming, "goto": (_set_seeming, {"seeming": seeming})} 
+               for i, seeming in enumerate(seemings[0].values)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_seeming(caller, raw_string, **kwargs):
+    seeming = kwargs.get("seeming")
+    caller.db.chargen["seeming"] = seeming
+    caller.msg(f"Seeming set to: {seeming}")
+    return "node_changeling_house"
+
+def node_changeling_house(caller):
+    text = "Choose your changeling house (optional):"
+    houses = Stat.objects.filter(category="identity", stat_type="lineage", name="House")
+    options = [{"key": str(i+1), "desc": house, "goto": (_set_house, {"house": house})} 
+               for i, house in enumerate(houses[0].values)]
+    options.append({"key": "0", "desc": "No house / Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_house(caller, raw_string, **kwargs):
+    house = kwargs.get("house")
+    caller.db.chargen["house"] = house
+    caller.msg(f"House set to: {house}")
+    return "node_start"
+
+ATTRIBUTE_CATEGORIES = ['Physical', 'Social', 'Mental']
+ABILITY_CATEGORIES = ['Talents', 'Skills', 'Knowledges']
+
+ABILITIES = {
+    'Talents': ['Alertness', 'Athletics', 'Awareness', 'Brawl', 'Empathy', 'Expression', 'Intimidation', 'Leadership', 'Streetwise', 'Subterfuge'],
+    'Skills': ['Animal Ken', 'Crafts', 'Drive', 'Etiquette', 'Firearms', 'Larceny', 'Melee', 'Performance', 'Stealth', 'Survival'],
+    'Knowledges': ['Academics', 'Computer', 'Finance', 'Investigation', 'Law', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology']
+}
+
+SECONDARY_ABILITIES = {
+    'Talents': ['Carousing', 'Diplomacy', 'Intrigue', 'Mimicry', 'Scrounging', 'Seduction', 'Style'],
+    'Skills': ['Archery', 'Fortitude', 'Fencing', 'Gambling', 'Fast-Talking', 'Pilot', 'Torture'],
+    'Knowledges': ['Area Knowledge', 'Cultural Savvy', 'Demolitions', 'Herbalism', 'Media', 'Power-Brokering', 'Vice']
+}
+
+def node_attributes(caller):
+    text = "Choose an attribute category to assign points:"
+    options = [
+        {"key": "1", "desc": "Physical Attributes", "goto": "node_physical_attributes"},
+        {"key": "2", "desc": "Social Attributes", "goto": "node_social_attributes"},
+        {"key": "3", "desc": "Mental Attributes", "goto": "node_mental_attributes"},
+        {"key": "0", "desc": "Return to main menu", "goto": "node_start"}
+    ]
+    return text, options
+
+def node_select_attribute_category(caller):
+    remaining_categories = [cat for cat in ATTRIBUTE_CATEGORIES if cat not in caller.db.chargen['attribute_order']]
+    text = f"Select {'primary' if len(caller.db.chargen['attribute_order']) == 0 else 'secondary' if len(caller.db.chargen['attribute_order']) == 1 else 'tertiary'} attribute category:"
+    options = [{"key": str(i+1), "desc": cat, "goto": (_set_attribute_category, {"category": cat})} 
+               for i, cat in enumerate(remaining_categories)]
+    return text, options
+
+def _set_attribute_category(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    caller.db.chargen['attribute_order'].append(category)
+    caller.msg(f"Added {category} to attribute order.")
+    return "node_attributes"
+
+def node_distribute_attribute_points(caller):
+    current_category = caller.db.chargen['attribute_order'][0]  # Start with primary
+    points_to_distribute = 7 if len(caller.db.chargen['attribute_order']) == 3 else 5 if len(caller.db.chargen['attribute_order']) == 2 else 3
+    
+    if 'attributes' not in caller.db.chargen:
+        caller.db.chargen['attributes'] = {cat: {'points_left': 0, 'attributes': {}} for cat in ATTRIBUTE_CATEGORIES}
+        for cat in ATTRIBUTE_CATEGORIES:
+            caller.db.chargen['attributes'][cat]['points_left'] = 7 if cat == caller.db.chargen['attribute_order'][0] else 5 if cat == caller.db.chargen['attribute_order'][1] else 3
+    
+    if caller.db.chargen['attributes'][current_category]['points_left'] == 0:
+        # Move to next category or finish
+        caller.db.chargen['attribute_order'].pop(0)
+        if not caller.db.chargen['attribute_order']:
+            return "node_abilities"  # All attributes distributed, move to abilities
+        return "node_distribute_attribute_points"
+    
+    text = f"Distribute points for {current_category} attributes. Points left: {caller.db.chargen['attributes'][current_category]['points_left']}\n"
+    text += "Current values:\n"
+    for attr in get_attributes_for_category(current_category):
+        current_value = caller.db.chargen['attributes'][current_category]['attributes'].get(attr, 1)
+        text += f"{attr}: {current_value}\n"
+    
+    options = [{"key": str(i+1), "desc": attr, "goto": (_set_attribute_value, {"category": current_category, "attribute": attr})} 
+               for i, attr in enumerate(get_attributes_for_category(current_category))]
+    options.append({"key": "0", "desc": "Finish this category", "goto": "node_distribute_attribute_points"})
+    return text, options
+
+def _set_attribute_value(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    attribute = kwargs.get("attribute")
+    try:
+        value = int(raw_string.strip())
+        if 1 <= value <= 5:
+            # Update chargen data
+            if 'attributes' not in caller.db.chargen:
+                caller.db.chargen['attributes'] = {}
+            if category not in caller.db.chargen['attributes']:
+                caller.db.chargen['attributes'][category] = {}
+            caller.db.chargen['attributes'][category][attribute] = value
+
+            # Update character stats directly
+            if 'stats' not in caller.db:
+                caller.db.stats = {}
+            if 'attributes' not in caller.db.stats:
+                caller.db.stats['attributes'] = {}
+            if category not in caller.db.stats['attributes']:
+                caller.db.stats['attributes'][category] = {}
+            if attribute not in caller.db.stats['attributes'][category]:
+                caller.db.stats['attributes'][category][attribute] = {}
+            caller.db.stats['attributes'][category][attribute]['perm'] = value
+            caller.db.stats['attributes'][category][attribute]['temp'] = value
+
+            caller.msg(f"{attribute} set to: {value}")
+            
+            # Return to the appropriate attribute menu
+            if category == "physical":
+                return "node_physical_attributes"
+            elif category == "social":
+                return "node_social_attributes"
+            else:
+                return "node_mental_attributes"
+        else:
+            caller.msg("Value must be between 1 and 5.")
+            # Return to the same node to retry
+            return f"node_{category}_attributes"
+    except ValueError:
+        caller.msg("Please enter a valid number.")
+        # Return to the same node to retry
+        return f"node_{category}_attributes"
+
+def _save_attribute_value(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    attribute = kwargs.get("attribute")
+    try:
+        value = int(raw_string.strip())
+        points_left = caller.db.chargen['attributes'][category]['points_left']
+        current_value = caller.db.chargen['attributes'][category]['attributes'].get(attribute, 1)
+        if 0 <= value <= points_left:
+            new_value = current_value + value
+            if new_value <= 5:
+                caller.db.chargen['attributes'][category]['attributes'][attribute] = new_value
+                caller.db.chargen['attributes'][category]['points_left'] -= value
+                caller.msg(f"{attribute} set to {new_value}")
+            else:
+                caller.msg(f"Total value cannot exceed 5. Current value: {current_value}, Attempted to add: {value}")
+        else:
+            caller.msg(f"Please enter a number between 0 and {points_left}")
+    except ValueError:
+        caller.msg("Please enter a valid number")
+    return "node_distribute_attribute_points"
+
+def get_attributes_for_category(category):
+    if category == 'Physical':
+        return ['Strength', 'Dexterity', 'Stamina']
+    elif category == 'Social':
+        return ['Charisma', 'Manipulation', 'Appearance']
+    elif category == 'Mental':
+        return ['Perception', 'Intelligence', 'Wits']
 
 def node_abilities(caller):
-    text = "Choose the priority for your character's Abilities. You will have:\n"
-    text += "Primary: 13 points\n"
-    text += "Secondary: 9 points\n"
-    text += "Tertiary: 5 points\n"
+    if 'ability_order' not in caller.db.chargen:
+        caller.db.chargen['ability_order'] = []
     
-    options = [
-        {"key": "1", "desc": "TSK (Talents, Skills, Knowledges)", "goto": (_set_ability_priority, {"priority": "TSK"})},
-        {"key": "2", "desc": "TKS (Talents, Knowledges, Skills)", "goto": (_set_ability_priority, {"priority": "TKS"})},
-        {"key": "3", "desc": "STK (Skills, Talents, Knowledges)", "goto": (_set_ability_priority, {"priority": "STK"})},
-        {"key": "4", "desc": "SKT (Skills, Knowledges, Talents)", "goto": (_set_ability_priority, {"priority": "SKT"})},
-        {"key": "5", "desc": "KTS (Knowledges, Talents, Skills)", "goto": (_set_ability_priority, {"priority": "KTS"})},
-        {"key": "6", "desc": "KST (Knowledges, Skills, Talents)", "goto": (_set_ability_priority, {"priority": "KST"})},
-        {"key": "0", "desc": "Return to main menu", "goto": "node_start"},
-    ]
+    if len(caller.db.chargen['ability_order']) < 3:
+        return node_select_ability_category(caller)
+    else:
+        return node_distribute_ability_points(caller)
+
+def node_select_ability_category(caller):
+    remaining_categories = [cat for cat in ABILITY_CATEGORIES if cat not in caller.db.chargen['ability_order']]
+    text = f"Select {'primary' if len(caller.db.chargen['ability_order']) == 0 else 'secondary' if len(caller.db.chargen['ability_order']) == 1 else 'tertiary'} ability category:"
+    options = [{"key": str(i+1), "desc": cat, "goto": (_set_ability_category, {"category": cat})} 
+               for i, cat in enumerate(remaining_categories)]
     return text, options
 
-def _set_ability_priority(caller, raw_string, **kwargs):
-    priority = kwargs.get('priority')
-    if priority:
-        caller.db.chargen["ability_priority"] = priority
-        caller.msg(f"Ability priority set to: {priority}")
-    else:
-        caller.msg("Error: No priority specified.")
-    return "assign_abilities"
+def _set_ability_category(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    caller.db.chargen['ability_order'].append(category)
+    caller.msg(f"Added {category} to ability order.")
+    return "node_abilities"
 
-def assign_abilities(caller):
-    if "abilities" not in caller.db.chargen:
-        caller.db.chargen["abilities"] = {
-            "talents": {},
-            "skills": {},
-            "knowledges": {}
-        }
+def node_distribute_ability_points(caller):
+    current_category = caller.db.chargen['ability_order'][0]  # Start with primary
+    points_to_distribute = 13 if len(caller.db.chargen['ability_order']) == 3 else 9 if len(caller.db.chargen['ability_order']) == 2 else 5
     
-    priority = caller.db.chargen.get("ability_priority")
-    if not priority:
-        caller.msg("You must set ability priorities before assigning points.")
-        return "node_abilities"
+    if 'abilities' not in caller.db.chargen:
+        caller.db.chargen['abilities'] = {cat: {'points_left': 0, 'abilities': {}, 'secondary_abilities': {}} for cat in ABILITY_CATEGORIES}
+        for cat in ABILITY_CATEGORIES:
+            caller.db.chargen['abilities'][cat]['points_left'] = 13 if cat == caller.db.chargen['ability_order'][0] else 9 if cat == caller.db.chargen['ability_order'][1] else 5
     
-    points = {"primary": 13, "secondary": 9, "tertiary": 5}
-    categories = {"T": "talents", "S": "skills", "K": "knowledges"}
+    if caller.db.chargen['abilities'][current_category]['points_left'] == 0:
+        # Move to next category or finish
+        caller.db.chargen['ability_order'].pop(0)
+        if not caller.db.chargen['ability_order']:
+            return "node_next_step"  # All abilities distributed, move to next step
+        return "node_distribute_ability_points"
     
-    # Determine which category we're currently assigning
-    for i, cat in enumerate(priority):
-        category = categories[cat]
-        current_points = points[["primary", "secondary", "tertiary"][i]]
-        if sum(caller.db.chargen['abilities'][category].values()) < current_points:
-            break
-    else:
-        # If we've completed all categories, move to the next step
-        caller.msg("You've completed assigning all ability points.")
-        return "node_disciplines"  # Or whatever the next step in your chargen process is
-    
-    text = f"Assign points to {category.capitalize()}. You have {current_points} points to spend.\n"
-    text += "Format: <ability> <value> (e.g., 'alertness 3' or 'brawl 2')\n"
-    
-    abilities = Stat.objects.filter(category="abilities", stat_type=category[:-1])  # Remove 's' from end
-    for ability in abilities:
-        value = caller.db.chargen['abilities'][category].get(ability.name, 0)
-        text += f"{ability.name}: {value}\n"
-    
-    options = [
-        {"key": "_default", "goto": (_process_ability_input, {"category": category, "points": current_points, "priority": priority})}
-    ]
-    options.append({"key": "0", "desc": "Return to abilities menu", "goto": "node_abilities"})
-    
+    text = f"Distribute points for {current_category}. Points left: {caller.db.chargen['abilities'][current_category]['points_left']}"
+    options = [{"key": str(i+1), "desc": ability, "goto": (_set_ability_value, {"category": current_category, "ability": ability, "is_secondary": False})} 
+               for i, ability in enumerate(ABILITIES[current_category])]
+    options.extend([{"key": str(i+1+len(ABILITIES[current_category])), "desc": f"{ability} (Secondary)", "goto": (_set_ability_value, {"category": current_category, "ability": ability, "is_secondary": True})} 
+                    for i, ability in enumerate(SECONDARY_ABILITIES[current_category])])
+    options.append({"key": "0", "desc": "Finish this category", "goto": "node_distribute_ability_points"})
     return text, options
 
-def _process_ability_input(caller, raw_string, **kwargs):
-    category = kwargs.get('category')
-    points = kwargs.get('points')
-    priority = kwargs.get('priority')
+def _set_ability_value(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    ability = kwargs.get("ability")
+    is_secondary = kwargs.get("is_secondary", False)
+    points_left = caller.db.chargen['abilities'][category]['points_left']
     
+    max_points = min(points_left, 5 if not is_secondary else 3)
+    text = f"Enter points to add to {ability} (1-{max_points}):"
+    options = (
+        {"key": "_default", "goto": (_save_ability_value, {"category": category, "ability": ability, "is_secondary": is_secondary})},
+    )
+    return text, options
+
+def _save_ability_value(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    ability = kwargs.get("ability")
+    is_secondary = kwargs.get("is_secondary")
     try:
-        ability, value = raw_string.rsplit(None, 1)
-        ability = ability.lower()  # Convert to lowercase for case-insensitive matching
-        value = int(value)
-
-        # Fetch abilities from Stat model
-        abilities = Stat.objects.filter(category="abilities", stat_type=category[:-1])
-        ability_map = {ab.name.lower(): ab.name for ab in abilities}
-
-        if ability not in ability_map:
-            caller.msg(f"Unknown ability: {ability}. Valid abilities are: {', '.join(ability_map.values())}")
-            return "assign_abilities"
-
-        # Use the correctly cased ability name
-        ability = ability_map[ability]
-
-        current = caller.db.chargen['abilities'][category].get(ability, 0)
-        used_points = sum(caller.db.chargen['abilities'][category].values())
-        remaining_points = points - used_points + current  # Add back the current value
-        
-        if value < 0 or value > 5:
-            caller.msg("Ability value must be between 0 and 5.")
-        elif value - current > remaining_points:
-            caller.msg(f"Not enough points. You have {remaining_points} points available.")
-        else:
-            caller.db.chargen['abilities'][category][ability] = value
-            caller.msg(f"{ability} set to {value}")
-        
-        # Check if we've spent all points for this category
-        if sum(caller.db.chargen['abilities'][category].values()) == points:
-            categories = {"T": "talents", "S": "skills", "K": "knowledges"}
-            current_category = next((key for key, value in categories.items() if value == category), None)
-            if current_category:
-                current_index = priority.index(current_category)
-                if current_index < len(priority) - 1:
-                    next_category = categories[priority[current_index + 1]]
-                    caller.msg(f"You've completed assigning {category}. Moving to {next_category}.")
-                    return "assign_abilities"
+        value = int(raw_string.strip())
+        points_left = caller.db.chargen['abilities'][category]['points_left']
+        max_points = min(points_left, 5 if not is_secondary else 3)
+        if 1 <= value <= max_points:
+            cost = value if not is_secondary else value * 2
+            if cost <= points_left:
+                if is_secondary:
+                    caller.db.chargen['abilities'][category]['secondary_abilities'][ability] = value
                 else:
-                    caller.msg("You've completed assigning all ability points.")
-                    return "node_disciplines"  # Or whatever the next step in your chargen process is
+                    caller.db.chargen['abilities'][category]['abilities'][ability] = value
+                caller.db.chargen['abilities'][category]['points_left'] -= cost
+                caller.msg(f"{ability} set to {value}" + (" (Secondary)" if is_secondary else ""))
             else:
-                caller.msg("Error: Unknown category.")
-                return "node_abilities"
-    except ValueError as e:
-        caller.msg(str(e))
-        caller.msg("Please enter an ability name and a value (e.g., 'alertness 3' or 'brawl 2').")
-    
-    return "assign_abilities"
+                caller.msg(f"Not enough points left. Cost: {cost}, Points left: {points_left}")
+        else:
+            caller.msg(f"Please enter a number between 1 and {max_points}")
+    except ValueError:
+        caller.msg("Please enter a valid number")
+    return "node_distribute_ability_points"
 
-def get_clan_disciplines(clan):
-    clan_disciplines = {
-        "Lasombra": ["Obtenebration", "Dominate", "Potence"],
-        "Ventrue": ["Fortitude", "Potence", "Presence"],
-        "Toreador": ["Presence", "Celerity", "Auspex"],
-        "Tzimisce": ["Animalism", "Auspex", "Vicissitude"],
-        "Kiasyd": ["Mytherceria", "Obtenebrate", "Auspex"],
-        "Tremere": ["Auspex", "Dominate", "Thaumaturgy"],
-        "Salubri": ["Auspex", "Fortitude", "Valeren"],
-        #Fill More Later
-    }
-    return clan_disciplines.get(clan, [])
+# Helper functions
+def get_attributes_for_category(category):
+    if category == 'Physical':
+        return ['Strength', 'Dexterity', 'Stamina']
+    elif category == 'Social':
+        return ['Charisma', 'Manipulation', 'Appearance']
+    elif category == 'Mental':
+        return ['Perception', 'Intelligence', 'Wits']
+
+def get_abilities_for_category(category):
+    # You'll need to define these based on your game's ability list
+    pass
+
+def node_physical_attributes(caller):
+    text = "Assign points to Physical Attributes (Strength, Dexterity, Stamina):"
+    options = [
+        {"key": "1", "desc": "Strength", "goto": (_set_attribute_value, {"category": "physical", "attribute": "Strength"})},
+        {"key": "2", "desc": "Dexterity", "goto": (_set_attribute_value, {"category": "physical", "attribute": "Dexterity"})},
+        {"key": "3", "desc": "Stamina", "goto": (_set_attribute_value, {"category": "physical", "attribute": "Stamina"})},
+        {"key": "0", "desc": "Return to attributes menu", "goto": "node_attributes"}
+    ]
+    return text, options
+
+def node_mental_attributes(caller):
+    text = "Assign points to Mental Attributes (Perception, Intelligence, Wits):"
+    options = [
+        {"key": "1", "desc": "Perception", "goto": (_set_attribute_value, {"category": "mental", "attribute": "Perception"})},
+        {"key": "2", "desc": "Intelligence", "goto": (_set_attribute_value, {"category": "mental", "attribute": "Intelligence"})},
+        {"key": "3", "desc": "Wits", "goto": (_set_attribute_value, {"category": "mental", "attribute": "Wits"})},
+        {"key": "0", "desc": "Return to attributes menu", "goto": "node_attributes"}
+    ]
+    return text, options
+
+def _set_attribute(caller, raw_string, **kwargs):
+    # This function should return a string or (string, dict)
+    category = kwargs.get("category")
+    attribute = kwargs.get("attribute")
+    text = f"Enter the value for {attribute} (1-5):"
+    options = (
+        {"key": "_default", "goto": (_save_attribute, {"category": category, "attribute": attribute})},
+    )
+    return text, options
+
+def _save_attribute(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    attribute = kwargs.get("attribute")
+    try:
+        value = int(raw_string.strip())
+        if 1 <= value <= 5:
+            if 'attributes' not in caller.db.chargen:
+                caller.db.chargen['attributes'] = {}
+            if category not in caller.db.chargen['attributes']:
+                caller.db.chargen['attributes'][category] = {}
+            caller.db.chargen['attributes'][category][attribute] = value
+            caller.msg(f"{attribute} set to: {value}")
+        else:
+            caller.msg("Value must be between 1 and 5.")
+    except ValueError:
+        caller.msg("Please enter a valid number.")
+    
+    # Return to the appropriate attribute menu
+    if category == "physical":
+        return "node_physical_attributes"
+    elif category == "social":
+        return "node_social_attributes"
+    else:
+        return "node_mental_attributes"
+
+def node_social_attributes(caller):
+    text = "Assign points to Social Attributes (Charisma, Manipulation, Appearance):"
+    options = [
+        {"key": "1", "desc": "Charisma", "goto": (_set_attribute_value, {"category": "social", "attribute": "Charisma"})},
+        {"key": "2", "desc": "Manipulation", "goto": (_set_attribute_value, {"category": "social", "attribute": "Manipulation"})},
+        {"key": "3", "desc": "Appearance", "goto": (_set_attribute_value, {"category": "social", "attribute": "Appearance"})},
+        {"key": "0", "desc": "Return to attributes menu", "goto": "node_attributes"}
+    ]
+    return text, options
+
+def node_mental_attributes(caller):
+    if "attributes" not in caller.db.chargen:
+        caller.db.chargen["attributes"] = {"physical": {}, "social": {}, "mental": {}}
+    
+    text = "Assign points to Mental Attributes (Perception, Intelligence, Wits):"
+    options = [
+        {"key": "1", "desc": "Perception", "goto": (_set_attribute, {"category": "mental", "attribute": "Perception"})},
+        {"key": "2", "desc": "Intelligence", "goto": (_set_attribute, {"category": "mental", "attribute": "Intelligence"})},
+        {"key": "3", "desc": "Wits", "goto": (_set_attribute, {"category": "mental", "attribute": "Wits"})},
+        {"key": "0", "desc": "Return to attributes menu", "goto": "node_attributes"}
+    ]
+    return text, options
+
+def node_abilities(caller):
+    text = "Assign points to your abilities. You have 13/9/5 points to distribute among Talents, Skills, and Knowledges."
+    options = [
+        {"key": "1", "desc": "Assign Talents", "goto": "node_talents"},
+        {"key": "2", "desc": "Assign Skills", "goto": "node_skills"},
+        {"key": "3", "desc": "Assign Knowledges", "goto": "node_knowledges"},
+        {"key": "0", "desc": "Return to main menu", "goto": "node_start"}
+    ]
+    return text, options
+
+def node_talents(caller):
+    if "abilities" not in caller.db.chargen:
+        caller.db.chargen["abilities"] = {"talents": {}, "skills": {}, "knowledges": {}}
+    
+    text = "Assign points to Talents:"
+    talents = Stat.objects.filter(category="abilities", stat_type="talent")
+    options = [{"key": str(i+1), "desc": talent.name, "goto": (_set_ability, {"category": "talents", "ability": talent.name})} 
+               for i, talent in enumerate(talents)]
+    options.append({"key": "0", "desc": "Return to abilities menu", "goto": "node_abilities"})
+    return text, options
+
+def _set_ability(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    ability = kwargs.get("ability")
+    text = f"Enter the value for {ability} (0-5):"
+    options = (
+        {"key": "_default", "goto": (_save_ability, {"category": category, "ability": ability})},
+    )
+    return text, options
+
+def _save_ability(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    ability = kwargs.get("ability")
+    try:
+        value = int(raw_string.strip())
+        if 0 <= value <= 5:
+            caller.db.chargen["abilities"][category][ability] = value
+            caller.msg(f"{ability} set to: {value}")
+        else:
+            caller.msg("Value must be between 0 and 5.")
+    except ValueError:
+        caller.msg("Please enter a valid number.")
+    
+    if category == "talents":
+        return "node_talents"
+    elif category == "skills":
+        return "node_skills"
+    else:
+        return "node_knowledges"
+
+def node_skills(caller):
+    if "abilities" not in caller.db.chargen:
+        caller.db.chargen["abilities"] = {"talents": {}, "skills": {}, "knowledges": {}}
+    
+    text = "Assign points to Skills:"
+    skills = Stat.objects.filter(category="abilities", stat_type="skill")
+    options = [{"key": str(i+1), "desc": skill.name, "goto": (_set_ability, {"category": "skills", "ability": skill.name})} 
+               for i, skill in enumerate(skills)]
+    options.append({"key": "0", "desc": "Return to abilities menu", "goto": "node_abilities"})
+    return text, options
+
+def node_knowledges(caller):
+    if "abilities" not in caller.db.chargen:
+        caller.db.chargen["abilities"] = {"talents": {}, "skills": {}, "knowledges": {}}
+    
+    text = "Assign points to Knowledges:"
+    knowledges = Stat.objects.filter(category="abilities", stat_type="knowledge")
+    options = [{"key": str(i+1), "desc": knowledge.name, "goto": (_set_ability, {"category": "knowledges", "ability": knowledge.name})} 
+               for i, knowledge in enumerate(knowledges)]
+    options.append({"key": "0", "desc": "Return to abilities menu", "goto": "node_abilities"})
+    return text, options
+
+def node_powers(caller):
+    splat = caller.db.chargen.get("splat")
+    if not splat:
+        caller.msg("Error: Character splat not set.")
+        return "node_start"
+    
+    if splat == "Vampire":
+        return node_disciplines(caller)
+    elif splat == "Shifter":
+        return node_gifts(caller)
+    elif splat == "Mage":
+        return node_spheres(caller)
+    elif splat == "Changeling":
+        return node_arts(caller)
+    else:
+        caller.msg("No special powers available for this character type.")
+        return "node_start"
 
 def node_disciplines(caller):
     if "disciplines" not in caller.db.chargen:
         caller.db.chargen["disciplines"] = {}
     
-    clan = caller.db.chargen.get("clan")
-    clan_disciplines = get_clan_disciplines(clan)
-    
-    text = f"Choose your character's Disciplines. You have 3 points to distribute.\n"
-    text += f"As a {clan}, you have access to: {', '.join(clan_disciplines)}\n"
-    text += "Format: <discipline> <value> (e.g., 'obtenebration 2' or 'dominate 1')\n"
-    
-    for discipline in clan_disciplines:
-        value = caller.db.chargen['disciplines'].get(discipline, 0)
-        text += f"{discipline}: {value}\n"
-    
-    options = [
-        {"key": "_default", "goto": (_assign_discipline_points, {"clan_disciplines": clan_disciplines})}
-    ]
+    text = "Assign points to Disciplines:"
+    disciplines = Stat.objects.filter(category="powers", stat_type="discipline")
+    options = [{"key": str(i+1), "desc": discipline.name, "goto": (_set_power, {"category": "disciplines", "power": discipline.name})} 
+               for i, discipline in enumerate(disciplines)]
     options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
-    
     return text, options
 
+def _set_power(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    power = kwargs.get("power")
+    text = f"Enter the value for {power} (1-5):"
+    options = (
+        {"key": "_default", "goto": (_save_power, {"category": category, "power": power})},
+    )
+    return text, options
 
-def _assign_discipline_points(caller, raw_string, **kwargs):
-    clan_disciplines = kwargs.get('clan_disciplines', [])
-    
+def _save_power(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    power = kwargs.get("power")
     try:
-        discipline, value = raw_string.rsplit(None, 1)
-        discipline = discipline.capitalize()
-        value = int(value)
-
-        if discipline not in clan_disciplines:
-            caller.msg(f"Invalid discipline: {discipline}. Your clan disciplines are: {', '.join(clan_disciplines)}")
-            return "node_disciplines"
-
-        current = caller.db.chargen['disciplines'].get(discipline, 0)
-        used_points = sum(caller.db.chargen['disciplines'].values())
-        remaining_points = 3 - used_points + current  # Add back the current value
-        
-        if value < 0 or value > 5:
-            caller.msg("Discipline value must be between 0 and 5.")
-        elif value - current > remaining_points:
-            caller.msg(f"Not enough points. You have {remaining_points} points available.")
+        value = int(raw_string.strip())
+        if 1 <= value <= 5:
+            caller.db.chargen[category][power] = value
+            caller.msg(f"{power} set to: {value}")
         else:
-            caller.db.chargen['disciplines'][discipline] = value
-            caller.msg(f"{discipline} set to {value}")
-        
-        # Check if we've spent all points
-        if sum(caller.db.chargen['disciplines'].values()) == 3:
-            caller.msg("You've completed assigning all discipline points.")
-            return "node_backgrounds"  # Move to the next step
-    except ValueError as e:
-        caller.msg(str(e))
-        caller.msg("Please enter a discipline name and a value (e.g., 'obtenebration 2' or 'dominate 1').")
+            caller.msg("Value must be between 1 and 5.")
+    except ValueError:
+        caller.msg("Please enter a valid number.")
     
-    return "node_disciplines"
+    if category == "disciplines":
+        return "node_disciplines"
+    elif category == "gifts":
+        return "node_gifts"
+    elif category == "spheres":
+        return "node_spheres"
+    else:
+        return "node_arts"
+
+def node_gifts(caller):
+    if "gifts" not in caller.db.chargen:
+        caller.db.chargen["gifts"] = {}
+    
+    text = "Choose Gifts for your character:"
+    gifts = Stat.objects.filter(category="powers", stat_type="gift")
+    options = [{"key": str(i+1), "desc": gift.name, "goto": (_set_power, {"category": "gifts", "power": gift.name})} 
+               for i, gift in enumerate(gifts)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def node_spheres(caller):
+    if "spheres" not in caller.db.chargen:
+        caller.db.chargen["spheres"] = {}
+    
+    text = "Assign points to Spheres:"
+    spheres = Stat.objects.filter(category="powers", stat_type="sphere")
+    options = [{"key": str(i+1), "desc": sphere.name, "goto": (_set_power, {"category": "spheres", "power": sphere.name})} 
+               for i, sphere in enumerate(spheres)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def node_arts(caller):
+    if "arts" not in caller.db.chargen:
+        caller.db.chargen["arts"] = {}
+    
+    text = "Assign points to Arts:"
+    arts = Stat.objects.filter(category="powers", stat_type="art")
+    options = [{"key": str(i+1), "desc": art.name, "goto": (_set_power, {"category": "arts", "power": art.name})} 
+               for i, art in enumerate(arts)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
 
 def node_backgrounds(caller):
     if "backgrounds" not in caller.db.chargen:
         caller.db.chargen["backgrounds"] = {}
     
-    text = "Choose your character's Backgrounds. You have 5 points to distribute.\n"
-    text += "Format: <background> <value> (e.g., 'allies 2' or 'resources 3')\n"
-    
+    text = "Assign points to Backgrounds:"
     backgrounds = Stat.objects.filter(category="backgrounds", stat_type="background")
-    for background in backgrounds:
-        value = caller.db.chargen['backgrounds'].get(background.name, 0)
-        text += f"{background.name}: {value}\n"
-    
-    options = [
-        {"key": "_default", "goto": (_process_background_input, {"backgrounds": [b.name for b in backgrounds]})}
-    ]
+    options = [{"key": str(i+1), "desc": background.name, "goto": (_set_background, {"background": background.name})} 
+               for i, background in enumerate(backgrounds)]
     options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
-    
     return text, options
 
-def _process_background_input(caller, raw_string, **kwargs):
-    backgrounds = kwargs.get('backgrounds', [])
-    
+def _set_background(caller, raw_string, **kwargs):
+    background = kwargs.get("background")
+    text = f"Enter the value for {background} (1-5):"
+    options = (
+        {"key": "_default", "goto": (_save_background, {"background": background})},
+    )
+    return text, options
+
+def _save_background(caller, raw_string, **kwargs):
+    background = kwargs.get("background")
     try:
-        background, value = raw_string.rsplit(None, 1)
-        background = background.capitalize()
-        value = int(value)
-
-        if background not in backgrounds:
-            caller.msg(f"Invalid background: {background}. Valid backgrounds are: {', '.join(backgrounds)}")
-            return "node_backgrounds"
-
-        current = caller.db.chargen['backgrounds'].get(background, 0)
-        used_points = sum(caller.db.chargen['backgrounds'].values())
-        remaining_points = 5 - used_points + current  # Add back the current value
-        
-        if value < 0 or value > 5:
-            caller.msg("Background value must be between 0 and 5.")
-        elif value - current > remaining_points:
-            caller.msg(f"Not enough points. You have {remaining_points} points available.")
+        value = int(raw_string.strip())
+        if 1 <= value <= 5:
+            caller.db.chargen["backgrounds"][background] = value
+            caller.msg(f"{background} set to: {value}")
         else:
-            caller.db.chargen['backgrounds'][background] = value
-            caller.msg(f"{background} set to {value}")
-        
-        # Check if we've spent all points
-        if sum(caller.db.chargen['backgrounds'].values()) == 5:
-            caller.msg("You've completed assigning all background points.")
-            return "node_review"  # Move to the review step
-    except ValueError as e:
-        caller.msg(str(e))
-        caller.msg("Please enter a background name and a value (e.g., 'allies 2' or 'resources 3').")
-    
-    return "node_backgrounds"
-
-def _assign_background_points(caller, raw_string, background):
-    try:
-        points = int(raw_string)
-        current = caller.db.chargen['backgrounds'].get(background, 0)
-        remaining = 5 - sum(caller.db.chargen['backgrounds'].values())
-        
-        if points < 0 or points > remaining + current:
-            caller.msg("Invalid number of points.")
-        else:
-            caller.db.chargen['backgrounds'][background] = points
-            caller.msg(f"{background} set to {points}")
+            caller.msg("Value must be between 1 and 5.")
     except ValueError:
-        caller.msg("Please enter a number.")
-    
+        caller.msg("Please enter a valid number.")
     return "node_backgrounds"
+
+def node_virtues(caller):
+    if "virtues" not in caller.db.chargen:
+        caller.db.chargen["virtues"] = {}
+    
+    text = "Assign points to Virtues:"
+    virtues = Stat.objects.filter(category="virtues", stat_type="moral")
+    options = [{"key": str(i+1), "desc": virtue.name, "goto": (_set_virtue, {"virtue": virtue.name})} 
+               for i, virtue in enumerate(virtues)]
+    options.append({"key": "0", "desc": "Return to main menu", "goto": "node_start"})
+    return text, options
+
+def _set_virtue(caller, raw_string, **kwargs):
+    virtue = kwargs.get("virtue")
+    text = f"Enter the value for {virtue} (1-5):"
+    options = (
+        {"key": "_default", "goto": (_save_virtue, {"virtue": virtue})},
+    )
+    return text, options
+
+def _save_virtue(caller, raw_string, **kwargs):
+    virtue = kwargs.get("virtue")
+    try:
+        value = int(raw_string.strip())
+        if 1 <= value <= 5:
+            caller.db.chargen["virtues"][virtue] = value
+            caller.msg(f"{virtue} set to: {value}")
+        else:
+            caller.msg("Value must be between 1 and 5.")
+    except ValueError:
+        caller.msg("Please enter a valid number.")
+    return "node_virtues"
 
 def node_review(caller):
     text = "Review your character:\n\n"
-    text += f"Concept: {caller.db.chargen.get('concept', 'Not set')}\n"
-    text += f"Nature: {caller.db.chargen.get('nature', 'Not set')}\n"
-    text += f"Demeanor: {caller.db.chargen.get('demeanor', 'Not set')}\n"
-    text += f"Clan: {caller.db.chargen.get('clan', 'Not set')}\n\n"
-
-    text += "Attributes:\n"
+    chargen_data = caller.db.chargen
+    
+    text += f"Concept: {chargen_data.get('concept', 'Not set')}\n"
+    text += f"Nature: {chargen_data.get('nature', 'Not set')}\n"
+    text += f"Demeanor: {chargen_data.get('demeanor', 'Not set')}\n"
+    text += f"Splat: {chargen_data.get('splat', 'Not set')}\n"
+    
+    if 'clan' in chargen_data:
+        text += f"Clan: {chargen_data['clan']}\n"
+    if 'shifter_type' in chargen_data:
+        text += f"Shifter Type: {chargen_data['shifter_type']}\n"
+    if 'mage_faction' in chargen_data:
+        text += f"Mage Faction: {chargen_data['mage_faction']}\n"
+    if 'kith' in chargen_data:
+        text += f"Kith: {chargen_data['kith']}\n"
+    
+    text += "\nAttributes:\n"
     for category in ['physical', 'social', 'mental']:
         text += f"  {category.capitalize()}:\n"
-        for attr, value in caller.db.chargen.get('attributes', {}).get(category, {}).items():
-            text += f"    {attr}: {value}\n"
-
+        attributes = caller.db.stats.get('attributes', {}).get(category, {})
+        for attr, values in attributes.items():
+            perm_value = values.get('perm', 0)
+            temp_value = values.get('temp', perm_value)
+            text += f"    {attr}: {perm_value}"
+            if temp_value != perm_value:
+                text += f" ({temp_value})"
+            text += "\n"
+    
     text += "\nAbilities:\n"
-    for category in ['talents', 'skills', 'knowledges']:
+    for category, abilities in chargen_data.get('abilities', {}).items():
         text += f"  {category.capitalize()}:\n"
-        for ability, value in caller.db.chargen.get('abilities', {}).get(category, {}).items():
+        for ability, value in abilities.items():
             text += f"    {ability}: {value}\n"
-
-    text += "\nDisciplines:\n"
-    for discipline, value in caller.db.chargen.get('disciplines', {}).items():
-        text += f"  {discipline}: {value}\n"
-
+    
+    text += "\nPowers:\n"
+    if 'disciplines' in chargen_data:
+        text += "  Disciplines:\n"
+        for discipline, value in chargen_data['disciplines'].items():
+            text += f"    {discipline}: {value}\n"
+    if 'gifts' in chargen_data:
+        text += "  Gifts:\n"
+        for gift, value in chargen_data['gifts'].items():
+            text += f"    {gift}: {value}\n"
+    if 'spheres' in chargen_data:
+        text += "  Spheres:\n"
+        for sphere, value in chargen_data['spheres'].items():
+            text += f"    {sphere}: {value}\n"
+    if 'arts' in chargen_data:
+        text += "  Arts:\n"
+        for art, value in chargen_data['arts'].items():
+            text += f"    {art}: {value}\n"
+    
     text += "\nBackgrounds:\n"
-    for background, value in caller.db.chargen.get('backgrounds', {}).items():
+    for background, value in chargen_data.get('backgrounds', {}).items():
         text += f"  {background}: {value}\n"
-
-    text += "\nAre you satisfied with your character?"
-
-    options = (
-        {"key": "1", "desc": "Yes, complete character creation", "goto": "node_finish"},
-        {"key": "2", "desc": "No, I want to make changes", "goto": "node_start"},
-    )
-
+    
+    text += "\nVirtues:\n"
+    for virtue, value in chargen_data.get('virtues', {}).items():
+        text += f"  {virtue}: {value}\n"
+    
+    options = [
+        {"key": "1", "desc": "Finish character creation", "goto": "node_finish"},
+        {"key": "2", "desc": "Return to main menu to make changes", "goto": "node_start"},
+    ]
     return text, options
 
 def node_finish(caller):
-    text = "Congratulations! Your character has been created. You can now enter the game world."
-    caller.msg(text)
-    
-    # Apply all the chargen data to the character
+    text = "Are you sure you want to finish character creation? This will apply all your choices and cannot be undone."
+    options = [
+        {"key": "Y", "desc": "Yes, finish character creation", "goto": _finish_chargen},
+        {"key": "N", "desc": "No, return to review", "goto": "node_review"},
+    ]
+    return text, options
+
+def _finish_chargen(caller):
     _apply_chargen_data(caller)
-    
-    # You might want to perform additional actions here, such as:
-    # - Moving the character to a starting location
-    # - Announcing the new character to the game
-    # - Granting initial equipment or resources
-    
+    caller.msg("Character creation complete! Your character has been created and is ready to play.")
     return None
-
-def finish_chargen(self, caller, menu):
-    """
-    Called when character generation is complete.
-    """
-    caller.msg("Character generation complete!")
-    # Additional logic to finalize character creation
-    _apply_chargen_data(caller)
-
-def _apply_chargen_data(caller):
-    """Apply all chargen data to the character."""
-    chargen_data = caller.db.chargen
-    
-    if not chargen_data:
-        caller.msg("Error: No character generation data found.")
-        return
-
-    # Apply basic information
-    caller.db.concept = chargen_data.get('concept', '')
-    caller.db.nature = chargen_data.get('nature', '')
-    caller.db.demeanor = chargen_data.get('demeanor', '')
-    caller.db.clan = chargen_data.get('clan', '')
-
-    # Apply attributes
-    for category, attributes in chargen_data.get('attributes', {}).items():
-        for attr, value in attributes.items():
-            caller.set_stat(category, 'attribute', attr, value)
-
-    # Apply abilities
-    for category, abilities in chargen_data.get('abilities', {}).items():
-        for ability, value in abilities.items():
-            caller.set_stat(category, 'ability', ability, value)
-
-    # Apply disciplines
-    for discipline, value in chargen_data.get('disciplines', {}).items():
-        caller.set_stat('powers', 'discipline', discipline, value)
-
-    # Apply backgrounds
-    for background, value in chargen_data.get('backgrounds', {}).items():
-        caller.set_stat('backgrounds', 'background', background, value)
-
-    # Clear chargen data
-    caller.attributes.remove('chargen')
-
-    # Set character as approved (you might want to change this if you have a manual approval process)
-    caller.db.approved = True
-
-    caller.msg("Your character has been fully created and is ready to play!")
-
-# Add this function to your main CmdCharGen class
-def at_post_cmd(self):
-    """
-    This hook is called after the command has finished executing 
-    (after self.func()).
-    """
-    if hasattr(self.caller, "ndb._menutree"):
-        self.caller.msg("|wUse 'look' to see the character creation menu again.")
-        self.caller.msg("Use 'quit' to exit character creation.")

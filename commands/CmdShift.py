@@ -73,11 +73,18 @@ class CmdShift(default_cmds.MuxCommand):
     help_category = "Shapeshifting"
 
     def func(self):
+        character = self.caller
+
+        # Check if the character is a Shifter
+        splat = character.get_stat('other', 'splat', 'Splat', temp=False)
+        if splat.lower() != 'shifter':
+            self.caller.msg("Only Shifters can use the +shift command.")
+            return
+
         if not self.args and not self.switches:
             self.caller.msg("Usage: +shift <form name>")
             return
 
-        character = self.caller
         if not self.is_valid_character(character):
             self.caller.msg("You need to have a valid character to use this command.")
             return

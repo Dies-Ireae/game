@@ -1,7 +1,11 @@
-from evennia.objects.objects import DefaultRoom
+from evennia import DefaultRoom
+from evennia.utils.utils import make_iter
 from evennia.utils.ansi import ANSIString
+from evennia.utils.search import search_channel
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
+from datetime import datetime
+import random
 
 class RoomParent(DefaultRoom):
 
@@ -29,18 +33,48 @@ class RoomParent(DefaultRoom):
             return ""
 
         name = self.get_display_name(looker, **kwargs)
-        desc = self.db.desc
+        
+        # Check if the looker is in the Umbra or peeking into it
+        in_umbra = looker.tags.get("in_umbra", category="state")
+        peeking_umbra = kwargs.get("peek_umbra", False)
+        
+        # Choose the appropriate description
+        if (in_umbra or peeking_umbra) and self.db.umbra_desc:
+            desc = self.db.umbra_desc
+        else:
+            desc = self.db.desc
 
         # Header with room name
-        
         string = header(name, width=78, bcolor="|r", fillchar=ANSIString("|r-|n")) + "\n"
         
-        # Optional: add custom room description here if available
+        # Process room description
         if desc:
-            string += wrap_ansi(desc, 78, left_padding=1) + "\n\n"
+            paragraphs = desc.split('%r')
+            formatted_paragraphs = []
+            for i, p in enumerate(paragraphs):
+                if not p.strip():
+                    if i > 0 and not paragraphs[i-1].strip():
+                        formatted_paragraphs.append('')  # Add blank line for double %r
+                    continue
+                
+                lines = p.split('%t')
+                formatted_lines = []
+                for j, line in enumerate(lines):
+                    if j == 0 and line.strip():
+                        formatted_lines.append(wrap_ansi(line.strip(), width=76))
+                    elif line.strip():
+                        formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
+                
+                formatted_paragraphs.append('\n'.join(formatted_lines))
+            
+            string += '\n'.join(formatted_paragraphs) + "\n\n"
 
         # List all characters in the room
-        characters = [obj for obj in self.contents if obj.has_account]
+        characters = [
+            obj for obj in self.contents 
+            if obj.has_account and obj != looker and 
+            obj.tags.get("in_umbra", category="state") == looker.tags.get("in_umbra", category="state")
+        ]
         if characters:
             string += divider("Characters", width=78, fillchar=ANSIString("|r-|n")) + "\n"
             for character in characters:
@@ -82,30 +116,58 @@ class RoomParent(DefaultRoom):
         # List all exits
         exits = [ex for ex in self.contents if ex.destination]
         if exits:
-            string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+            direction_strings = []
             exit_strings = []
             for exit in exits:
                 aliases = exit.aliases.all() or []
                 exit_name = exit.get_display_name(looker)
-                # get the shortest alias in the array.
                 short = min(aliases, key=len) if aliases else ""
                 
-                exit_strings.append(ANSIString(f" <|y{short.upper()}|n> {exit_name}"))
+                exit_string = ANSIString(f" <|y{short.upper()}|n> {exit_name}")
+                
+                if any(word in exit_name for word in ['Sector', 'District', 'Neighborhood']):
+                    direction_strings.append(exit_string)
+                else:
+                    exit_strings.append(exit_string)
 
-            # Split into two columns
-            half = (len(exit_strings) + 1) // 2
-            col1 = exit_strings[:half]
-            col2 = exit_strings[half:]
+            # Display Directions
+            if direction_strings:
+                string += divider("Directions", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += self.format_exit_columns(direction_strings)
 
-            # Create two-column format
-            for i in range(max(len(col1), len(col2))):
-                col1_str = col1[i] if i < len(col1) else ANSIString("")
-                col2_str = col2[i] if i < len(col2) else ANSIString("")
-                string += f"{col1_str.ljust(38)} {col2_str}\n"
+            # Display Exits
+            if exit_strings:
+                string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += self.format_exit_columns(exit_strings) + "\n"
 
-        string += footer(width=78, fillchar=ANSIString("|r-|n"))
+        # Get room type and resources
+        room_type = self.db.roomtype or "Unknown"
+        resources = self.db.resources
+        resources_str = f"Res:{resources}" if resources is not None else ""
+
+        # Create the footer with room type and resources
+        footer_text = f"{resources_str}, {room_type}".strip(", ")
+        footer_length = len(ANSIString(footer_text))
+        padding = 78 - footer_length - 2  # -2 for the brackets
+
+        string += ANSIString(f"|r{'-' * padding}[|c{footer_text}|r]|n")
 
         return string
+
+    def format_exit_columns(self, exit_strings):
+        # Split into two columns
+        half = (len(exit_strings) + 1) // 2
+        col1 = exit_strings[:half]
+        col2 = exit_strings[half:]
+
+        # Create two-column format
+        formatted_string = ""
+        for i in range(max(len(col1), len(col2))):
+            col1_str = col1[i] if i < len(col1) else ANSIString("")
+            col2_str = col2[i] if i < len(col2) else ANSIString("")
+            formatted_string += f"{col1_str.ljust(38)} {col2_str}\n"
+        
+        return formatted_string
 
     def idle_time_display(self, idle_time):
         """
@@ -119,24 +181,183 @@ class RoomParent(DefaultRoom):
         else:
             time_str = f"{idle_time // 3600}h"
 
-        # Color code based on idle time intervals  well use Xterm 256 colors |[[0-255]
-        # We'll go with the most natural time interval for now.
-        # Maybe something that slowly increases.  1m (bright green) 5m (Dark green) 15m (Yellow) 30m (red) 1h+ (bright grey)
-
-        if idle_time < 60:
-            color = "|g"
-        elif idle_time < 300:
-            color = "|G"
-        elif idle_time < 900:
-            color = "|y"
-        elif idle_time < 1800:
-            color = "|r"
+        # Color code based on idle time intervals
+        if idle_time < 900:  # less than 15 minutes
+            color = "|g"  # green
+        elif idle_time < 1800:  # 15-30 minutes
+            color = "|y"  # yellow
+        elif idle_time < 2700:  # 30-45 minutes
+            color = "|o"  # orange
+        elif idle_time < 3600:
+            color = "|r"  # red
         else:
             color = "|h|x"
+        
 
         return f"{color}{time_str}|n"
 
+    def get_gauntlet_difficulty(self):
+        """
+        Returns the Gauntlet difficulty for this room.
+        Override this method to set custom difficulties for specific rooms.
+        """
+        return self.db.gauntlet_difficulty or 6  # Default difficulty
 
+    def peek_umbra(self, character):
+        """
+        Allows a character to peek into the Umbra.
+        """
+        difficulty = self.get_gauntlet_difficulty() + 2
+        success = self.roll_gnosis(character, difficulty)
+        
+        if success:
+            if self.db.umbra_desc:
+                # Format the Umbra description
+                umbra_header = header("Umbra Vision", width=78, fillchar=ANSIString("|r-|n"))
+                formatted_desc = self.format_description(self.db.umbra_desc)
+                umbra_footer = footer(width=78, fillchar=ANSIString("|r-|n"))
+                
+                return f"You successfully pierce the Gauntlet and glimpse into the Umbra:\n\n{umbra_header}\n{formatted_desc}\n{umbra_footer}"
+            else:
+                return "You successfully pierce the Gauntlet, but there's nothing unusual to see in the Umbra here."
+        else:
+            return "You fail to pierce the Gauntlet and see into the Umbra."
+
+    def format_description(self, desc):
+        """
+        Format the description with proper paragraph handling and indentation.
+        """
+        paragraphs = desc.split('%r')
+        formatted_paragraphs = []
+        for i, p in enumerate(paragraphs):
+            if not p.strip():
+                if i > 0 and not paragraphs[i-1].strip():
+                    formatted_paragraphs.append('')  # Add blank line for double %r
+                continue
+            
+            lines = p.split('%t')
+            formatted_lines = []
+            for j, line in enumerate(lines):
+                if j == 0 and line.strip():
+                    formatted_lines.append(wrap_ansi(line.strip(), width=76))
+                elif line.strip():
+                    formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
+            
+            formatted_paragraphs.append('\n'.join(formatted_lines))
+        
+        return '\n\n'.join(formatted_paragraphs)
+
+    def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
+        """
+        Send a message to all objects inside the room, excluding the sender and those in a different plane.
+        """
+        contents = self.contents
+        if exclude:
+            exclude = make_iter(exclude)
+            contents = [obj for obj in contents if obj not in exclude]
+
+        for obj in contents:
+            if hasattr(obj, 'is_character') and obj.is_character:
+                # Check if the character is in the same plane (Umbra or material)
+                if from_obj and hasattr(from_obj, 'tags'):
+                    sender_in_umbra = from_obj.tags.get("in_umbra", category="state")
+                    receiver_in_umbra = obj.tags.get("in_umbra", category="state")
+                    
+                    if sender_in_umbra != receiver_in_umbra:
+                        continue  # Skip this character if they're in a different plane
+
+            obj.msg(text=text, from_obj=from_obj, mapping=mapping, **kwargs)
+
+    def step_sideways(self, character):
+        """
+        Allows a character to step sideways into the Umbra.
+        """
+        difficulty = self.get_gauntlet_difficulty()
+        successes, ones = self.roll_gnosis(character, difficulty)
+        
+        if successes > 0:
+            character.tags.remove("in_material", category="state")
+            character.tags.add("in_umbra", category="state")
+            character.msg("You successfully step sideways into the Umbra.")
+            self.msg_contents(f"{character.name} shimmers and fades from view as they step into the Umbra.", exclude=character, from_obj=character)
+            return True
+        elif successes == 0 and ones > 0:
+            # Botch
+            character.msg("You catastrophically fail to step sideways into the Umbra.")
+            self.msg_contents(f"{character.name} seems to flicker for a moment, but remains in place.", exclude=character, from_obj=character)
+            
+            # Announce the botch on the mudinfo channel
+            mudinfo = search_channel("mudinfo")
+            if mudinfo:
+                mudinfo[0].msg(f"|rBOTCH!!!|n {character.name} botched their attempt to step sideways in {self.name}.")
+            
+            return False
+        else:
+            character.msg("You fail to step sideways into the Umbra.")
+            return False
+
+    def return_from_umbra(self, character):
+        """
+        Allows a character to return from the Umbra to the material world.
+        """
+        difficulty = self.get_gauntlet_difficulty()
+        successes, ones = self.roll_gnosis(character, difficulty)
+        
+        if successes > 0:
+            character.tags.remove("in_umbra", category="state")
+            character.tags.add("in_material", category="state")
+            character.msg("You step back into the material world.")
+            self.msg_contents(f"{character.name} shimmers into view as they return from the Umbra.", exclude=character, from_obj=character)
+            return True
+        elif successes == 0 and ones > 0:
+            # Botch
+            character.msg("You catastrophically fail to return from the Umbra.")
+            
+            # Announce the botch on the mudinfo channel
+            mudinfo = search_channel("mudinfo")
+            if mudinfo:
+                mudinfo[0].msg(f"|rBOTCH!!!|n {character.name} botched their attempt to return from the Umbra in {self.name}.")
+            
+            return False
+        else:
+            character.msg("You fail to return from the Umbra.")
+            return False
+
+    def roll_gnosis(self, character, difficulty):
+        """
+        Simulates a Gnosis roll for the character.
+        Returns a tuple of (successes, ones).
+        """
+        stats = character.db.stats
+        if not stats or 'pools' not in stats or 'dual' not in stats['pools'] or 'Gnosis' not in stats['pools']['dual']:
+            character.msg("Error: Gnosis attribute not found. Please contact an admin.")
+            return 0, 0
+        
+        gnosis = stats['pools']['dual']['Gnosis']['perm']
+        if gnosis is None:
+            character.msg("Error: Permanent Gnosis value is None. Please contact an admin.")
+            return 0, 0
+        
+        # Convert gnosis to an integer if it's stored as a string
+        if isinstance(gnosis, str):
+            try:
+                gnosis = int(gnosis)
+            except ValueError:
+                character.msg("Error: Invalid Gnosis value. Please contact an admin.")
+                return 0, 0
+        
+        successes = 0
+        ones = 0
+        for _ in range(gnosis):
+            roll = random.randint(1, 10)
+            if roll >= difficulty:
+                successes += 1
+            elif roll == 1:
+                ones += 1
+        
+        character.msg(f"Gnosis Roll: {successes} successes against difficulty {difficulty}")
+        return successes, ones
+    
     def initialize(self):
         """
         Initialize default attributes if they haven't been set yet.
@@ -151,14 +372,17 @@ class RoomParent(DefaultRoom):
             self.db.resources = {}  # Empty dict for resources
             self.db.owners = []
             self.db.sub_locations = []
+            self.db.roll_log = []  # Initialize an empty list for roll logs
             self.db.initialized = True  # Mark this room as initialized
             self.save()  # Save immediately to avoid ID-related issues
 
     def at_object_creation(self):
         """
-        Called when the object is first created. Initialize is deferred until after saving.
+        Called when the room is first created.
         """
-        self.initialize()
+        super().at_object_creation()
+        self.db.unfindable = False  # Add this line
+        self.db.fae_desc = ""
 
     def set_as_district(self):
         self.initialize()
@@ -301,3 +525,44 @@ class RoomParent(DefaultRoom):
         self.msg(f"{indent}- {self.key} ({self.db.location_type})")
         for sub_loc in self.get_sub_locations():
             sub_loc.display_hierarchy(depth + 1)
+
+    def log_roll(self, roller, roll_description, result):
+        """
+        Log a roll made in this room.
+        """
+        self.initialize()
+        
+        # Use the game time if available, otherwise use the current system time
+        if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
+            timestamp = self.db.gametime.time()
+        else:
+            timestamp = datetime.now()
+
+        log_entry = {
+            "roller": roller,
+            "description": roll_description,
+            "result": result,
+            "timestamp": timestamp
+        }
+        self.db.roll_log.append(log_entry)
+        if len(self.db.roll_log) > 10:
+            self.db.roll_log.pop(0)  # Remove the oldest entry if we have more than 10
+        self.save()
+
+    def get_roll_log(self):
+        """
+        Return the roll log for this room.
+        """
+        self.initialize()
+        return self.db.roll_log
+
+    def get_fae_description(self):
+        """Get the fae description of the room."""
+        return self.db.fae_desc or "This place has no special fae aspect."
+
+    def set_fae_description(self, description):
+        """Set the fae description of the room."""
+        self.db.fae_desc = description
+
+class Room(RoomParent):
+    pass

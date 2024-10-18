@@ -1,0 +1,434 @@
+[
+    {
+        "name": "Alchemy",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Conjuration",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Chronomancy",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Conveyance",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Divination",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Enchantment",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Fascination",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Fortune",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Gauntlet Manipulation",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Healing",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Hellfire",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Mana Manipulation",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Mediumship",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Oneiromancy",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Saturnal Anima",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Saturnal Manes",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Scrying",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Shadowcasting",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Shapeshifting",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Spirit Awakening",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Spirit Chasing",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Summoning, Binding, and Warding",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Weather Control",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "sorcery",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Animal Psychic",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Anti-Psi",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Astral Projection",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Biocontrol",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Channeling",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Clairvoyance",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Cyberkinesis",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Cyberpathy",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Ectoplasmic Generation",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Empathic Healing",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Mind Shields",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Precognition",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychic Healing",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychic Hypnosis",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychic Invisibility",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychic Vampirism",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychokinesis",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychometry",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Psychoportation",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Pyrokinesis",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Synergy",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Soul Stealing",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Telepathy",
+        "description": "",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "psychic",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Signs of Faith",
+        "description": "Signs of Faith allows for the faithful to imbue items and others with their faith, granting the objects and people blessed certain abilities and powers so long as they work in harmony with the faith.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Sin-Eating",
+        "description": "Sin-Eating allows the faithful to consume the sins of others, gaining a variety of benefits depending on the severity of the sin consumed.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Faithful Resolve",
+        "description": "Powers of perception and strengthening the mind and body of the faithful.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Words of Faith",
+        "description": "Prayers are another form of incantation; this power allows the faithful to summon, bind, and ward against spirits, with a specific focus on antithetical spirits to their faith.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Prophecy",
+        "description": "Prophecy allows the faithful to see visions of the future. They can also see the past; faithful with higher levels in this power can see a variety of possible futures.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Martyrdom",
+        "description": "Martyrdom allows the faithful to sacrifice themselves in favor of assisting others; others gain a variety of benefits depending on the number of health levels suffered by the faithful.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Sanctification",
+        "description": "Sanctification is the most notably 'sorcerous' power of the faithful, which allows them to channel their faith into the elements and divine retribution.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Healing Devotion",
+        "description": "Healing Devotion allows the faithful to channel their faith into healing others. This can heal the body, mind, or spirit - especially against those powers invoked by Banes.",
+        "game_line": "Various",
+        "category": "powers",
+        "stat_type": "true_faith",
+        "values": [1, 2, 3, 4, 5]
+    }
+]
