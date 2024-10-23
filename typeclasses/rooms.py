@@ -363,3 +363,33 @@ class RoomParent(DefaultRoom):
         self.msg(f"{indent}- {self.key} ({self.db.location_type})")
         for sub_loc in self.get_sub_locations():
             sub_loc.display_hierarchy(depth + 1)
+
+    def log_roll(self, roller, roll_description, result):
+        """
+        Log a roll made in this room.
+        """
+        self.initialize()
+        
+        # Use the game time if available, otherwise use the current system time
+        if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
+            timestamp = self.db.gametime.time()
+        else:
+            timestamp = datetime.now()
+
+        log_entry = {
+            "roller": roller,
+            "description": roll_description,
+            "result": result,
+            "timestamp": timestamp
+        }
+        self.db.roll_log.append(log_entry)
+        if len(self.db.roll_log) > 10:
+            self.db.roll_log.pop(0)  # Remove the oldest entry if we have more than 10
+        self.save()
+
+    def get_roll_log(self):
+        """
+        Return the roll log for this room.
+        """
+        self.initialize()
+        return self.db.roll_log
