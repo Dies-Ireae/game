@@ -1,5 +1,4 @@
-from evennia import DefaultCharacter
-print("DefaultCharacter:", DefaultCharacter)
+from evennia.objects.objects import DefaultCharacter
 from evennia.utils.ansi import ANSIString
 from world.wod20th.models import Stat
 from evennia.utils import lazy_property
@@ -8,13 +7,8 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 
-from evennia import DefaultCharacter
-print("DefaultCharacter:", DefaultCharacter)
 
-# If DefaultCharacter is None, use object as a fallback
-BaseCharacter = DefaultCharacter if DefaultCharacter is not None else object
-
-class Character(BaseCharacter):
+class Character(DefaultCharacter):
     """
     The Character typeclass.
     """
@@ -31,6 +25,7 @@ class Character(BaseCharacter):
         self.db.speaking_language = None
         self.db.approved = False
         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
+        self.db.stats = {}
 
     @lazy_property
     def notes(self):

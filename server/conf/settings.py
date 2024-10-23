@@ -28,6 +28,8 @@ put secret game- or server-specific settings in secret_settings.py.
 from evennia.settings_default import *
 import os
 
+from evennia.contrib.base_systems import color_markups
+
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
 # Evennia base server config
@@ -50,8 +52,6 @@ LOCK_FUNC_MODULES = [
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000', 'https://diesiraemu.com']
 
-MAX_CHARACTERS_PER_ACCOUNT = 5
-
 COLOR_ANSI_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
 COLOR_XTERM256_EXTRA_FG = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
 COLOR_XTERM256_EXTRA_BG = color_markups.MUX_COLOR_XTERM256_EXTRA_BG
@@ -61,28 +61,11 @@ COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diesiraemu.com']
 WEBSOCKET_CLIENT_URL = "wss://diesiraemu.com:4005/websocket"
-EVENNIA_ADMIN=False
-
-
-SERVERNAME = "beta.diesiraemu.com"
-TELNET_INTERFACES = ['0.0.0.0']
-WEBSERVER_INTERFACES = ['0.0.0.0']
-
-if ENVIRONMENT == 'development':
-  WEB_SOCKET_CLIENT_URL = "ws://localhost4005/websocket"
-else:
-  WEBSOCKET_CLIENT_URL = "wss://beta.diesiraemu.com/websocket"
-
-ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
 
 INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
-LOCK_FUNC_MODULES = [
-    "evennia.locks.lockfuncs",
-    "world.wod20th.locks", 
-]
-  # Change 8001 to your desired websocket port
+  
+# Change 8001 to your desired websocket port
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
 ######################################################################
@@ -260,3 +243,7 @@ MAX_ACCOUNTS = 10000  # Adjust this number as needed
 
 # Maximum number of characters per account
 MAX_CHARACTERS_PER_ACCOUNT = 5  # Adjust this number as needed
+
+import warnings
+
+warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.models.base')
