@@ -1,22 +1,76 @@
-from evennia.objects.objects import DefaultCharacter
-from evennia.utils.ansi import ANSIString, strip_ansi
+from evennia import DefaultCharacter
+print("DefaultCharacter:", DefaultCharacter)
+from evennia.utils.ansi import ANSIString
 from world.wod20th.models import Stat
+from evennia.utils import lazy_property
+from world.wod20th.models import Note
+from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 
-class Character(DefaultCharacter):
-    
+from evennia import DefaultCharacter
+print("DefaultCharacter:", DefaultCharacter)
+
+# If DefaultCharacter is None, use object as a fallback
+BaseCharacter = DefaultCharacter if DefaultCharacter is not None else object
+
+class Character(BaseCharacter):
+    """
+    The Character typeclass.
+    """
 
     def at_object_creation(self):
         """
-        Called only when first created.
+        Called when the character is first created.
         """
+        super().at_object_creation()
+        self.tags.add("in_material", category="state")
+        self.db.unfindable = False  # Add this line
+        self.db.fae_desc = ""
+        self.db.languages = ["English"]  # Default language
         self.db.speaking_language = None
-        self.db.stats = {}
-        self.db.gradient_name = None
-        self.db.display_name = None
+        self.db.approved = False
+        self.db.in_umbra = False  # Use a persistent attribute instead of a tag
 
-    
+    @lazy_property
+    def notes(self):
+        return Note.objects.filter(character=self)
+
+    def add_note(self, name, text, category="General"):
+        return Note.objects.create(
+            character=self,
+            name=name,
+            text=text,
+            category=category
+        )
+
+    def get_note(self, identifier):
+        try:
+            return self.notes.get(id=int(identifier))
+        except ValueError:
+            return self.notes.filter(name__iexact=identifier).first()
+
+    def get_all_notes(self):
+        return self.notes.all()
+
+    def update_note(self, identifier, text, category=None):
+        note = self.get_note(identifier)
+        if note:
+            note.text = text
+            if category:
+                note.category = category
+            note.save()
+            return True
+        return False
+
+    def change_note_status(self, identifier, is_public):
+        note = self.get_note(identifier)
+        if note:
+            note.is_public = is_public
+            note.save()
+            return True
+        return False
+
     def get_display_name(self, looker, **kwargs):
         """
         Get the name to display for the character.
@@ -25,44 +79,32 @@ class Character(DefaultCharacter):
         
         if self.db.gradient_name:
             name = ANSIString(self.db.gradient_name)
-        elif self.db.display_name:
-            name = f"|w{strip_ansi(self.db.display_name)}"
-
-
+            if looker.check_permstring("builders"):
+                name += f"({self.dbref})"
+            return name
+        
+        # If the looker is builder+ show the dbref
         if looker.check_permstring("builders"):
             name += f"({self.dbref})"
-        
+
         return name
 
     def get_languages(self):
         """
-        Get the character's known languages from their merits.
+        Get the character's known languages.
         """
-        return_langs = []
-        if not hasattr(self.db, "stats") or not self.db.stats: # Check if the character has stats
-            self.db.stats = {}
-        merits = self.db.stats.get('merits', {}).get('social', {}).get('Merits', [])
-        for merit in merits:
-            if merit.startswith('Language'):
-                return_langs.append(merit.split('(')[1].split(')')[0])
-        return return_langs
+        return self.db.languages or []  # Return an empty list if None
 
-    def set_speaking_language(self, language_name):
+    def set_speaking_language(self, language):
         """
         Set the character's currently speaking language.
         """
-        if language_name.lower().strip() == "none":
+        if language is None:
             self.db.speaking_language = None
-            return
-        # Check if the character knows the language case insensitively.  Lowercasse the language name
-        language_name = language_name.lower().strip()
-        # use get_languages() to get the list of languages and lowercase them
-        languages = [lang.lower() for lang in self.get_languages()]
-
-        if language_name in languages:
-            self.db.speaking_language = language_name.capitalize()
+        elif language in self.db.languages:
+            self.db.speaking_language = language
         else:
-            raise ValueError(f"You don't know the language: {language_name}")
+            raise ValueError(f"You don't know the language: {language}")
 
     def get_speaking_language(self):
         """
@@ -167,76 +209,172 @@ class Character(DefaultCharacter):
 
         return msg_self, msg_understand, msg_not_understand, language
 
+    def step_sideways(self):
+        """Attempt to step sideways into the Umbra."""
+        if self.db.in_umbra:
+            self.msg("You are already in the Umbra.")
+            return False
+        
+        if self.location:
+            success = self.location.step_sideways(self)
+            if success:
+                self.db.in_umbra = True
+                self.msg("You have stepped sideways into the Umbra.")
+                self.location.msg_contents(f"{self.name} shimmers and fades from view as they step into the Umbra.", exclude=[self], from_obj=self)
+            return success
+        else:
+            self.msg("You can't step sideways here.")
+            return False
 
+    def return_from_umbra(self):
+        """Return from the Umbra to the material world."""
+        if not self.db.in_umbra:
+            self.msg("You are not in the Umbra.")
+            return False
+        
+        self.db.in_umbra = False
+        self.msg("You step back into the material world.")
+        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self], from_obj=self)
+        return True
 
-    def at_say(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
+    def return_appearance(self, looker, **kwargs):
         """
-        Hook method for the say command. This method is called by the say command,
-        but doesn't handle the actual message distribution.
+        This formats a description for any object looking at this object.
         """
-        # This method can be empty or contain any additional logic you want to run when a character speaks
-        pass
+        if not looker:
+            return ""
+        
+        # Get the description
+        desc = self.db.desc
 
-    def at_pose(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
+        # Start with the name
+        string = f"|c{self.get_display_name(looker)}|n\n"
+
+        # Process character description
+        if desc:
+            # Replace both %t and |- with a consistent tab marker
+            desc = desc.replace('%t', '|t').replace('|-', '|t')
+            
+            paragraphs = desc.split('%r')
+            formatted_paragraphs = []
+            for p in paragraphs:
+                if not p.strip():
+                    formatted_paragraphs.append('')  # Add blank line for empty paragraph
+                    continue
+                
+                # Handle tabs manually
+                lines = p.split('|t')
+                indented_lines = [line.strip() for line in lines]
+                indented_text = '\n    '.join(indented_lines)
+                
+                # Wrap each line individually
+                wrapped_lines = [wrap_ansi(line, width=78) for line in indented_text.split('\n')]
+                formatted_paragraphs.append('\n'.join(wrapped_lines))
+            
+            # Join paragraphs with a single newline, and remove any consecutive newlines
+            joined_paragraphs = '\n'.join(formatted_paragraphs)
+            joined_paragraphs = re.sub(r'\n{3,}', '\n\n', joined_paragraphs)
+            
+            string += joined_paragraphs + "\n"
+
+        # Add any other details you want to include in the character's appearance
+        # For example, you might want to add information about their equipment, stats, etc.
+
+        return string
+
+    def announce_move_from(self, destination, msg=None, mapping=None, **kwargs):
         """
-        Override the default pose method to use the gradient name, selective language masking, and quote handling.
+        Called just before moving out of the current room.
         """
         if not self.location:
             return
 
-        speaking_language = self.get_speaking_language()
-        name = self.db.gradient_name if self.db.gradient_name else self.name
+        string = f"{self.name} is leaving {self.location}, heading for {destination}."
         
-        def mask_quotes(match):
-            content = match.group(1)
-            if content.startswith('~'):
-                return f'"{self.mask_language(content[1:], speaking_language)}"'
-            return f'"{content}"'
+        # Send message directly to the room
+        self.location.msg_contents(string, exclude=[self], from_obj=self)
 
-        # Use regex to find and process quoted text
-        processed_message = re.sub(r'"(.*?)"', mask_quotes, message)
+    def announce_move_to(self, source_location, msg=None, mapping=None, **kwargs):
+        """
+        Called just after arriving in a new room.
+        """
+        if not source_location:
+            return
 
-        if msg_self is None:
-            msg_self = f"{name} {message}"  # The poser always understands themselves
+        string = f"{self.name} arrives to {self.location} from {source_location}."
+        
+        # Send message directly to the room
+        self.location.msg_contents(string, exclude=[self], from_obj=self)
 
+    def at_say(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
+        """Hook method for the say command."""
+        if not self.location:
+            return
 
-        # Create different messages for those who understand and those who don't
-        msg_understand = f"{name} {message}"
-        msg_not_understand = f"{name} {processed_message}"
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            r for r in self.location.contents 
+            if hasattr(r, 'has_account') and r.has_account and r.db.in_umbra == self.db.in_umbra
+        ]
+
+        # Prepare the say messages
+        msg_self, msg_understand, msg_not_understand, language = self.prepare_say(message)
 
         # Send messages to receivers
-        for receiver in self.location.contents:
+        for receiver in filtered_receivers:
             if receiver != self:
-                if speaking_language and speaking_language in receiver.get_languages():
+                if language and language in receiver.get_languages():
                     receiver.msg(msg_understand)
                 else:
                     receiver.msg(msg_not_understand)
-            else:
-                receiver.msg(msg_self)
 
+        # Send message to the speaker
+        self.msg(msg_self)
 
-    def at_emote(self, emote, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
-        """
-        Override the default emote method to use the gradient name and language masking.
-        """
+    def at_pose(self, pose_understand, pose_not_understand, pose_self, speaking_language):
         if not self.location:
             return
 
-        masked_emote = re.sub(r'"([^"]*)"', lambda m: f'"{self.mask_language(m.group(1))}"', emote)
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            r for r in self.location.contents 
+            if hasattr(r, 'has_account') and r.has_account and r.db.in_umbra == self.db.in_umbra
+        ]
 
-        if msg_self is None:
-            msg_self = f"You emote: {masked_emote}"
-        if msg_location is None:
-            if self.db.gradient_name:
-                gradient_name = ANSIString(self.db.gradient_name)
-                msg_location = f"{gradient_name} {masked_emote}"
-            else:
-                msg_location = f"{self.name} {masked_emote}"
+        # Send messages to receivers
+        for receiver in filtered_receivers:
+            if receiver != self:
+                if speaking_language and speaking_language in receiver.get_languages():
+                    receiver.msg(pose_understand)
+                else:
+                    receiver.msg(pose_not_understand)
 
-        super().at_emote(masked_emote, msg_self=msg_self, msg_location=msg_location, 
-                         receivers=receivers, msg_receivers=msg_receivers, **kwargs)
+        # Send message to the poser
+        self.msg(pose_self)
 
-    def get_stat(self, category, stat_type, stat_name, temp=False, default=None):
+        # Log the pose (only visible to those in the same realm)
+        self.location.msg_contents(pose_understand, exclude=filtered_receivers + [self], from_obj=self)
+
+    def at_emote(self, message, msg_self=None, msg_location=None, receivers=None, msg_receivers=None, **kwargs):
+        """Display an emote to the room."""
+        if not self.location:
+            return
+
+        # Filter receivers based on Umbra state
+        filtered_receivers = [
+            r for r in self.location.contents 
+            if hasattr(r, 'has_account') and r.has_account and r.db.in_umbra == self.db.in_umbra
+        ]
+        
+        # Send the emote to filtered receivers
+        for receiver in filtered_receivers:
+            if receiver != self:
+                receiver.msg(message)
+        
+        # Send the emote to the emitter
+        self.msg(msg_self or message)
+
+    def get_stat(self, category, stat_type, stat_name, temp=False):
         """
         Retrieve the value of a stat, considering instances if applicable.
         """
@@ -246,28 +384,27 @@ class Character(DefaultCharacter):
         category_stats = self.db.stats.get(category, {})
         type_stats = category_stats.get(stat_type, {})
 
-        for full_stat_name, stat in type_stats.items():
-            # Check if the base stat name matches the given stat_name
-            if full_stat_name.startswith(stat_name):
-                return stat['temp'] if temp else stat['perm']
-        
-        # If we reach here, the stat wasn't found in db.stats
-        stat = Stat.objects.filter(name__icontains=stat_name.split("(")[0], category=category, stat_type=stat_type).first()
+        # Check for the stat in the current category and type
+        if stat_name in type_stats:
+            return type_stats[stat_name]['temp' if temp else 'perm']
+
+        # If not found and the category is 'pools', check in 'dual' as well
+        if category == 'pools' and 'dual' in self.db.stats:
+            dual_stats = self.db.stats['dual']
+            if stat_name in dual_stats:
+                return dual_stats[stat_name]['temp' if temp else 'perm']
+
+        # If still not found, check the Stat model
+        stat = Stat.objects.filter(name=stat_name, category=category, stat_type=stat_type).first()
         if stat:
-            # Add the default value to db.stats
-            if category not in self.db.stats:
-                self.db.stats[category] = {}
-            if stat_type not in self.db.stats[category]:
-                self.db.stats[category][stat_type] = {}
-            self.db.stats[category][stat_type][stat_name] = {'perm': stat.default, 'temp': stat.default}
-            return stat.default or default
+            return stat.default
+
         return None
 
     def set_stat(self, category, stat_type, stat_name, value, temp=False):
         """
         Set the value of a stat, considering instances if applicable.
         """
-        
         if not hasattr(self.db, "stats") or not self.db.stats:
             self.db.stats = {}
         if category not in self.db.stats:
@@ -280,18 +417,17 @@ class Character(DefaultCharacter):
             self.db.stats[category][stat_type][stat_name]['temp'] = value
         else:
             self.db.stats[category][stat_type][stat_name]['perm'] = value
-            self.db.stats[category][stat_type][stat_name]['temp'] = value
             
     def check_stat_value(self, category, stat_type, stat_name, value, temp=False):
         """
         Check if a value is valid for a stat, considering instances if applicable.
         """
+        from world.wod20th.models import Stat  
         stat = Stat.objects.filter(name=stat_name, category=category, stat_type=stat_type).first()
         if stat:
             stat_values = stat.values
             return value in stat_values['temp'] if temp else value in stat_values['perm']
         return False
-
 
     def colorize_name(self, message):
         """
@@ -301,59 +437,43 @@ class Character(DefaultCharacter):
             gradient_name = ANSIString(self.db.gradient_name)
             return message.replace(self.name, str(gradient_name))
         return message
+ 
+    def delete_note(self, name):
+        if self.character_sheet:
+            return self.character_sheet.delete_note(name)
+        return False
 
-    def execute_dice_pool(self, expression):
-            """
-            Execute the dice pool expression and return the roll results.
-            """
-            components = re.findall(r'([+-])?\s*(\w+|\d+)', expression)
-            dice_pool = 0
+    def get_notes_by_category(self, category):
+        if self.character_sheet:
+            return self.character_sheet.get_notes_by_category(category)
+        return []
 
-            for sign, value in components:
-                sign = sign or '+'  # Default to '+' if no sign is given
-                if value.isdigit():
-                    modifier = int(value)
-                    dice_pool += modifier if sign == '+' else -modifier
-                else:
-                    stat_value, full_name = self.get_stat_value_and_name(value)
-                    dice_pool += stat_value if sign == '+' else -stat_value
+    def approve_note(self, name):
+        if self.character_sheet:
+            return self.character_sheet.approve_note(name)
+        return False
 
-            rolls, successes, ones = self.roll_dice(dice_pool)
-            result = self.interpret_roll_results(successes, ones, rolls=rolls)
-            return result
+    def unapprove_note(self, name):
+        if self.character_sheet:
+            return self.character_sheet.unapprove_note(name)
+        return False
 
-    def roll_dice(self, dice_pool, difficulty=6):
-        """
-        Roll the dice based on the dice pool and difficulty.
-        """
-        rolls = [random.randint(1, 10) for _ in range(dice_pool)]
-        successes = sum(1 for roll in rolls if roll >= difficulty)
-        ones = sum(1 for roll in rolls if roll == 1)
-        return rolls, successes, ones
+    def change_note_status(self, name, is_public):
+        if self.character_sheet:
+            return self.character_sheet.change_note_status(name, is_public)
+        return False
 
-    def interpret_roll_results(self, successes, ones, rolls):
-        """
-        Interpret the results of the roll and return a string description.
-        """
-        if successes <= ones:
-            return f"Botch! Rolls: {rolls}"
-        elif successes == 0:
-            return f"Failure. Rolls: {rolls}"
-        else:
-            return f"Successes: {successes}. Rolls: {rolls}"
+    def get_fae_description(self):
+        """Get the fae description of the character."""
+        return self.db.fae_desc or f"{self.name} has no visible fae aspect."
 
-    def get_stat_value_and_name(self, stat_name):
-        """
-        Retrieve the value and full name of a stat for the character by querying the Stat model.
-        Returns (0, capitalized_input) if the stat doesn't exist or has a non-numeric value.
-        """
-        stat = Stat.objects.filter(name__icontains=stat_name).first()
-        value = self.get_stat(stat.category, stat.stat_type, stat.name)
-        
-        if value is not None:
-            try:
-                return int(value), stat.name
-            except ValueError:
-                return 0, stat.name
+    def set_fae_description(self, description):
+        """Set the fae description of the character."""
+        self.db.fae_desc = description
 
-        return 0, stat_name.capitalize()
+    def is_fae_perceiver(self):
+        """Check if the character is a Changeling or Kinain."""
+        if not self.db.stats or 'other' not in self.db.stats or 'splat' not in self.db.stats['other']:
+            return False
+        splat = self.db.stats['other']['splat'].get('Splat', {}).get('perm', '')
+        return splat in ['Changeling', 'Kinain']

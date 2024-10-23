@@ -13,29 +13,37 @@
         "game_line": "Various",
         "category": "other",
         "stat_type": "splat",
-        "values": ["Vampire", "Shifter"]
+        "values": ["Vampire", "Shifter", "Mortal", "Mage", "Changeling"]
     },
         {
-        "name": "Age",
-        "description": "The character's age.",
+        "name": "Date of Birth",
+        "description": "The character's DoB.",
+        "game_line": "Vampire: The Masquerade",
+        "category": "identity",
+        "stat_type": "personal",
+        "values": []
+    },
+    {
+        "name": "Date of Embrace",
+        "description": "The character's DoE.",
         "game_line": "Vampire: The Masquerade",
         "category": "identity",
         "stat_type": "personal",
         "values": []
     },
         {
-        "name": "Nature",
+        "name": "Nature Archetype",
         "description": "This is the 'true' personality of your character — who she is deep down.",
         "game_line": "Vampire: The Masquerade",
-        "category": "identity",
+        "category": "archetype",
         "stat_type": "personal",
         "values": []
     },
         {
-        "name": "Demeanor",
+        "name": "Demeanor Archetype",
         "description": "This is the personality your character presents to the world. Often different from Nature.",
         "game_line": "Vampire: The Masquerade",
-        "category": "identity",
+        "category": "archetype",
         "stat_type": "personal",
         "values": []
     },
@@ -74,5 +82,16 @@
         "values": [],
         "splat": "Vampire"
 
+    },
+    {
+        "name": "Enlightenment",
+        "description": "The character's path of enlightenment.",
+        "game_line": "Vampire: The Masquerade",
+        "category": "identity",
+        "stat_type": "personal",
+        "values": ["Night", "Metamorphosis", "Beast", "Harmony", "Evil Revelations", "Self-Focus", "Scorched Heart", 
+                   "Entelechy", "Sharia El-Sama", "Asakku", "Death and the Soul", "Honorable Accord", "Feral Heart", 
+                   "Orion", "Power and the Inner Voice", "Lilith", "Caine", "Cathari", "Redemption", "Bones", "Typhon", 
+                   "Paradox", "Blood", "Hive", "Humanity"]
     }
 ]

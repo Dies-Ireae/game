@@ -28,7 +28,7 @@
         "description": "Ability to maintain reason and reconcile predatory urges with capacity for atrocity.",
         "game_line": "Vampire: The Masquerade",
         "category": "virtues",
-        "stat_type": "inhuman",
+        "stat_type": "moral",
         "values": [1, 2, 3, 4, 5]
     },
     {
@@ -36,7 +36,7 @@
         "description": "Ability to control the Beast by familiarity, harnessing destructive power.",
         "game_line": "Vampire: The Masquerade",
         "category": "virtues",
-        "stat_type": "inhuman",
+        "stat_type": "moral",
         "values": [1, 2, 3, 4, 5]
     }
 ]

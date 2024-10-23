@@ -3,7 +3,7 @@
 from evennia import default_cmds
 from evennia import create_object
 from typeclasses.bbs_controller import BBSController
-
+from world.wod20th.utils.bbs_utils import get_or_create_bbs_controller
 class CmdPost(default_cmds.MuxCommand):
     """
     Post a message on a board.
@@ -22,10 +22,13 @@ class CmdPost(default_cmds.MuxCommand):
         board_ref, post_data = [arg.strip() for arg in self.args.split("/", 1)]
         title, content = [arg.strip() for arg in post_data.split("=", 1)]
 
-        controller = BBSController.objects.get(db_key="BBSController")
-        if not controller:
-            self.caller.msg("BBSController not found.")
-            return
+        # Try to get the BBSController, create it if it doesn't exist
+        try:
+            controller = BBSController.objects.get(db_key="BBSController")
+        except BBSController.DoesNotExist:
+            controller = create_object(BBSController, key="BBSController")
+            controller.db.boards = {}  # Initialize with an empty boards dictionary
+            self.caller.msg("BBSController created.")
 
         try:
             board_ref = int(board_ref)  # Try converting to an integer
@@ -59,10 +62,7 @@ class CmdReadBBS(default_cmds.MuxCommand):
     help_category = "BBS"
 
     def func(self):
-        controller = BBSController.objects.get(db_key="BBSController")
-        if not controller:
-            self.caller.msg("BBSController not found.")
-            return
+        controller = get_or_create_bbs_controller()
 
         if not self.args:
             self.list_boards(controller)

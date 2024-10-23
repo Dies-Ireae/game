@@ -2,7 +2,7 @@ import json
 import os
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ValidationError
-from django.db import connection
+from django.db import transaction, connection, IntegrityError
 
 # Import Evennia and initialize it
 import evennia
@@ -13,10 +13,10 @@ import django
 django.setup()
 
 # Import the Stat model
-from world.wod20th.models import Stat
+from world.wod20th.models import Stat, CATEGORIES, STAT_TYPES
 
 class Command(BaseCommand):
-    help = 'Load WoD20th stats from a folder containing JSON files'
+    help = 'Load or update WoD20th stats from a folder containing JSON files'
 
     def add_arguments(self, parser):
         parser.add_argument('json_folder', type=str, help='Path to the folder containing JSON files with stats')
@@ -36,84 +36,89 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.NOTICE(f'Processing file: {file_path}'))
                 
                 try:
-                    with open(file_path, 'r') as file:
+                    with open(file_path, 'r', encoding='utf-8') as file:
                         stats_data = json.load(file)
-                        self.stdout.write(self.style.SUCCESS(f'Successfully loaded JSON data from {file_path}'))
-                except FileNotFoundError:
-                    self.stdout.write(self.style.ERROR(f'File {file_path} not found.'))
-                    continue
-                except json.JSONDecodeError:
-                    self.stdout.write(self.style.ERROR(f'Error decoding JSON from file {file_path}.'))
+                except (FileNotFoundError, json.JSONDecodeError, UnicodeDecodeError) as e:
+                    self.stdout.write(self.style.ERROR(f'Error reading file {filename}: {str(e)}'))
                     continue
                 
                 for stat_data in stats_data:
-                    self.stdout.write(self.style.NOTICE(f'Processing stat data: {stat_data}'))
-                    
-                    name = stat_data.get('name')
-                    if not name:
-                        self.stdout.write(self.style.ERROR('Missing stat name in data. Skipping entry.'))
-                        continue
-                    
-                    description = stat_data.get('description', '')
-                    game_line = stat_data.get('game_line')
-                    category = stat_data.get('category')
-                    stat_type = stat_data.get('stat_type')
-                    values = stat_data.get('values', [])
-                    lock_string = stat_data.get('lock_string', '')
-                    default = stat_data.get('default', '')
-                    instanceed = stat_data.get('instanced', False)
-                    splat = stat_data.get('splat', None)
-                    hidden = stat_data.get('hidden', False)
-                    locked = stat_data.get('locked', False)
-
-
-                    # Data validation
-                    if not game_line or not category or not stat_type:
-                        self.stdout.write(self.style.ERROR(f'Invalid data for stat {name}. Skipping entry.'))
-                        continue
-
-                    # Ensure values are a list
-                    if not isinstance(values, list):
-                        self.stdout.write(self.style.ERROR(f'Invalid values for stat {name}. Values must be a list. Skipping entry.'))
-                        continue
-
-                    # Check if stat already exists
-                    existing_stat = Stat.objects.filter(name=name, game_line=game_line, category=category, stat_type=stat_type).first()
-                    if existing_stat:
-                        self.stdout.write(self.style.WARNING(f'Stat {name} already exists. Skipping entry.'))
-                        continue
-                    
-                    # Create new stat
-                    stat = Stat(
-                        name=name,
-                        description=description,
-                        game_line=game_line,
-                        category=category,
-                        stat_type=stat_type,
-                        values=values,
-                        lock_string=lock_string,
-                        default=default,
-                        instanced=instanceed,
-                        splat=splat,
-                        hidden=hidden,
-                        locked=locked
-                    )
-
-                    try:
-                        # Validate the model before saving
-                        stat.full_clean()
-                        stat.save()
-                        self.stdout.write(self.style.SUCCESS(f'Successfully created stat: {stat.name}'))
-                    except ValidationError as e:
-                        self.stdout.write(self.style.ERROR(f'Validation error for stat {stat.name}: {e}'))
-                    except Exception as e:
-                        self.stdout.write(self.style.ERROR(f'Error saving stat {stat.name}: {e}'))
-                        self.stdout.write(self.style.ERROR(f'Stat object: {stat.__dict__}'))
-                        if connection.queries:
-                            last_query = connection.queries[-1]
-                            self.stdout.write(self.style.ERROR(f'SQL: {last_query.get("sql", "N/A")}'))
-                            self.stdout.write(self.style.ERROR(f'SQL params: {last_query.get("params", "N/A")}'))
-                        else:
-                            self.stdout.write(self.style.ERROR('No SQL queries recorded.'))
+                    self.process_stat(stat_data)
 
         self.stdout.write(self.style.SUCCESS('Finished processing all files.'))
+
+    def process_stat(self, stat_data):
+        name = stat_data.get('name')
+        if not name:
+            self.stdout.write(self.style.ERROR('Missing stat name in data. Skipping entry.'))
+            return
+
+        # Extract other fields...
+        description = stat_data.get('description', '')
+        game_line = stat_data.get('game_line')
+        category = stat_data.get('category', 'other')
+        stat_type = stat_data.get('stat_type', 'other')
+        values = self.process_values(stat_data.get('values', []))
+        lock_string = stat_data.get('lock_string', '')
+        default = stat_data.get('default', '')
+        instanced = stat_data.get('instanced', False)
+        splat = stat_data.get('splat')
+        hidden = stat_data.get('hidden', False)
+        locked = stat_data.get('locked', False)
+
+        # Validate data...
+        if not game_line:
+            self.stdout.write(self.style.ERROR(f'Missing game_line for stat {name}. Skipping entry.'))
+            return
+
+        # Ensure category and stat_type are valid
+        category = category if category in dict(CATEGORIES) else 'other'
+        stat_type = stat_type if stat_type in dict(STAT_TYPES) else 'other'
+
+        # Try to get existing stat or create a new one
+        stat, created = Stat.objects.get_or_create(
+            name=name,
+            game_line=game_line,
+            defaults={
+                'description': description,
+                'category': category,
+                'stat_type': stat_type,
+                'values': values,
+                'lock_string': lock_string,
+                'default': default,
+                'instanced': instanced,
+                'splat': splat,
+                'hidden': hidden,
+                'locked': locked
+            }
+        )
+
+        if created:
+            self.stdout.write(self.style.SUCCESS(f'Created new stat: {name}'))
+        else:
+            # Update existing stat if any fields have changed
+            updated = False
+            for field, value in stat_data.items():
+                if field == 'values':
+                    value = self.process_values(value)
+                if getattr(stat, field) != value:
+                    setattr(stat, field, value)
+                    updated = True
+            
+            if updated:
+                stat.save()
+                self.stdout.write(self.style.SUCCESS(f'Updated existing stat: {name}'))
+            else:
+                self.stdout.write(self.style.NOTICE(f'No changes for existing stat: {name}'))
+
+    def process_values(self, values):
+        if isinstance(values, dict):
+            values_list = []
+            for key in ['permanent', 'temporary', 'perm', 'temp']:
+                if key in values:
+                    values_list.extend(values[key])
+            return values_list
+        elif isinstance(values, list):
+            return values
+        else:
+            return []

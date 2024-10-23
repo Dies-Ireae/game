@@ -1,7 +1,11 @@
-from evennia.objects.objects import DefaultRoom
+from evennia import DefaultRoom
+from evennia.utils.utils import make_iter
 from evennia.utils.ansi import ANSIString
+from evennia.utils.search import search_channel
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
+from datetime import datetime
+import random
 
 class RoomParent(DefaultRoom):
 
@@ -29,18 +33,48 @@ class RoomParent(DefaultRoom):
             return ""
 
         name = self.get_display_name(looker, **kwargs)
-        desc = self.db.desc
+        
+        # Check if the looker is in the Umbra or peeking into it
+        in_umbra = looker.tags.get("in_umbra", category="state")
+        peeking_umbra = kwargs.get("peek_umbra", False)
+        
+        # Choose the appropriate description
+        if (in_umbra or peeking_umbra) and self.db.umbra_desc:
+            desc = self.db.umbra_desc
+        else:
+            desc = self.db.desc
 
         # Header with room name
-        
         string = header(name, width=78, bcolor="|r", fillchar=ANSIString("|r-|n")) + "\n"
         
-        # Optional: add custom room description here if available
+        # Process room description
         if desc:
-            string += wrap_ansi(desc, 78, left_padding=1) + "\n\n"
+            paragraphs = desc.split('%r')
+            formatted_paragraphs = []
+            for i, p in enumerate(paragraphs):
+                if not p.strip():
+                    if i > 0 and not paragraphs[i-1].strip():
+                        formatted_paragraphs.append('')  # Add blank line for double %r
+                    continue
+                
+                lines = p.split('%t')
+                formatted_lines = []
+                for j, line in enumerate(lines):
+                    if j == 0 and line.strip():
+                        formatted_lines.append(wrap_ansi(line.strip(), width=76))
+                    elif line.strip():
+                        formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
+                
+                formatted_paragraphs.append('\n'.join(formatted_lines))
+            
+            string += '\n'.join(formatted_paragraphs) + "\n\n"
 
         # List all characters in the room
-        characters = [obj for obj in self.contents if obj.has_account]
+        characters = [
+            obj for obj in self.contents 
+            if obj.has_account and obj != looker and 
+            obj.tags.get("in_umbra", category="state") == looker.tags.get("in_umbra", category="state")
+        ]
         if characters:
             string += divider("Characters", width=78, fillchar=ANSIString("|r-|n")) + "\n"
             for character in characters:
@@ -82,30 +116,58 @@ class RoomParent(DefaultRoom):
         # List all exits
         exits = [ex for ex in self.contents if ex.destination]
         if exits:
-            string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+            direction_strings = []
             exit_strings = []
             for exit in exits:
                 aliases = exit.aliases.all() or []
                 exit_name = exit.get_display_name(looker)
-                # get the shortest alias in the array.
                 short = min(aliases, key=len) if aliases else ""
                 
-                exit_strings.append(ANSIString(f" <|y{short.upper()}|n> {exit_name}"))
+                exit_string = ANSIString(f" <|y{short.upper()}|n> {exit_name}")
+                
+                if any(word in exit_name for word in ['Sector', 'District', 'Neighborhood']):
+                    direction_strings.append(exit_string)
+                else:
+                    exit_strings.append(exit_string)
 
-            # Split into two columns
-            half = (len(exit_strings) + 1) // 2
-            col1 = exit_strings[:half]
-            col2 = exit_strings[half:]
+            # Display Directions
+            if direction_strings:
+                string += divider("Directions", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += self.format_exit_columns(direction_strings)
 
-            # Create two-column format
-            for i in range(max(len(col1), len(col2))):
-                col1_str = col1[i] if i < len(col1) else ANSIString("")
-                col2_str = col2[i] if i < len(col2) else ANSIString("")
-                string += f"{col1_str.ljust(38)} {col2_str}\n"
+            # Display Exits
+            if exit_strings:
+                string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += self.format_exit_columns(exit_strings) + "\n"
 
-        string += footer(width=78, fillchar=ANSIString("|r-|n"))
+        # Get room type and resources
+        room_type = self.db.roomtype or "Unknown"
+        resources = self.db.resources
+        resources_str = f"Res:{resources}" if resources is not None else ""
+
+        # Create the footer with room type and resources
+        footer_text = f"{resources_str}, {room_type}".strip(", ")
+        footer_length = len(ANSIString(footer_text))
+        padding = 78 - footer_length - 2  # -2 for the brackets
+
+        string += ANSIString(f"|r{'-' * padding}[|c{footer_text}|r]|n")
 
         return string
+
+    def format_exit_columns(self, exit_strings):
+        # Split into two columns
+        half = (len(exit_strings) + 1) // 2
+        col1 = exit_strings[:half]
+        col2 = exit_strings[half:]
+
+        # Create two-column format
+        formatted_string = ""
+        for i in range(max(len(col1), len(col2))):
+            col1_str = col1[i] if i < len(col1) else ANSIString("")
+            col2_str = col2[i] if i < len(col2) else ANSIString("")
+            formatted_string += f"{col1_str.ljust(38)} {col2_str}\n"
+        
+        return formatted_string
 
     def idle_time_display(self, idle_time):
         """
