@@ -49,7 +49,8 @@ class RoomParent(DefaultRoom):
         
         # Process room description
         if desc:
-            paragraphs = desc.split('%r')
+            paragraphs = desc.split('%r')  # First split on %r
+            paragraphs = [p for para in paragraphs for p in para.split('%R')]  # Then split on %R
             formatted_paragraphs = []
             for i, p in enumerate(paragraphs):
                 if not p.strip():
@@ -57,7 +58,8 @@ class RoomParent(DefaultRoom):
                         formatted_paragraphs.append('')  # Add blank line for double %r
                     continue
                 
-                lines = p.split('%t')
+                lines = p.split('%t')  # First split on %t
+                lines = [l for line in lines for l in line.split('%T')]  # Then split on %T
                 formatted_lines = []
                 for j, line in enumerate(lines):
                     if j == 0 and line.strip():
@@ -227,7 +229,7 @@ class RoomParent(DefaultRoom):
         """
         Format the description with proper paragraph handling and indentation.
         """
-        paragraphs = desc.split('%r')
+        paragraphs = desc.split('%r', '%R')
         formatted_paragraphs = []
         for i, p in enumerate(paragraphs):
             if not p.strip():
@@ -375,6 +377,10 @@ class RoomParent(DefaultRoom):
             self.db.roll_log = []  # Initialize an empty list for roll logs
             self.db.initialized = True  # Mark this room as initialized
             self.save()  # Save immediately to avoid ID-related issues
+        else:
+            # Ensure roll_log exists even for previously initialized rooms
+            if not hasattr(self.db, 'roll_log'):
+                self.db.roll_log = []
 
     def at_object_creation(self):
         """
@@ -530,7 +536,11 @@ class RoomParent(DefaultRoom):
         """
         Log a roll made in this room.
         """
-        self.initialize()
+        self.initialize()  # Ensure initialization
+        
+        # Ensure roll_log exists
+        if not hasattr(self.db, 'roll_log'):
+            self.db.roll_log = []
         
         # Use the game time if available, otherwise use the current system time
         if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
@@ -566,3 +576,4 @@ class RoomParent(DefaultRoom):
 
 class Room(RoomParent):
     pass
+
