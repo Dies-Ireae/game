@@ -121,7 +121,7 @@ class Stat(models.Model):
         return temp_lock_handler.check(accessing_obj, access_type)
 
     class Meta:
-        app_label = 'wod20ths'
+        app_label = 'wod20th'
 
 class CharacterSheet(SharedMemoryModel):
     account = models.OneToOneField(AccountDB, related_name='character_sheet', on_delete=models.CASCADE, null=True)
