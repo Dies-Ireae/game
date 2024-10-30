@@ -1,13 +1,17 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import WikiPage
 
 
 # Create your views here.
 
 def page_list(request):
-    """List all wiki pages."""
-    pages = WikiPage.objects.all().order_by('title')
-    return render(request, 'wiki/page_list.html', {'pages': pages})
+    """Show index page if one exists, otherwise show list of pages."""
+    try:
+        index_page = WikiPage.objects.get(is_index=True)
+        return page_detail(request, index_page.slug)
+    except WikiPage.DoesNotExist:
+        pages = WikiPage.objects.all().order_by('title')
+        return render(request, 'wiki/page_list.html', {'pages': pages})
 
 
 def page_detail(request, slug):
@@ -17,9 +21,9 @@ def page_detail(request, slug):
     # Get featured articles
     featured_articles = WikiPage.objects.filter(
         is_featured=True
-    )
+    ).exclude(pk=page.pk)  # Don't show current page in featured
     
-    # Get related articles - fix the query to get the related_to articles
+    # Get related articles
     related_articles = page.related_to.all().order_by('title')
     
     context = {

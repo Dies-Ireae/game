@@ -14,12 +14,18 @@ Search the Django documentation for "URL dispatcher" for more help.
 """
 
 from django.urls import include, path
+from django.shortcuts import redirect
 
 # default evennia patterns
 from evennia.web.urls import urlpatterns as evennia_default_urlpatterns
 
+def redirect_to_wiki(request):
+    return redirect('wiki:page_list')
+
 # add patterns
 urlpatterns = [
+    # Add this at the top of your urlpatterns
+    path('', redirect_to_wiki, name='index'),
     # website
     path("", include("web.website.urls")),
     # webclient

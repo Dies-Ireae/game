@@ -30,47 +30,22 @@ class FeaturedImageInline(admin.StackedInline):
 class WikiPageAdmin(admin.ModelAdmin):
     """Admin interface for wiki pages."""
     
-    list_display = (
-        'title', 'creator', 'last_editor', 'created_at', 
-        'updated_at', 'is_featured'
-    )
-    list_filter = ('created_at', 'updated_at', 'is_featured')
+    list_display = ('title', 'creator', 'created_at', 'last_editor', 'updated_at')
+    list_filter = ('created_at', 'updated_at', 'is_featured', 'is_index')
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
-    readonly_fields = ('created_at', 'updated_at')
+    inlines = [FeaturedImageInline]
+    filter_horizontal = ('related_to',)
     
     fieldsets = (
         (None, {
-            'fields': ('title', 'slug', 'is_featured')
+            'fields': ('title', 'slug', 'content', 'right_content')
         }),
-        ('Content', {
-            'fields': ('content', 'right_content'),
-            'classes': ('wide',)
-        }),
-        ('Related Articles', {
-            'fields': ('related_to',),
-            'classes': ('collapse',)
-        }),
-        ('Metadata', {
-            'fields': ('creator', 'last_editor', 'created_at', 'updated_at'),
+        ('Options', {
+            'fields': ('is_featured', 'is_index', 'related_to'),
             'classes': ('collapse',)
         })
     )
-    inlines = [FeaturedImageInline]
-
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        formfield = super().formfield_for_dbfield(db_field, **kwargs)
-        if db_field.name == 'right_content':
-            formfield.widget.attrs['placeholder'] = (
-                'Optional content for the right sidebar. '
-                'Leave empty to hide sidebar.'
-            )
-            # Make the text area shorter than the main content
-            formfield.widget.attrs['rows'] = 10
-        elif db_field.name == 'content':
-            # Make the main content area larger
-            formfield.widget.attrs['rows'] = 20
-        return formfield
 
     def save_model(self, request, obj, form, change):
         """Override save_model to pass the current user to the model's save method."""
@@ -82,6 +57,9 @@ class WikiPageAdmin(admin.ModelAdmin):
         # Update last_editor after related objects are saved
         form.instance.last_editor = request.user
         form.instance.save(current_user=request.user)
+
+    def view_on_site(self, obj):
+        return obj.get_absolute_url()
 
 
 @admin.register(WikiRevision)

@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 import os
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 
 
 # Create your models here.
@@ -29,6 +30,10 @@ class WikiPage(SharedMemoryModel):
     is_featured = models.BooleanField(
         default=False,
         help_text="Show this article in the featured articles list"
+    )
+    is_index = models.BooleanField(
+        default=False,
+        help_text="Use this page as the wiki index page"
     )
     related_to = models.ManyToManyField(
         'self',
@@ -63,37 +68,28 @@ class WikiPage(SharedMemoryModel):
         return self.title
 
     def get_absolute_url(self):
+        """Return the URL for viewing this page on the site."""
         return reverse('wiki:page_detail', kwargs={'slug': self.slug})
 
-    def save(self, *args, **kwargs):
-        """Override save to handle meta information and revision creation."""
+    def save(self, current_user=None, *args, **kwargs):
+        """Override save to handle meta information and slug creation."""
+        if not self.slug:
+            self.slug = slugify(self.title)
+
         is_new = self.pk is None
         
-        # If this is a new page, set creator and last_editor to the current user
-        if is_new:
-            # Get the current user from the thread local storage
-            current_user = None
-            for key, value in kwargs.items():
-                if key == 'current_user':
-                    current_user = value
-                    del kwargs[key]
-                    break
-            
-            if current_user:
-                self.creator = current_user
-                self.last_editor = current_user
-            
-            # Set timestamps (these should be handled by auto_now_add and auto_now)
-            self.created_at = timezone.now()
-            self.updated_at = timezone.now()
-        else:
-            # Update the last_editor and updated_at timestamp
-            current_user = kwargs.pop('current_user', None)
-            if current_user:
-                self.last_editor = current_user
-            self.updated_at = timezone.now()
+        if is_new and current_user:
+            self.creator = current_user
+            self.last_editor = current_user
+        elif current_user:
+            self.last_editor = current_user
 
-        # Call the parent class's save method
+        if self.is_index:
+            # Unset any other index pages
+            WikiPage.objects.filter(is_index=True).exclude(
+                pk=self.pk
+            ).update(is_index=False)
+
         super().save(*args, **kwargs)
         
         # Create initial revision if this is a new page
