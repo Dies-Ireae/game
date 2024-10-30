@@ -54,3 +54,6 @@ nosetests.xml
 
 # VSCode config
 .vscode
+
+media
+static

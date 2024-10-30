@@ -19,10 +19,8 @@ def page_detail(request, slug):
         is_featured=True
     )
     
-    # Get related articles
-    related_articles = WikiPage.objects.filter(
-        related_to=page
-    ).order_by('title')
+    # Get related articles - fix the query to get the related_to articles
+    related_articles = page.related_to.all().order_by('title')
     
     context = {
         'page': page,

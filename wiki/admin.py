@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from django.urls import reverse
 from .models import WikiPage, WikiRevision, FeaturedImage
 
 # Register your models here.
@@ -10,6 +12,9 @@ class FeaturedImageInline(admin.StackedInline):
     
     class Media:
         js = ('wiki/js/featured-image-component.js',)
+        css = {
+            'all': ('wiki/css/admin.css',)
+        }
     
     def get_fields(self, request, obj=None):
         fields = ['image', 'banner', 'show_texture']
@@ -66,6 +71,17 @@ class WikiPageAdmin(admin.ModelAdmin):
             # Make the main content area larger
             formfield.widget.attrs['rows'] = 20
         return formfield
+
+    def save_model(self, request, obj, form, change):
+        """Override save_model to pass the current user to the model's save method."""
+        obj.save(current_user=request.user)
+
+    def save_related(self, request, form, formsets, change):
+        """Override save_related to ensure related objects are saved after the main object."""
+        super().save_related(request, form, formsets, change)
+        # Update last_editor after related objects are saved
+        form.instance.last_editor = request.user
+        form.instance.save(current_user=request.user)
 
 
 @admin.register(WikiRevision)

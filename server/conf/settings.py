@@ -29,14 +29,14 @@ from evennia.settings_default import *
 import os
 
 from evennia.contrib.base_systems import color_markups
-
+SITE_ID = 1  # This tells Django which site object to use
+DEBUG = True
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
 # Evennia base server config
 ######################################################################
 SERVERNAME = "Dies Irae"
-DEBUG = True
-SITE_ID = 1
+
 DEFAULT_CMDSETS = [
     'commands.mycmdset.MyCmdset'
 ]
@@ -60,9 +60,13 @@ COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diesiraemu.com']
-WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
+WEBSOCKET_CLIENT_URL = None  # Let Evennia handle this automatically
 
-INSTALLED_APPS += [ "world.wod20th", "wiki" ]  # Add your app to the list of installed apps
+INSTALLED_APPS += (
+    "world.wod20th",
+    "wiki",
+)
+
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
   
 # Change 8001 to your desired websocket port
@@ -260,4 +264,10 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(GAME_DIR, 'media')
+
+# Update the WEBSOCKET_CLIENT_URL configuration
+if ENVIRONMENT == 'production':
+    WEBSOCKET_CLIENT_URL = "wss://diesiraemu.com:4202/websocket"
+elif ENVIRONMENT == 'development':
+    WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
 

@@ -73,7 +73,7 @@
                                     <li><a href="/accounts/profile/">Profile</a></li>
                                     <hr />
                                     <li><a href="/accounts/password_change/">Change Password</a></li>
-                                    <li><a href="/accounts/logout/">Logout</a></li>
+                                    <li><a href="/auth/logout/?next=/">Logout</a></li>
                                 </ul>
                             </li>
                         {% else %}
@@ -175,7 +175,7 @@
 
         <!-- Mobile Menu -->
         <div class="sliding-menu">
-            <ul>
+            <ul class="menu-items">
                 <li><a href="/">Home</a></li>
                 <li><a href="#">Characters</a></li>
                 <li><a href="#">Wiki</a></li>
@@ -197,26 +197,13 @@
         <script>
             document.addEventListener('scroll', function() {
                 const nav = document.querySelector('.main-nav');
-                const featuredImage = document.querySelector('.featured-image');
+                const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
                 
-                if (!featuredImage) return;
+                // Calculate opacity based on scroll position (0 to 1000px)
+                const scrollOpacity = Math.min(scrollPosition / 1000, 1);
+                nav.style.backgroundColor = `rgba(0, 0, 0, ${scrollOpacity})`;
                 
-                // Get the actual bottom position of the featured image relative to the viewport
-                const featuredImageRect = featuredImage.getBoundingClientRect();
-                const featuredImageBottom = featuredImageRect.bottom;
-                const navHeight = nav.offsetHeight;
-                
-                if (featuredImageBottom <= navHeight) {
-                    // We've scrolled past the bottom of the featured image
-                    nav.style.backgroundColor = 'rgba(0, 0, 0, 1)';
-                } else if (window.scrollY > 50) {
-                    // Calculate opacity based on scroll position
-                    const scrollProgress = (window.scrollY) / (featuredImage.offsetHeight - navHeight);
-                    const opacity = Math.min(scrollProgress, 1);
-                    nav.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-                } else {
-                    nav.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-                }
+                console.log('Scroll position:', scrollPosition, 'Opacity:', scrollOpacity);
             });
         </script>
     </body>

@@ -65,6 +65,59 @@ h3 {
     letter-spacing: 5px;
 }
 
+table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+    color: #fff;
+
+}
+
+thead {
+    background-color: #000;
+    color: #fff;
+    font-family: 'impact_label_reversed', Arial, sans-serif;
+    font-weight: normal;
+    font-size: 24px;
+    letter-spacing: 5px;
+}
+
+thead th {
+    padding: 5px;
+    text-align: left;
+    border-bottom: 1px solid #fff;
+}
+
+td {
+    font-family: 'roboto mono', monospace;
+    font-size: 16px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+tbody td {
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+blockquote {
+    font-family: 'roboto mono', monospace;
+    font-size: 16px;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    padding-left: 40px;
+    margin-bottom: 20px;
+    border-left: 1px solid #fff;
+}
+
 a, a:hover, a:visited, a:active {
     color: #fff;
     text-decoration: none;
@@ -78,6 +131,7 @@ a, a:hover, a:visited, a:active {
     top: 0;
     flex-direction: column;
     min-height: 100vh;
+  
 }
 
 ul {
@@ -94,9 +148,11 @@ ul {
     flex-grow: 1;
     align-items: center;
     width: 100%;
+    flex-grow: 1;
     max-width: 1728px;
     margin: 0 auto;
     min-height: 100vh;
+
 }
 
 /* Navigation */
@@ -108,7 +164,7 @@ ul {
     width: 100%;
     height: 90px;
     color: #fff;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease;
     background-color: rgba(0, 0, 0, 0);
     display: flex;
     justify-content: center;
@@ -170,6 +226,7 @@ ul {
     transition: color 0.3s ease;
     padding: 10px;
     display: block;
+    font-weight: normal;
     background-color: #000;
 }
 
@@ -204,6 +261,45 @@ ul {
     margin: 0;
     padding: 0;
     list-style: none;
+}
+
+.sliding-menu {
+    position: fixed;
+    top: 0;
+    right: -50vw;
+    width: 50vw;
+    height: 100vh;
+    background-color: #000;
+    z-index: 10001;
+    transition: all 0.3s ease-in-out;
+    padding-top: 90px;
+    visibility: hidden;
+}
+
+.sliding-menu.open {
+    right: 0;
+    visibility: visible;
+}
+
+.menu-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.menu-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 .dropdown-menu a {
@@ -255,7 +351,7 @@ ul {
     content: '\2304';
     position: absolute;
     right: 10px;
-    top: 50%;
+    top: 15px;
     transform: translateY(-50%);
     font-size: 0.9em;
 }
@@ -274,6 +370,21 @@ ul {
     opacity: 1;
 }
 
+
+.left_content {
+    position: relative;
+    flex: 0 0 calc(65% - 20px);
+    width: calc(65% - 20px);
+    max-width: 100%;
+}
+
+.right_content {
+    flex: 0 0 30%;
+    width: 30%;
+    max-width: 100%;
+}
+
+
 /* Mobile menu adjustments */
 @media (max-width: 1690px) {
     .nav-wrapper, .nav-container {
@@ -283,6 +394,10 @@ ul {
 
     .nav-container {
         padding: 0 20px;
+    }
+
+    .sliding-menu {
+        visibility: visible;
     }
 }
 
@@ -297,6 +412,7 @@ ul {
 
     .sliding-menu {
         padding-top: 90px;
+        display: flex;
     }
 
     .sliding-menu ul {
@@ -309,7 +425,7 @@ ul {
     }
 
     .sliding-menu a {
-        color: #fff;
+        color: rgba(255, 255, 255, 0.7);
         text-decoration: none;
         font-size: 24px;
         font-family: 'impact_label_reversed', Arial, sans-serif;
@@ -408,25 +524,17 @@ ul {
 
 .content {
     font-family: 'Roboto Mono', monospace;
-    width: 1040px;
+    width: 100%;
+    max-width: 1040px;
     color: #fff;
     font-size: 16px;
     line-height: 1.6;
     display: flex;
     justify-content: space-between;
     gap: 40px;
+    box-sizing: border-box;
 }
 
-.left_content {
-    position: relative;
-    flex: 0 0 calc(65% - 20px);
-    width: calc(65% - 20px);
-}
-
-.right_content {
-    flex: 0 0 30%;
-    width: 30%;
-}
 
 .right_content.aside {
     border: 1px solid #fff;
@@ -526,10 +634,12 @@ footer a:hover {
     z-index: 10001;
     transition: right 0.3s ease-in-out;
     padding-top: 90px;
+    visibility: hidden;
 }
 
 .sliding-menu.open {
     right: 0;
+    visibility: visible;
 }
 
 .menu-overlay {
@@ -557,14 +667,13 @@ footer a:hover {
     }
 }
 
-@media (max-width: 1690px) {
+@media (max-width: 1724px) {
     .context_menu {
-        display: none;
-    }
-
-    .content_holder {
-        padding: 0 20px;
-        max-width: 1072px;
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+        transition: none;
     }
 
     .nav-wrapper, .nav-container {
@@ -573,7 +682,7 @@ footer a:hover {
     }
 }
 
-@media (max-width: 1160px) {
+@media (max-width: 1530px) {
     .nav-menu {
         display: none;
     }
@@ -584,6 +693,17 @@ footer a:hover {
 
     .sliding-menu {
         padding-top: 90px;
+    }
+
+    .content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .left_content,
+    .right_content {
+        flex: 0 0 100%;
+        width: 100%;
     }
 
     .sliding-menu ul {
@@ -668,6 +788,10 @@ footer a:hover {
 }
 
 /* Right content visibility control */
+.right_content.hidden {
+    display: none;
+}
+
 .right_content.hidden ~ .left_content,
 .right_content:empty ~ .left_content,
 .content:not(:has(.right_content:not(.hidden))) .left_content {
@@ -698,7 +822,7 @@ footer a:hover {
 @media (max-width: 1200px) {
     .banner img {
         max-width: 80%;
-        width: 100%;
+        
         display: block;
         margin-left: auto;
         margin-right: auto;
@@ -779,4 +903,25 @@ p {
     bottom: -20px;
     left: 0;
 }
+
+/* Update the sliding menu text styles */
+.sliding-menu a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 20px;
+    font-family: 'impact_label_reversed', Arial, sans-serif;
+    display: block;
+    padding: 10px;
+    transition: all 0.3s ease-in-out;
+    letter-spacing: 5px;
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.sliding-menu.open a {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Remove the duplicate media query styles for sliding-menu a */
 

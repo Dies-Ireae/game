@@ -1,36 +1,11 @@
-console.log('JavaScript is running');
-// Rest of your main.js code...
-
 document.addEventListener('DOMContentLoaded', function() {
     const nav = document.querySelector('.main-nav');
-    const hamburger = document.querySelector('.hamburger-menu');
-    const slidingMenu = document.querySelector('.sliding-menu');
-    const menuOverlay = document.querySelector('.menu-overlay');
+    const featuredImage = document.querySelector('.featured-image-container');
     const contextMenu = document.querySelector('.context_menu');
     const contentHolder = document.querySelector('.content_holder');
-    const featuredImage = document.querySelector('.featured-image');
-
-    // Navigation background opacity
-    function updateNavBackground() {
-        if (!featuredImage) return;
-        
-        const featuredImageRect = featuredImage.getBoundingClientRect();
-        const featuredImageBottom = featuredImageRect.bottom;
-        const navHeight = nav.offsetHeight;
-        
-        if (featuredImageBottom <= navHeight) {
-            nav.style.backgroundColor = 'rgba(0, 0, 0, 1)';
-        } else {
-            const scrollProgress = 1 - (featuredImageBottom - navHeight) / (featuredImage.offsetHeight - navHeight);
-            const opacity = Math.min(Math.max(scrollProgress, 0), 1);
-            nav.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-        }
-    }
-
-    // Context menu positioning
+    let contextMenuInitialOffset = contentHolder.offsetTop;
+    
     function updateContextMenuPosition() {
-        if (!contextMenu || !contentHolder) return;
-        
         const scrollPosition = window.scrollY;
         const navHeight = nav.offsetHeight;
         const contentTop = contentHolder.offsetTop;
@@ -44,21 +19,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Mobile menu toggle
+    // Add scroll listener for context menu position
+    window.addEventListener('scroll', updateContextMenuPosition);
+
+    // New function to toggle featured image visibility
+    function toggleFeaturedImage() {
+        featuredImage.classList.toggle('hidden');
+        contentHolder.classList.toggle('no-featured-image');
+        window.dispatchEvent(new CustomEvent('contentLayoutChange'));
+    }
+
+    // Recalculate contextMenuInitialOffset on window resize
+    window.addEventListener('resize', function() {
+        contextMenuInitialOffset = contentHolder.offsetTop;
+        updateContextMenuPosition();
+    });
+
+    // Initial positioning of the context menu
+    contextMenu.style.top = `${contentHolder.offsetTop}px`;
+
+    const hamburger = document.querySelector('.hamburger-menu');
+    const slidingMenu = document.querySelector('.sliding-menu');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const menuItems = document.querySelectorAll('.sliding-menu a');
+
     function toggleMenu() {
         slidingMenu.classList.toggle('open');
         menuOverlay.classList.toggle('open');
+        
+        // Add a small delay before showing menu items when opening
+        if (slidingMenu.classList.contains('open')) {
+            menuItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('visible');
+                }, 50); // Small delay for synchronization
+            });
+        } else {
+            menuItems.forEach(item => {
+                item.classList.remove('visible');
+            });
+        }
+        
         document.body.style.overflow = slidingMenu.classList.contains('open') ? 'hidden' : '';
     }
 
-    // Event listeners
-    window.addEventListener('scroll', updateNavBackground);
-    window.addEventListener('scroll', updateContextMenuPosition);
+    hamburger.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu();
+    });
 
-    hamburger.addEventListener('click', toggleMenu);
     menuOverlay.addEventListener('click', toggleMenu);
 
-    // Initial calls
-    updateNavBackground();
-    updateContextMenuPosition();
+    // Function to toggle login state
+    function toggleLoginState() {
+        const navComponent = document.getElementById('main-nav');
+        if (navComponent.hasAttribute('logged-in')) {
+            navComponent.removeAttribute('logged-in');
+        } else {
+            navComponent.setAttribute('logged-in', '');
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('.login_btn') || event.target.closest('.dropdown-toggle')) {
+            toggleLoginState();
+        }
+    });
+
+    // Initial call to set opacity
+    window.onscroll();
 });

@@ -6,6 +6,8 @@ from django.core.files.base import ContentFile
 import requests
 from urllib.parse import urlparse
 import os
+from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 
 # Create your models here.
@@ -64,12 +66,38 @@ class WikiPage(SharedMemoryModel):
         return reverse('wiki:page_detail', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
-        """Override save to handle revision creation."""
+        """Override save to handle meta information and revision creation."""
         is_new = self.pk is None
+        
+        # If this is a new page, set creator and last_editor to the current user
+        if is_new:
+            # Get the current user from the thread local storage
+            current_user = None
+            for key, value in kwargs.items():
+                if key == 'current_user':
+                    current_user = value
+                    del kwargs[key]
+                    break
+            
+            if current_user:
+                self.creator = current_user
+                self.last_editor = current_user
+            
+            # Set timestamps (these should be handled by auto_now_add and auto_now)
+            self.created_at = timezone.now()
+            self.updated_at = timezone.now()
+        else:
+            # Update the last_editor and updated_at timestamp
+            current_user = kwargs.pop('current_user', None)
+            if current_user:
+                self.last_editor = current_user
+            self.updated_at = timezone.now()
+
+        # Call the parent class's save method
         super().save(*args, **kwargs)
         
-        if is_new:
-            # Create initial revision
+        # Create initial revision if this is a new page
+        if is_new and self.creator:
             WikiRevision.objects.create(
                 page=self,
                 content=self.content,
