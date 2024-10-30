@@ -41,13 +41,14 @@ DEFAULT_CMDSETS = [
     'commands.mycmdset.MyCmdset'
 ]
 
-"""
 TELNET_PORTS = [4000]  
 WEBSERVER_PORTS = [(4200, 4005)] 
 WEBSOCKET_CLIENT_PORT = 4202
 EVENNIA_ADMIN=False
+CSRF_TRUSTED_ORIGINS = ['https:/diesiraemu.com', 'http://diesiraemu.com']
 
 
+"""
 SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']
