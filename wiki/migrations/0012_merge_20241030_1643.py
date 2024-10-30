@@ -4,10 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+    """
+    Merge migration
+    """
 
     dependencies = [
-        ("wiki", "0003_create_default_site"),
-        ("wiki", "0011_wikipage_related_to_alter_wikipage_right_content"),
+        ('wiki', '0011_wikipage_related_to_alter_wikipage_right_content'),
     ]
 
     operations = []
