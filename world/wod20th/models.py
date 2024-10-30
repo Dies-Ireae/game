@@ -9,6 +9,7 @@ from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.utils.idmapper.models import SharedMemoryModel
 
+# Define predefined categories and extended stat types
 CATEGORIES = [
     ('attributes', 'Attributes'),
     ('abilities', 'Abilities'),
@@ -86,7 +87,7 @@ STAT_TYPES = [
 
 class Stat(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField(default='')
+    description = models.TextField(default='')  # Changed to non-nullable with default empty string
     game_line = models.CharField(max_length=100)
     category = models.CharField(max_length=100, choices=CATEGORIES)
     stat_type = models.CharField(max_length=100, choices=STAT_TYPES)
