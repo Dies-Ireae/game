@@ -1,4 +1,4 @@
-from evennia.objects.objects import DefaultRoom
+from evennia import DefaultRoom
 from evennia.utils.utils import make_iter
 from evennia.utils.ansi import ANSIString
 from evennia.utils.search import search_channel

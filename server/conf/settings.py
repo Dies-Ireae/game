@@ -60,9 +60,9 @@ COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
 COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diesiraemu.com']
-WEBSOCKET_CLIENT_URL = "wss://diesiraemu.com/websocket"
+WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
 
-INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
+INSTALLED_APPS += [ "world.wod20th", "wiki" ]  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
   
 # Change 8001 to your desired websocket port
@@ -247,3 +247,17 @@ MAX_CHARACTERS_PER_ACCOUNT = 5  # Adjust this number as needed
 import warnings
 
 warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.models.base')
+
+# Static files configuration (keep this in one place)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(GAME_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(GAME_DIR, "web", "static"),
+    os.path.join(GAME_DIR, "wiki", "static"),
+]
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(GAME_DIR, 'media')
+

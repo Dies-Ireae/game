@@ -1,0 +1,32 @@
+{% extends "wiki/base_wiki.html" %}
+{% load static %}
+
+{% block titleblock %}Wiki Pages{% endblock %}
+
+{% block content %}
+<h1>Wiki Pages</h1>
+{% if pages %}
+    <div class="list-group">
+    {% for page in pages %}
+        <a href="{% url 'wiki:page_detail' page.slug %}" class="list-group-item list-group-item-action">
+            <h5 class="mb-1">{{ page.title }}</h5>
+            <small>Last edited by {{ page.last_editor }} on {{ page.updated_at|date }}</small>
+        </a>
+    {% endfor %}
+    </div>
+{% else %}
+    <p>No wiki pages found.</p>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+<div class="sidebar">
+    <h2>Quick Links</h2>
+    <ul>
+        {% if user.is_staff %}
+        <li><a href="/admin/wiki/wikipage/add/">Create New Page</a></li>
+        {% endif %}
+        <li><a href="{% url 'wiki:page_list' %}">All Pages</a></li>
+    </ul>
+</div>
+{% endblock %}

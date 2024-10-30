@@ -1,0 +1,11 @@
+{% include 'admin/widgets/clearable_file_input.html' %}
+<div class="image-preview-container">
+    {% if widget.value %}
+        <img src="{{ widget.value.url }}" class="image-preview" style="max-width: 300px; margin-top: 10px;">
+    {% else %}
+        <img class="image-preview" style="max-width: 300px; margin-top: 10px; display: none;">
+    {% endif %}
+</div>
+<div class="help-text">
+    Drag and drop an image here, paste from clipboard, or use the file selector above.
+</div>

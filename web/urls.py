@@ -28,6 +28,7 @@ urlpatterns = [
     path("admin/", include("web.admin.urls")),
     # add any extra urls here:
     # path("mypath/", include("path.to.my.urls.file")),
+    path('wiki/', include('wiki.urls', namespace='wiki')),
 ]
 
 # 'urlpatterns' must be named such for Django to find it.
