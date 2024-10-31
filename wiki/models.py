@@ -13,15 +13,13 @@ from django.utils.text import slugify
 
 # Create your models here.
 
-class WikiPage(SharedMemoryModel):
+class WikiPage(models.Model):
     """
     Model for storing wiki pages.
     """
-    title = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True)
-    content = models.TextField(
-        help_text="The content of the wiki page. Markdown formatting is supported."
-    )
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    content = models.TextField()
     right_content = models.TextField(
         blank=True,
         null=True,
@@ -58,6 +56,8 @@ class WikiPage(SharedMemoryModel):
         related_name='edited_pages',
         help_text="The last user to edit this page."
     )
+    featured_order = models.IntegerField(default=0)  # For ordering featured articles
+    published = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Wiki Page"

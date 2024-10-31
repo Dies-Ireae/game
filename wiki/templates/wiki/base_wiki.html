@@ -109,7 +109,10 @@
                 <div class="context_menu">
                     <ul>
                         <li><h4>Featured</h4></li>
+                        <!-- Debug output -->
                         {% if featured_articles %}
+                            <!-- For debugging -->
+                            <!-- {{ featured_articles|length }} featured articles found -->
                             {% for article in featured_articles %}
                                 <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
                                     <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
@@ -117,6 +120,8 @@
                             {% endfor %}
                         {% else %}
                             <li><em>No featured articles yet</em></li>
+                            <!-- For debugging -->
+                            <!-- No featured articles in context -->
                         {% endif %}
                     </ul>
 
