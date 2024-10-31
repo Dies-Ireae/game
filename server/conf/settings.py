@@ -47,6 +47,9 @@ WEBSOCKET_CLIENT_PORT = 4202
 EVENNIA_ADMIN=False
 CSRF_TRUSTED_ORIGINS = ['https:/diesiraemu.com', 'http://diesiraemu.com']
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+
 
 """
 SERVERNAME = "beta.diesiraemu.com"
@@ -283,9 +286,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(GAME_DIR, 'media')
 
+ENVIRONMENT = "production"
 # Update the WEBSOCKET_CLIENT_URL configuration
 if ENVIRONMENT == 'production':
-    WEBSOCKET_CLIENT_URL = "wss://diesiraemu.com:4202/websocket"
+    WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
 elif ENVIRONMENT == 'development':
     WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
 
