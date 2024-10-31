@@ -457,6 +457,10 @@ ul {
     background-repeat: no-repeat;
 }
 
+.featured-image-background.no-feature {
+    background-image: url('/static/wiki/imgs/nofeature.png');  
+}
+
 .featured-image-background {
     position: absolute;
     top: 0;
