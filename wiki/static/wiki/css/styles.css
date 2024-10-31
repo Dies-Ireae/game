@@ -244,17 +244,16 @@ ul {
     position: relative;
 }
 
-.dropdown-menu {
-    display: none;
+.nav-menu .dropdown .dropdown-menu {
     position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #000;
-    min-width: 200px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    z-index: 10001;
-    padding: 5px 0;
+    min-width: 250px;
+    padding: 10px 0;
+    margin: 0;
     list-style: none;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown-menu li {
@@ -928,4 +927,150 @@ p {
 }
 
 /* Remove the duplicate media query styles for sliding-menu a */
+
+/* Dropdown menu styling updates */
+.dropdown-header {
+    font-family: 'impact_label_reversed', Arial, sans-serif;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 20px;
+    padding: 10px 16px;
+    letter-spacing: 5px;
+    margin-top: 10px;
+}
+
+.dropdown-divider {
+    margin: 5px 16px;
+}
+
+.dropdown-divider hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-menu {
+    min-width: 300px; /* Match context menu width */
+    padding: 10px 0;
+}
+
+.dropdown-menu li a {
+    font-family: 'roboto mono', monospace;
+    font-size: 14px;
+    line-height: 1.2;
+    padding: 8px 16px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: normal;
+    letter-spacing: normal;
+}
+
+.dropdown-menu li.highlight a {
+    color: rgba(255, 255, 255, 1);
+    text-decoration: underline;
+}
+
+/* Update dropdown positioning */
+.nav-menu .dropdown .dropdown-menu {
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px;
+}
+
+/* Add dropdown arrow */
+.nav-menu .dropdown .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #000;
+}
+
+/* Ensure dropdown stays visible on hover */
+.nav-menu .dropdown:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Animation for dropdown */
+.dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+/* Update mobile menu to include dropdown sections */
+@media (max-width: 1530px) {
+    .sliding-menu .dropdown-header {
+        color: rgba(255, 255, 255, 0.5);
+        padding: 20px 20px 10px;
+        margin: 0;
+    }
+
+    .sliding-menu .dropdown-divider {
+        margin: 10px 20px;
+    }
+
+    .sliding-menu li a {
+        padding: 10px 20px;
+    }
+
+    .sliding-menu li.highlight a {
+        color: rgba(255, 255, 255, 1);
+        text-decoration: underline;
+    }
+}
+
+/* Context menu visibility */
+.context_menu {
+    display: block; /* Show by default on large screens */
+}
+
+/* Dropdown menu base styles */
+.nav-menu .dropdown .dropdown-menu {
+    display: none; /* Hide by default */
+}
+
+/* Media query for screen width breakpoint */
+@media (max-width: 1172px) {
+    /* Hide context menu */
+    .context_menu {
+        display: none;
+    }
+
+    /* Show dropdown menu */
+    .nav-menu .dropdown:hover .dropdown-menu {
+        display: block;
+        background-color: rgba(0, 0, 0, 0.9);
+        position: absolute;
+        top: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* Ensure dropdown menu is visible */
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        z-index: 1000;
+    }
+
+    .dropdown:hover .dropdown-menu {
+        display: block;
+    }
+}
+
+/* Mobile menu adjustments */
+@media (max-width: 768px) {
+    .nav-menu .dropdown .dropdown-menu {
+        display: none !important; /* Force hide dropdown on mobile */
+    }
+
+    /* Show content in sliding menu instead */
+    .sliding-menu .menu-items {
+        padding-top: 20px;
+    }
+}
 

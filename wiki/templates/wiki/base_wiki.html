@@ -58,6 +58,35 @@
                                 {% if user.is_staff %}
                                 <li><a href="/admin/wiki/wikipage/add/">Create Page</a></li>
                                 {% endif %}
+                                
+                                <!-- Featured Articles Section -->
+                                {% if featured_articles %}
+                                <li class="dropdown-divider"><hr/></li>
+                                <li class="dropdown-header">Featured</li>
+                                {% for article in featured_articles %}
+                                    <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
+                                        <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% endif %}
+                                
+                                <!-- Related Articles Section -->
+                                {% if related_articles %}
+                                <li class="dropdown-divider"><hr/></li>
+                                <li class="dropdown-header">Related</li>
+                                {% for article in related_articles %}
+                                    <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
+                                        <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% endif %}
+                                
+                                <!-- Admin Section -->
+                                {% if user.is_staff and page %}
+                                <li class="dropdown-divider"><hr/></li>
+                                <li class="dropdown-header">Admin</li>
+                                <li><a href="/admin/wiki/wikipage/{{ page.id }}/change/">Edit This Page</a></li>
+                                {% endif %}
                             </ul>
                         </li>
                         <li><a href="/channels/">Channels</a></li>
