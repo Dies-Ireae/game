@@ -38,14 +38,17 @@ class RoomParent(DefaultRoom):
         in_umbra = looker.tags.get("in_umbra", category="state")
         peeking_umbra = kwargs.get("peek_umbra", False)
         
+        # Set color scheme based on umbra state
+        border_color = "|B" if (in_umbra or peeking_umbra) else "|r"
+        
         # Choose the appropriate description
         if (in_umbra or peeking_umbra) and self.db.umbra_desc:
             desc = self.db.umbra_desc
         else:
             desc = self.db.desc
 
-        # Header with room name
-        string = header(name, width=78, bcolor="|r", fillchar=ANSIString("|r-|n")) + "\n"
+        # Update all dividers to use the new color scheme
+        string = header(name, width=78, bcolor=border_color, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
         
         # Process room description
         if desc:
@@ -75,14 +78,15 @@ class RoomParent(DefaultRoom):
         characters = []
         for obj in self.contents:
             if obj.has_account:
-                obj_umbra = obj.tags.get("in_umbra", category="state")
-                looker_umbra = looker.tags.get("in_umbra", category="state")
+                # Use tag state for comparison
+                obj_umbra_tag = obj.tags.get("in_umbra", category="state")
+                looker_umbra_tag = looker.tags.get("in_umbra", category="state")
                 
-                if obj_umbra == looker_umbra:
+                if obj_umbra_tag == looker_umbra_tag:
                     characters.append(obj)
 
         if characters:
-            string += divider("Characters", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+            string += divider("Characters", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
             for character in characters:
                 idle_time = self.idle_time_display(character.idle_time)
 
@@ -103,7 +107,7 @@ class RoomParent(DefaultRoom):
         # List all objects in the room
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
         if objects:
-            string += divider("Objects", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+            string += divider("Objects", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
             
             # get shordesc or dhoe s blsnk string
             for obj in objects:
@@ -136,12 +140,12 @@ class RoomParent(DefaultRoom):
 
             # Display Directions
             if direction_strings:
-                string += divider("Directions", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += divider("Directions", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
                 string += self.format_exit_columns(direction_strings)
 
             # Display Exits
             if exit_strings:
-                string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += divider("Exits", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
                 string += self.format_exit_columns(exit_strings) + "\n"
 
         # Get room type and resources
@@ -154,7 +158,7 @@ class RoomParent(DefaultRoom):
         footer_length = len(ANSIString(footer_text))
         padding = 78 - footer_length - 2  # -2 for the brackets
 
-        string += ANSIString(f"|r{'-' * padding}[|c{footer_text}|r]|n")
+        string += ANSIString(f"{border_color}{'-' * padding}[|c{footer_text}{border_color}]|n")
 
         return string
 
