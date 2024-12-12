@@ -262,13 +262,13 @@ class Character( DefaultCharacter):
         if self.location:
             success = self.location.step_sideways(self)
             if success:
-                self.db.in_umbra = True
-                self.msg("You have stepped sideways into the Umbra.")
-                self.location.msg_contents(f"{self.name} shimmers and fades from view as they step into the Umbra.", exclude=[self], from_obj=self)
+                # Use attributes.add for more reliable attribute setting
+                self.attributes.add('in_umbra', True)
+                self.tags.remove("in_material", category="state")
+                self.tags.add("in_umbra", category="state")
+                self.location.msg_contents(f"{self.name} shimmers and fades from view as they step into the Umbra.", exclude=[self])
             return success
-        else:
-            self.msg("You can't step sideways here.")
-            return False
+        return False
 
     def return_from_umbra(self):
         """Return from the Umbra to the material world."""
@@ -276,9 +276,11 @@ class Character( DefaultCharacter):
             self.msg("You are not in the Umbra.")
             return False
         
-        self.db.in_umbra = False
-        self.msg("You step back into the material world.")
-        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self], from_obj=self)
+        # Use attributes.add for more reliable attribute setting
+        self.attributes.add('in_umbra', False)
+        self.tags.remove("in_umbra", category="state")
+        self.tags.add("in_material", category="state")
+        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self])
         return True
 
     def return_appearance(self, looker, **kwargs):
