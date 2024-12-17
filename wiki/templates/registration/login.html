@@ -1,0 +1,32 @@
+{% extends "wiki/base_wiki.html" %}
+{% load static %}
+
+{% block content %}
+<div class="box">
+    <h1>Login</h1>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="group">
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" required>
+        </div>
+        <div class="group">
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" required>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        {% if form.errors %}
+            <div class="error_message">
+                Your username and password didn't match. Please try again.
+            </div>
+        {% endif %}
+        <button type="submit">Login</button>
+        <div class="links">
+            <a href="{% url 'password_reset' %}">Forgot Password?</a>
+            <a href="/accounts/register/">Register</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

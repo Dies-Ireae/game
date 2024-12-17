@@ -8,13 +8,58 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 
-from evennia import DefaultCharacter
-print("DefaultCharacter:", DefaultCharacter)
 
-# If DefaultCharacter is None, use object as a fallback
-BaseCharacter = DefaultCharacter if DefaultCharacter is not None else object
+# class Character(DefaultCharacter):
+#     """
+#     The Character typeclass, based on DefaultCharacter.
+#     """
 
-class Character(BaseCharacter):
+#     def at_object_creation(self):
+#         """
+#         Called when the character is first created.
+#         """
+#         super().at_object_creation()
+#         self.tags.add("in_material", category="state")
+#         self.db.unfindable = False
+#         self.db.fae_desc = ""
+#         self.db.languages = ["English"]  # Default language
+#         self.db.speaking_language = None
+#         self.db.approved = False
+#         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
+#         self.db.stats = {}
+
+#     @lazy_property
+#     def notes(self):
+#         return Note.objects.filter(character=self)
+
+#     def add_note(self, name, text, category="General"):
+#         return Note.objects.create(
+#             character=self,
+#             name=name,
+#             text=text,
+#             category=category
+#         )
+
+#     def get_note(self, identifier):
+#         try:
+#             return self.notes.get(id=int(identifier))
+#         except ValueError:
+#             return self.notes.filter(name__iexact=identifier).first()
+
+#     def get_all_notes(self):
+#         return self.notes.all()
+
+#     def update_note(self, identifier, text, category=None):
+#         note = self.get_note(identifier)
+#         if note:
+#             note.text = text
+#             if category:
+#                 note.category = category
+#             note.save()
+#             return True
+#         return False
+
+class Character( DefaultCharacter):
     """
     The Character typeclass.
     """
@@ -218,13 +263,14 @@ class Character(BaseCharacter):
         if self.location:
             success = self.location.step_sideways(self)
             if success:
-                self.db.in_umbra = True
-                self.msg("You have stepped sideways into the Umbra.")
-                self.location.msg_contents(f"{self.name} shimmers and fades from view as they step into the Umbra.", exclude=[self], from_obj=self)
+                # Use attributes.add for more reliable attribute setting
+                self.attributes.add('in_umbra', True)
+                self.tags.remove("in_material", category="state")
+                self.tags.add("in_umbra", category="state")
+                self.location.msg_contents(f"{self.name} shimmers and fades from view as they step into the Umbra.", exclude=[self])
             return success
-        else:
-            self.msg("You can't step sideways here.")
-            return False
+        return False
+
 
     def return_from_umbra(self):
         """Return from the Umbra to the material world."""
@@ -232,9 +278,12 @@ class Character(BaseCharacter):
             self.msg("You are not in the Umbra.")
             return False
         
-        self.db.in_umbra = False
-        self.msg("You step back into the material world.")
-        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self], from_obj=self)
+        # Use attributes.add for more reliable attribute setting
+        self.attributes.add('in_umbra', False)
+        self.tags.remove("in_umbra", category="state")
+        self.tags.add("in_material", category="state")
+        self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self])
+
         return True
 
     def return_appearance(self, looker, **kwargs):

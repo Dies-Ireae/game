@@ -38,18 +38,24 @@ class RoomParent(DefaultRoom):
         in_umbra = looker.tags.get("in_umbra", category="state")
         peeking_umbra = kwargs.get("peek_umbra", False)
         
+        # Set color scheme based on umbra state
+        border_color = "|B" if (in_umbra or peeking_umbra) else "|r"
+        
         # Choose the appropriate description
         if (in_umbra or peeking_umbra) and self.db.umbra_desc:
             desc = self.db.umbra_desc
         else:
             desc = self.db.desc
 
-        # Header with room name
-        string = header(name, width=78, bcolor="|r", fillchar=ANSIString("|r-|n")) + "\n"
+
+        # Update all dividers to use the new color scheme
+        string = header(name, width=78, bcolor=border_color, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
         
         # Process room description
         if desc:
-            paragraphs = desc.split('%r')
+            paragraphs = desc.split('%r')  # First split on %r
+            paragraphs = [p for para in paragraphs for p in para.split('%R')]  # Then split on %R
+            
             formatted_paragraphs = []
             for i, p in enumerate(paragraphs):
                 if not p.strip():
@@ -57,7 +63,9 @@ class RoomParent(DefaultRoom):
                         formatted_paragraphs.append('')  # Add blank line for double %r
                     continue
                 
-                lines = p.split('%t')
+                lines = p.split('%t')  # First split on %t
+                lines = [l for line in lines for l in line.split('%T')]  # Then split on %T
+
                 formatted_lines = []
                 for j, line in enumerate(lines):
                     if j == 0 and line.strip():
@@ -70,17 +78,21 @@ class RoomParent(DefaultRoom):
             string += '\n'.join(formatted_paragraphs) + "\n\n"
 
         # List all characters in the room
-        characters = [
-            obj for obj in self.contents 
-            if obj.has_account and obj != looker and 
-            obj.tags.get("in_umbra", category="state") == looker.tags.get("in_umbra", category="state")
-        ]
+        characters = []
+        for obj in self.contents:
+            if obj.has_account:
+                # Use tag state for comparison
+                obj_umbra_tag = obj.tags.get("in_umbra", category="state")
+                looker_umbra_tag = looker.tags.get("in_umbra", category="state")
+                
+                if obj_umbra_tag == looker_umbra_tag:
+                    characters.append(obj)
+
         if characters:
-            string += divider("Characters", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+            string += divider("Characters", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
             for character in characters:
                 idle_time = self.idle_time_display(character.idle_time)
-                if character == looker:
-                    idle_time = self.idle_time_display(0)
+
 
                 shortdesc = character.db.shortdesc
                 if shortdesc:
@@ -99,7 +111,8 @@ class RoomParent(DefaultRoom):
         # List all objects in the room
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
         if objects:
-            string += divider("Objects", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+            string += divider("Objects", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
+
             
             # get shordesc or dhoe s blsnk string
             for obj in objects:
@@ -132,12 +145,13 @@ class RoomParent(DefaultRoom):
 
             # Display Directions
             if direction_strings:
-                string += divider("Directions", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += divider("Directions", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
+
                 string += self.format_exit_columns(direction_strings)
 
             # Display Exits
             if exit_strings:
-                string += divider("Exits", width=78, fillchar=ANSIString("|r-|n")) + "\n"
+                string += divider("Exits", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
                 string += self.format_exit_columns(exit_strings) + "\n"
 
         # Get room type and resources
@@ -150,7 +164,7 @@ class RoomParent(DefaultRoom):
         footer_length = len(ANSIString(footer_text))
         padding = 78 - footer_length - 2  # -2 for the brackets
 
-        string += ANSIString(f"|r{'-' * padding}[|c{footer_text}|r]|n")
+        string += ANSIString(f"{border_color}{'-' * padding}[|c{footer_text}{border_color}]|n")
 
         return string
 
@@ -227,7 +241,8 @@ class RoomParent(DefaultRoom):
         """
         Format the description with proper paragraph handling and indentation.
         """
-        paragraphs = desc.split('%r')
+        paragraphs = desc.split('%r', '%R')
+
         formatted_paragraphs = []
         for i, p in enumerate(paragraphs):
             if not p.strip():
@@ -375,6 +390,10 @@ class RoomParent(DefaultRoom):
             self.db.roll_log = []  # Initialize an empty list for roll logs
             self.db.initialized = True  # Mark this room as initialized
             self.save()  # Save immediately to avoid ID-related issues
+        else:
+            # Ensure roll_log exists even for previously initialized rooms
+            if not hasattr(self.db, 'roll_log'):
+                self.db.roll_log = []
 
     def at_object_creation(self):
         """
@@ -530,7 +549,12 @@ class RoomParent(DefaultRoom):
         """
         Log a roll made in this room.
         """
-        self.initialize()
+        self.initialize()  # Ensure initialization
+        
+        # Ensure roll_log exists
+        if not hasattr(self.db, 'roll_log'):
+            self.db.roll_log = []
+
         
         # Use the game time if available, otherwise use the current system time
         if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
