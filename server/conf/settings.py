@@ -36,15 +36,22 @@ ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 # Evennia base server config
 ######################################################################
 SERVERNAME = "Dies Irae"
+DEBUG = True
+SITE_ID = 1
+DEFAULT_CMDSETS = [
+    'commands.mycmdset.MyCmdset'
+]
 
 DEFAULT_CMDSETS = [
     'commands.mycmdset.MyCmdset'
 ]
 
+
 TELNET_PORTS = [4000]  
 WEBSERVER_PORTS = [(4200, 4005)] 
 WEBSOCKET_CLIENT_PORT = 4202
 EVENNIA_ADMIN=False
+
 CSRF_TRUSTED_ORIGINS = ['https:/diesiraemu.com', 'http://diesiraemu.com']
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
@@ -60,6 +67,7 @@ if ENVIRONMENT == 'development':
   WEB_SOCKET_CLIENT_URL = "ws://localhost4005/websocket"
 else:
   WEBSOCKET_CLIENT_URL = "wss://beta.diesiraemu.com/websocket"
+
 
 ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
@@ -91,6 +99,16 @@ INSTALLED_APPS += (
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
   
 # Change 8001 to your desired websocket port
+
+
+"""
+INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
+BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
+LOCK_FUNC_MODULES = [
+    "evennia.locks.lockfuncs",
+    "world.wod20th.locks", 
+]
+  # Change 8001 to your desired websocket port
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
 ######################################################################
@@ -256,6 +274,7 @@ MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = [
     (r"%ch%cX", r"%c[222"),  # dark grey background
 ]
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -292,4 +311,5 @@ if ENVIRONMENT == 'production':
     WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
 elif ENVIRONMENT == 'development':
     WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
+
 

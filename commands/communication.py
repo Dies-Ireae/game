@@ -103,6 +103,7 @@ class CmdPlusIc(MuxCommand):
         # Get the stored pre_ooc_location, or use the default room #30
         target_location = caller.db.pre_ooc_location or search_object("#52")[0]
 
+
         if not target_location:
             caller.msg("Error: Unable to find a valid IC location.")
             return

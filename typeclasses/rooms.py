@@ -47,6 +47,7 @@ class RoomParent(DefaultRoom):
         else:
             desc = self.db.desc
 
+
         # Update all dividers to use the new color scheme
         string = header(name, width=78, bcolor=border_color, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
         
@@ -54,6 +55,7 @@ class RoomParent(DefaultRoom):
         if desc:
             paragraphs = desc.split('%r')  # First split on %r
             paragraphs = [p for para in paragraphs for p in para.split('%R')]  # Then split on %R
+            
             formatted_paragraphs = []
             for i, p in enumerate(paragraphs):
                 if not p.strip():
@@ -63,6 +65,7 @@ class RoomParent(DefaultRoom):
                 
                 lines = p.split('%t')  # First split on %t
                 lines = [l for line in lines for l in line.split('%T')]  # Then split on %T
+
                 formatted_lines = []
                 for j, line in enumerate(lines):
                     if j == 0 and line.strip():
@@ -90,6 +93,7 @@ class RoomParent(DefaultRoom):
             for character in characters:
                 idle_time = self.idle_time_display(character.idle_time)
 
+
                 shortdesc = character.db.shortdesc
                 if shortdesc:
                     shortdesc_str = f"{shortdesc}"
@@ -108,6 +112,7 @@ class RoomParent(DefaultRoom):
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
         if objects:
             string += divider("Objects", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
+
             
             # get shordesc or dhoe s blsnk string
             for obj in objects:
@@ -141,6 +146,7 @@ class RoomParent(DefaultRoom):
             # Display Directions
             if direction_strings:
                 string += divider("Directions", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
+
                 string += self.format_exit_columns(direction_strings)
 
             # Display Exits
@@ -236,6 +242,7 @@ class RoomParent(DefaultRoom):
         Format the description with proper paragraph handling and indentation.
         """
         paragraphs = desc.split('%r', '%R')
+
         formatted_paragraphs = []
         for i, p in enumerate(paragraphs):
             if not p.strip():
@@ -547,6 +554,7 @@ class RoomParent(DefaultRoom):
         # Ensure roll_log exists
         if not hasattr(self.db, 'roll_log'):
             self.db.roll_log = []
+
         
         # Use the game time if available, otherwise use the current system time
         if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
@@ -582,4 +590,3 @@ class RoomParent(DefaultRoom):
 
 class Room(RoomParent):
     pass
-

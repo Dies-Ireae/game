@@ -66,6 +66,7 @@ class CmdReadBBS(default_cmds.MuxCommand):
         if not controller:
             self.caller.msg("BBSController not found.")
             return
+
         controller = get_or_create_bbs_controller()
 
         if not self.args:

@@ -8,6 +8,7 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 
+
 # class Character(DefaultCharacter):
 #     """
 #     The Character typeclass, based on DefaultCharacter.
@@ -270,6 +271,7 @@ class Character( DefaultCharacter):
             return success
         return False
 
+
     def return_from_umbra(self):
         """Return from the Umbra to the material world."""
         if not self.db.in_umbra:
@@ -281,6 +283,7 @@ class Character( DefaultCharacter):
         self.tags.remove("in_umbra", category="state")
         self.tags.add("in_material", category="state")
         self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self])
+
         return True
 
     def return_appearance(self, looker, **kwargs):

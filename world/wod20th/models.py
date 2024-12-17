@@ -123,6 +123,7 @@ class Stat(models.Model):
     class Meta:
         app_label = 'wod20th'
 
+
 class CharacterSheet(SharedMemoryModel):
     account = models.OneToOneField(AccountDB, related_name='character_sheet', on_delete=models.CASCADE, null=True)
     character = models.OneToOneField(ObjectDB, related_name='character_sheet', on_delete=models.CASCADE, null=True, unique=True)
