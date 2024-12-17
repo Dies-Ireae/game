@@ -23,9 +23,52 @@ several more options for customizing the Guest account system.
 """
 
 from evennia.accounts.accounts import DefaultAccount, DefaultGuest
-
+from django.conf import settings
 
 class Account(DefaultAccount):
+    """
+    An Account represents the player's account and contains all the settings and
+    account-related information.
+    """
+
+    # Add a class attribute for the maximum number of accounts
+    max_accounts = getattr(settings, 'MAX_ACCOUNTS', 1000)  # Default to 1000 if not set
+
+    @classmethod
+    def get_account_count(cls):
+        """
+        Get the current number of accounts.
+        """
+        return cls.objects.count()
+
+    @classmethod
+    def can_create_account(cls):
+        """
+        Check if a new account can be created.
+        """
+        return cls.get_account_count() < cls.max_accounts
+
+    @classmethod
+    def increase_max_accounts(cls, increase_by=100):
+        """
+        Increase the maximum number of accounts.
+        """
+        cls.max_accounts += increase_by
+        # You might want to save this to a database or settings file for persistence
+
+    def at_account_creation(self):
+        """
+        This is called once, the very first time the account is created
+        (i.e. first time they register with the game). It's a good
+        place to store attributes all accounts should have, like
+        configuration values etc.
+        """
+        super().at_account_creation()
+
+        # Set the maximum number of characters this account can have
+        # You can adjust this number as needed
+        self.db.max_characters = getattr(settings, 'MAX_CHARACTERS_PER_ACCOUNT', 5)
+
     """
     An Account is the actual OOC player entity. It doesn't exist in the game,
     but puppets characters.

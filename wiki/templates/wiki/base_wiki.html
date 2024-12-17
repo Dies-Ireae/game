@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'wiki/css/styles.css' %}?v=1" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="icon" type="image/png" href="{% static 'wiki/imgs/favicon.png' %}">
+        <title>{% block titleblock %}Dies Irae Wiki{% endblock %}</title>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script>
+            // Configure marked options
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                html: true,
+                headerIds: true,
+                sanitize: false,
+            });
+
+            // Pre-process the content
+            document.addEventListener('DOMContentLoaded', function() {
+                const leftContentData = `{{ page.content|escapejs }}`;
+                const rightContentData = `{{ page.right_content|escapejs }}`;
+                
+                // Process left content
+                const leftContentElement = document.querySelector('.left_content');
+                if (leftContentElement && leftContentData) {
+                    leftContentElement.innerHTML = marked.parse(leftContentData);
+                }
+                
+                // Process right content
+                const rightContentElement = document.querySelector('.right_content');
+                if (rightContentElement && rightContentData) {
+                    rightContentElement.innerHTML = marked.parse(rightContentData);
+                }
+            });
+        </script>
+        <script src="{% static 'wiki/js/main.js' %}?v=1" defer></script>
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <div class="nav-wrapper">
+                <div class="nav-container">
+                    <div class="nav-logo">
+                        <p>Dies Irae</p>
+                    </div>
+                    <ul class="nav-menu">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/characters/">Characters</a></li>
+                        <li class="dropdown">
+                            <a href="{% url 'wiki:page_list' %}" class="dropdown-toggle">Wiki</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'wiki:page_list' %}">All Pages</a></li>
+                                {% if user.is_staff %}
+                                <li><a href="/admin/wiki/wikipage/add/">Create Page</a></li>
+                                {% endif %}
+                                
+                                <!-- Featured Articles Section -->
+                                {% if featured_articles %}
+                                <li class="dropdown-divider"><hr/></li>
+                                <li class="dropdown-header">Featured</li>
+                                {% for article in featured_articles %}
+                                    <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
+                                        <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% endif %}
+                                
+                                <!-- Related Articles Section -->
+                                {% if related_articles %}
+                                <li class="dropdown-divider"><hr/></li>
+                                <li class="dropdown-header">Related</li>
+                                {% for article in related_articles %}
+                                    <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
+                                        <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
+                                    </li>
+                                {% endfor %}
+                                {% endif %}
+                                
+                                <!-- Admin Section -->
+                                {% if user.is_staff and page %}
+                                <li class="dropdown-divider"><hr/></li>
+                                <li class="dropdown-header">Admin</li>
+                                <li><a href="/admin/wiki/wikipage/{{ page.id }}/change/">Edit This Page</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                        <li><a href="/channels/">Channels</a></li>
+                        <li><a href="/help/">Help</a></li>
+                        <li><a href="/webclient/">Play Online</a></li>
+                        {% if user.is_authenticated %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle">{{ user.username }}</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/characters/create/">Create Character</a></li>
+                                    <li><a href="/characters/">Manage Characters</a></li>
+                                    <hr />
+                                    <li><a href="/accounts/profile/">Profile</a></li>
+                                    <hr />
+                                    <li><a href="/accounts/password_change/">Change Password</a></li>
+                                    <li><a href="/auth/logout/?next=/">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="login-btn"><a href="/auth/login/?next=/">Login</a></li>
+                        {% endif %}
+                    </ul>
+                    <div class="hamburger-menu">
+                        <img src="{% static 'wiki/imgs/hamburger.svg' %}" alt="Menu" class="hamburger-icon">
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="wrapper">
+            <div class="container">
+                <!-- Featured Image -->
+                <div class="featured-image">
+                    {% if page.featured_image and page.featured_image.image %}
+                        <div class="featured-image-background {% if not page.featured_image.show_texture %}no-texture{% endif %}" 
+                             style="background-image: url('{{ page.featured_image.get_image_url }}');">
+                        </div>
+                        {% if page.featured_image.show_texture %}
+                            <div class="featured-image-texture"></div>
+                        {% endif %}
+                    {% else %}
+                        <div class="featured-image-background no-feature"></div>
+                        <div class="featured-image-texture"></div>
+                    {% endif %}
+                    <div class="featured-image-overlay"></div>
+                </div>
+
+                <!-- Context Menu -->
+                <div class="context_menu">
+                    <ul>
+                        <li><h4>Featured</h4></li>
+                        <!-- Debug output -->
+                        {% if featured_articles %}
+                            <!-- For debugging -->
+                            <!-- {{ featured_articles|length }} featured articles found -->
+                            {% for article in featured_articles %}
+                                <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
+                                    <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li><em>No featured articles yet</em></li>
+                            <!-- For debugging -->
+                            <!-- No featured articles in context -->
+                        {% endif %}
+                    </ul>
+
+                    {% if related_articles %}
+                    <ul>
+                        <li><h4>Related</h4></li>
+                        {% for article in related_articles %}
+                            <li {% if page.slug == article.slug %}class="highlight"{% endif %}>
+                                <a href="{% url 'wiki:page_detail' article.slug %}">{{ article.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if user.is_staff %}
+                    <ul>
+                        <li><h4>Admin</h4></li>
+                        <li><a href="{% url 'wiki:page_list' %}">Wiki Home</a></li>
+                        <li><a href="/admin/wiki/wikipage/add/">Create New Page</a></li>
+                        {% if page %}
+                            <li><a href="/admin/wiki/wikipage/{{ page.id }}/change/">Edit This Page</a></li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+                    {% block context_menu %}{% endblock %}
+                </div>
+
+                <!-- Banner -->
+                <div class="banner">
+                    {% if page.featured_image and page.featured_image.banner %}
+                        <img src="{{ page.featured_image.get_banner_url }}" alt="Page Banner">
+                    {% else %}
+                       <!-- No banner -->
+                    {% endif %}
+                </div>
+
+                <!-- Content -->
+                <div class="content_holder">
+                    <div class="content">
+                        <div class="left_content">
+                            <!-- Content will be inserted by JavaScript -->
+                        </div>
+                        
+                        <div class="right_content {% if not page.right_content %}hidden{% endif %}">
+                            {% block sidebar %}
+                                <!-- Content will be inserted by JavaScript -->
+                            {% endblock %}
+                        </div>
+                    </div>
+                    <footer>
+                        <p>Powered by <a href="https://evennia.com">Evennia</a></p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="sliding-menu">
+            <ul class="menu-items">
+                <li><a href="/">Home</a></li>
+                <li><a href="#">Characters</a></li>
+                <li><a href="#">Wiki</a></li>
+                <li><a href="#">Channels</a></li>
+                <li><a href="#">Help</a></li>
+                <li><a href="#">Play Online</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="#">Profile</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Logout</a></li>
+                {% else %}
+                    <li><a href="#">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="menu-overlay"></div>
+
+        <!-- Update the scroll event listener -->
+        <script>
+            document.addEventListener('scroll', function() {
+                const nav = document.querySelector('.main-nav');
+                const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Calculate opacity based on scroll position (0 to 1000px)
+                const scrollOpacity = Math.min(scrollPosition / 1000, 1);
+                nav.style.backgroundColor = `rgba(0, 0, 0, ${scrollOpacity})`;
+                
+                console.log('Scroll position:', scrollPosition, 'Opacity:', scrollOpacity);
+            });
+        </script>
+    </body>
+</html>

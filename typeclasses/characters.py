@@ -8,13 +8,57 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 
-from evennia import DefaultCharacter
-print("DefaultCharacter:", DefaultCharacter)
+# class Character(DefaultCharacter):
+#     """
+#     The Character typeclass, based on DefaultCharacter.
+#     """
 
-# If DefaultCharacter is None, use object as a fallback
-BaseCharacter = DefaultCharacter if DefaultCharacter is not None else object
+#     def at_object_creation(self):
+#         """
+#         Called when the character is first created.
+#         """
+#         super().at_object_creation()
+#         self.tags.add("in_material", category="state")
+#         self.db.unfindable = False
+#         self.db.fae_desc = ""
+#         self.db.languages = ["English"]  # Default language
+#         self.db.speaking_language = None
+#         self.db.approved = False
+#         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
+#         self.db.stats = {}
 
-class Character(BaseCharacter):
+#     @lazy_property
+#     def notes(self):
+#         return Note.objects.filter(character=self)
+
+#     def add_note(self, name, text, category="General"):
+#         return Note.objects.create(
+#             character=self,
+#             name=name,
+#             text=text,
+#             category=category
+#         )
+
+#     def get_note(self, identifier):
+#         try:
+#             return self.notes.get(id=int(identifier))
+#         except ValueError:
+#             return self.notes.filter(name__iexact=identifier).first()
+
+#     def get_all_notes(self):
+#         return self.notes.all()
+
+#     def update_note(self, identifier, text, category=None):
+#         note = self.get_note(identifier)
+#         if note:
+#             note.text = text
+#             if category:
+#                 note.category = category
+#             note.save()
+#             return True
+#         return False
+
+class Character( DefaultCharacter):
     """
     The Character typeclass.
     """

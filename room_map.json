@@ -1,0 +1,8136 @@
+{
+  "2": {
+    "id": 2,
+    "name": "Limbo",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Staff Nexus",
+        "destination_id": 30
+      },
+      {
+        "name": "OOC Nexus",
+        "destination_id": 1729
+      }
+    ],
+    "contents": []
+  },
+  "13": {
+    "id": 13,
+    "name": "Marid's Sea",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 30
+      }
+    ],
+    "contents": [
+      {
+        "id": 12,
+        "name": "Marid",
+        "typeclass": "typeclasses.characters.Character"
+      }
+    ]
+  },
+  "19": {
+    "id": 19,
+    "name": "Scylla's Lair",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 30
+      }
+    ],
+    "contents": [
+      {
+        "id": 1,
+        "name": "Diablerie",
+        "typeclass": "typeclasses.characters.Character"
+      }
+    ]
+  },
+  "22": {
+    "id": 22,
+    "name": "Witches Hut",
+    "location_type": null,
+    "exits": [],
+    "contents": []
+  },
+  "24": {
+    "id": 24,
+    "name": "Witch Hut",
+    "location_type": null,
+    "exits": [],
+    "contents": []
+  },
+  "27": {
+    "id": 27,
+    "name": "Diablerie's Sanctum",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 30
+      }
+    ],
+    "contents": []
+  },
+  "30": {
+    "id": 30,
+    "name": "Staff Nexus",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marid's Sea",
+        "destination_id": 13
+      },
+      {
+        "name": "Scylla's Lair",
+        "destination_id": 19
+      },
+      {
+        "name": "Diablerie's Sanctum",
+        "destination_id": 27
+      },
+      {
+        "name": "Limbo",
+        "destination_id": 2
+      },
+      {
+        "name": "Charybdis' Sea Cave",
+        "destination_id": 36
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      },
+      {
+        "name": "OOC Nexus",
+        "destination_id": 1729
+      }
+    ],
+    "contents": []
+  },
+  "36": {
+    "id": 36,
+    "name": "Charybdis' Sea Cave",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Staff Nexus",
+        "destination_id": 30
+      }
+    ],
+    "contents": []
+  },
+  "39": {
+    "id": 39,
+    "name": "Downtown Sector - Central District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marina",
+        "destination_id": 40
+      },
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      },
+      {
+        "name": "Little Italy",
+        "destination_id": 46
+      },
+      {
+        "name": "Columbia",
+        "destination_id": 49
+      },
+      {
+        "name": "Central District",
+        "destination_id": 52
+      },
+      {
+        "name": "Embarcadero",
+        "destination_id": 495
+      },
+      {
+        "name": "East Village",
+        "destination_id": 766
+      }
+    ],
+    "contents": []
+  },
+  "40": {
+    "id": 40,
+    "name": "Marina - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "Harborview Apts",
+        "destination_id": 1192
+      },
+      {
+        "name": "Pantoja Park",
+        "destination_id": 1630
+      }
+    ],
+    "contents": []
+  },
+  "43": {
+    "id": 43,
+    "name": "Gaslamp Quarter - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "Hard Rock Hotel",
+        "destination_id": 887
+      },
+      {
+        "name": "Leave of Absence",
+        "destination_id": 897
+      },
+      {
+        "name": "Mad House Comedy Club",
+        "destination_id": 900
+      },
+      {
+        "name": "The Cat Cafe",
+        "destination_id": 903
+      },
+      {
+        "name": "House of Blues",
+        "destination_id": 906
+      },
+      {
+        "name": "Prohibition",
+        "destination_id": 909
+      },
+      {
+        "name": "Balboa Theatre",
+        "destination_id": 912
+      }
+    ],
+    "contents": []
+  },
+  "46": {
+    "id": 46,
+    "name": "Little Italy - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "Carousel Bar",
+        "destination_id": 915
+      },
+      {
+        "name": "James Coffee Co.",
+        "destination_id": 918
+      },
+      {
+        "name": "Landini's Pizzeria",
+        "destination_id": 921
+      },
+      {
+        "name": "Kettner Blvd",
+        "destination_id": 1174
+      },
+      {
+        "name": "Camden Apts",
+        "destination_id": 1177
+      }
+    ],
+    "contents": []
+  },
+  "49": {
+    "id": 49,
+    "name": "Columbia - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "Columbia Tower Apts",
+        "destination_id": 1180
+      },
+      {
+        "name": "Queenstown Public House",
+        "destination_id": 1183
+      },
+      {
+        "name": "The Perils Club",
+        "destination_id": 1677
+      }
+    ],
+    "contents": []
+  },
+  "52": {
+    "id": 52,
+    "name": "Central District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "Balboa Park Sector",
+        "destination_id": 55
+      },
+      {
+        "name": "Old Town Sector",
+        "destination_id": 58
+      },
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      }
+    ],
+    "contents": []
+  },
+  "55": {
+    "id": 55,
+    "name": "Balboa Park Sector - Central District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Central District",
+        "destination_id": 52
+      },
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      },
+      {
+        "name": "Bankers Hill",
+        "destination_id": 73
+      },
+      {
+        "name": "Hillcrest",
+        "destination_id": 76
+      }
+    ],
+    "contents": []
+  },
+  "58": {
+    "id": 58,
+    "name": "Old Town Sector - Central District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Central District",
+        "destination_id": 52
+      },
+      {
+        "name": "Old Town",
+        "destination_id": 61
+      },
+      {
+        "name": "Mission Hills",
+        "destination_id": 64
+      },
+      {
+        "name": "Presidio Park",
+        "destination_id": 67
+      },
+      {
+        "name": "Heritage County Park",
+        "destination_id": 516
+      }
+    ],
+    "contents": []
+  },
+  "61": {
+    "id": 61,
+    "name": "Old Town",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town Sector",
+        "destination_id": 58
+      },
+      {
+        "name": "Historic Park",
+        "destination_id": 510
+      },
+      {
+        "name": "Whaley House Museum",
+        "destination_id": 513
+      },
+      {
+        "name": "New Orleans Creole Cafe",
+        "destination_id": 519
+      },
+      {
+        "name": "Cafe Coyote",
+        "destination_id": 523
+      }
+    ],
+    "contents": []
+  },
+  "64": {
+    "id": 64,
+    "name": "Mission Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town Sector",
+        "destination_id": 58
+      },
+      {
+        "name": "Palmetto Way",
+        "destination_id": 1168
+      },
+      {
+        "name": "Hills Cafe",
+        "destination_id": 1171
+      }
+    ],
+    "contents": []
+  },
+  "67": {
+    "id": 67,
+    "name": "Presidio Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town Sector",
+        "destination_id": 58
+      }
+    ],
+    "contents": []
+  },
+  "70": {
+    "id": 70,
+    "name": "Balboa Park - Central District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park Sector",
+        "destination_id": 55
+      },
+      {
+        "name": "Naval Medical Center",
+        "destination_id": 460
+      },
+      {
+        "name": "Morley Field Sports Complex",
+        "destination_id": 463
+      },
+      {
+        "name": "Spanish Village Art Center",
+        "destination_id": 466
+      },
+      {
+        "name": "Japanese Friendship Garden",
+        "destination_id": 471
+      },
+      {
+        "name": "Museum of Us",
+        "destination_id": 474
+      },
+      {
+        "name": "Natural History Museum",
+        "destination_id": 477
+      },
+      {
+        "name": "Air & Space Museum",
+        "destination_id": 480
+      },
+      {
+        "name": "Automative Museum",
+        "destination_id": 483
+      },
+      {
+        "name": "Veterans Museum",
+        "destination_id": 486
+      },
+      {
+        "name": "San Diego Zoo",
+        "destination_id": 489
+      },
+      {
+        "name": "WorldBeat Cultural Center",
+        "destination_id": 492
+      }
+    ],
+    "contents": []
+  },
+  "73": {
+    "id": 73,
+    "name": "Bankers Hill",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park Sector",
+        "destination_id": 55
+      }
+    ],
+    "contents": []
+  },
+  "76": {
+    "id": 76,
+    "name": "Hillcrest",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park Sector",
+        "destination_id": 55
+      }
+    ],
+    "contents": []
+  },
+  "79": {
+    "id": 79,
+    "name": "Coastal District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Sector",
+        "destination_id": 80
+      },
+      {
+        "name": "Pacific Beach Sector",
+        "destination_id": 83
+      },
+      {
+        "name": "Point Loma Sector",
+        "destination_id": 86
+      },
+      {
+        "name": "Coronado Sector",
+        "destination_id": 89
+      },
+      {
+        "name": "Central District",
+        "destination_id": 52
+      },
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      }
+    ],
+    "contents": []
+  },
+  "80": {
+    "id": 80,
+    "name": "La Jolla Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Torrey Pines",
+        "destination_id": 381
+      },
+      {
+        "name": "La Jolla",
+        "destination_id": 387
+      },
+      {
+        "name": "University City",
+        "destination_id": 129
+      },
+      {
+        "name": "La Jolla Shores",
+        "destination_id": 384
+      },
+      {
+        "name": "Village of La Jolla",
+        "destination_id": 450
+      }
+    ],
+    "contents": []
+  },
+  "83": {
+    "id": 83,
+    "name": "Pacific Beach Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Pacific Beach",
+        "destination_id": 119
+      },
+      {
+        "name": "Mission Beach",
+        "destination_id": 122
+      },
+      {
+        "name": "Crown Point",
+        "destination_id": 125
+      },
+      {
+        "name": "Fiesta Island",
+        "destination_id": 454
+      },
+      {
+        "name": "SeaWorld San Diego",
+        "destination_id": 457
+      }
+    ],
+    "contents": []
+  },
+  "86": {
+    "id": 86,
+    "name": "Point Loma Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Point Loma",
+        "destination_id": 104
+      },
+      {
+        "name": "Ocean Beach",
+        "destination_id": 107
+      },
+      {
+        "name": "Midway",
+        "destination_id": 110
+      },
+      {
+        "name": "Sunset Cliffs",
+        "destination_id": 113
+      }
+    ],
+    "contents": []
+  },
+  "89": {
+    "id": 89,
+    "name": "Coronado Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Silver Strand Beach",
+        "destination_id": 92
+      },
+      {
+        "name": "City of Coronado",
+        "destination_id": 95
+      },
+      {
+        "name": "Naval Air Station",
+        "destination_id": 101
+      }
+    ],
+    "contents": []
+  },
+  "92": {
+    "id": 92,
+    "name": "Silver Strand",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coronado Sector",
+        "destination_id": 89
+      },
+      {
+        "name": "Imperial Beach Sector",
+        "destination_id": 176
+      },
+      {
+        "name": "Beach Cafe",
+        "destination_id": 393
+      },
+      {
+        "name": "Southern Bay",
+        "destination_id": 656
+      },
+      {
+        "name": "Buccaneer Way",
+        "destination_id": 1114
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1670
+      }
+    ],
+    "contents": []
+  },
+  "95": {
+    "id": 95,
+    "name": "City of Coronado - Coronado Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coronado Sector",
+        "destination_id": 89
+      },
+      {
+        "name": "Hotel del Coronado",
+        "destination_id": 648
+      },
+      {
+        "name": "Coronado Beach",
+        "destination_id": 98
+      },
+      {
+        "name": "Glorietta Bay Marina",
+        "destination_id": 1023
+      },
+      {
+        "name": "Orange Ave",
+        "destination_id": 1111
+      },
+      {
+        "name": "Yacht Club",
+        "destination_id": 1481
+      }
+    ],
+    "contents": []
+  },
+  "98": {
+    "id": 98,
+    "name": "Coronado Beach - Coronado Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "City of Coronado",
+        "destination_id": 95
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 697
+      }
+    ],
+    "contents": []
+  },
+  "101": {
+    "id": 101,
+    "name": "Naval Air Station",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coronado Sector",
+        "destination_id": 89
+      }
+    ],
+    "contents": []
+  },
+  "104": {
+    "id": 104,
+    "name": "Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Point Loma Sector",
+        "destination_id": 86
+      },
+      {
+        "name": "Naval Health Research Center",
+        "destination_id": 407
+      },
+      {
+        "name": "Caminito Peascado St",
+        "destination_id": 1588
+      },
+      {
+        "name": "Anchorage Apts",
+        "destination_id": 1591
+      }
+    ],
+    "contents": []
+  },
+  "107": {
+    "id": 107,
+    "name": "Ocean Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Point Loma Sector",
+        "destination_id": 86
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1443
+      },
+      {
+        "name": "Cape May Ave",
+        "destination_id": 1448
+      }
+    ],
+    "contents": []
+  },
+  "110": {
+    "id": 110,
+    "name": "Midway",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Point Loma Sector",
+        "destination_id": 86
+      },
+      {
+        "name": "Swap Meet",
+        "destination_id": 1475
+      },
+      {
+        "name": "Rosecran St",
+        "destination_id": 1594
+      },
+      {
+        "name": "Greenwood Apts",
+        "destination_id": 1597
+      }
+    ],
+    "contents": []
+  },
+  "113": {
+    "id": 113,
+    "name": "Sunset Cliffs",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Point Loma Sector",
+        "destination_id": 86
+      },
+      {
+        "name": "Sunset Cliffs National Park",
+        "destination_id": 116
+      }
+    ],
+    "contents": []
+  },
+  "116": {
+    "id": 116,
+    "name": "Sunset Cliffs National Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sunset Cliffs",
+        "destination_id": 113
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 697
+      }
+    ],
+    "contents": []
+  },
+  "119": {
+    "id": 119,
+    "name": "Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach Sector",
+        "destination_id": 83
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1051
+      },
+      {
+        "name": "Turquoise Street",
+        "destination_id": 1057
+      },
+      {
+        "name": "Iron Pig Alehouse",
+        "destination_id": 1060
+      },
+      {
+        "name": "Dolphin Cove Apts",
+        "destination_id": 1614
+      },
+      {
+        "name": "Alleyway",
+        "destination_id": 1691
+      }
+    ],
+    "contents": []
+  },
+  "122": {
+    "id": 122,
+    "name": "Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach Sector",
+        "destination_id": 83
+      },
+      {
+        "name": "Boardwalk",
+        "destination_id": 789
+      },
+      {
+        "name": "Ocean Beach",
+        "destination_id": 1028
+      },
+      {
+        "name": "Camplands",
+        "destination_id": 1036
+      },
+      {
+        "name": "Rockaway Court",
+        "destination_id": 1045
+      },
+      {
+        "name": "Rosemarie's Burgers",
+        "destination_id": 1048
+      }
+    ],
+    "contents": []
+  },
+  "125": {
+    "id": 125,
+    "name": "Crown Point",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach Sector",
+        "destination_id": 83
+      },
+      {
+        "name": "Bay",
+        "destination_id": 1033
+      }
+    ],
+    "contents": []
+  },
+  "128": {
+    "id": 128,
+    "name": "Northern District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mira Mesa Sector",
+        "destination_id": 132
+      },
+      {
+        "name": "Del Mar Sector",
+        "destination_id": 138
+      },
+      {
+        "name": "Escondido Sector",
+        "destination_id": 144
+      },
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      },
+      {
+        "name": "Northeastern District",
+        "destination_id": 179
+      }
+    ],
+    "contents": []
+  },
+  "129": {
+    "id": 129,
+    "name": "University City - Coastal District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Sector",
+        "destination_id": 80
+      },
+      {
+        "name": "Rose Canyon Park",
+        "destination_id": 443
+      },
+      {
+        "name": "UC San Diego",
+        "destination_id": 400
+      },
+      {
+        "name": "Star-Mart",
+        "destination_id": 1010
+      },
+      {
+        "name": "Nobel Dr",
+        "destination_id": 1429
+      },
+      {
+        "name": "Sparks Apts",
+        "destination_id": 1432
+      },
+      {
+        "name": "O'Tolley's",
+        "destination_id": 1636
+      }
+    ],
+    "contents": []
+  },
+  "132": {
+    "id": 132,
+    "name": "Mira Mesa Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "Mira Mesa",
+        "destination_id": 412
+      },
+      {
+        "name": "Sorento Valley",
+        "destination_id": 415
+      }
+    ],
+    "contents": []
+  },
+  "135": {
+    "id": 135,
+    "name": "Carmel Valley Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "Carmel Valley",
+        "destination_id": 418
+      },
+      {
+        "name": "Del Mar Heights",
+        "destination_id": 421
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "138": {
+    "id": 138,
+    "name": "Del Mar Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "Del Mar",
+        "destination_id": 424
+      },
+      {
+        "name": "Solano Beach",
+        "destination_id": 427
+      },
+      {
+        "name": "Torrey Pines State Beach",
+        "destination_id": 433
+      }
+    ],
+    "contents": []
+  },
+  "141": {
+    "id": 141,
+    "name": "Rancho Bernando Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "Rancho Bernardo",
+        "destination_id": 659
+      },
+      {
+        "name": "4S Ranch",
+        "destination_id": 662
+      },
+      {
+        "name": "Carmel Mountain Ranch",
+        "destination_id": 665
+      },
+      {
+        "name": "Black Mountain Park",
+        "destination_id": 1392
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "144": {
+    "id": 144,
+    "name": "Escondido Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "San Pasqual Valley",
+        "destination_id": 436
+      },
+      {
+        "name": "Escondido",
+        "destination_id": 439
+      }
+    ],
+    "contents": []
+  },
+  "147": {
+    "id": 147,
+    "name": "Mid-City District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "College Area Sector",
+        "destination_id": 151
+      },
+      {
+        "name": "El Cajon Sector",
+        "destination_id": 160
+      },
+      {
+        "name": "Central District",
+        "destination_id": 52
+      },
+      {
+        "name": "Coastal District",
+        "destination_id": 79
+      },
+      {
+        "name": "Far East County District",
+        "destination_id": 846
+      }
+    ],
+    "contents": []
+  },
+  "148": {
+    "id": 148,
+    "name": "Mission Valley Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      },
+      {
+        "name": "Mission Valley East",
+        "destination_id": 247
+      },
+      {
+        "name": "Mission Valley West",
+        "destination_id": 250
+      },
+      {
+        "name": "Serra Mesa",
+        "destination_id": 253
+      },
+      {
+        "name": "Morena",
+        "destination_id": 256
+      },
+      {
+        "name": "Linda Vista",
+        "destination_id": 259
+      },
+      {
+        "name": "Grantville",
+        "destination_id": 668
+      },
+      {
+        "name": "Kearny Mesa",
+        "destination_id": 792
+      }
+    ],
+    "contents": []
+  },
+  "151": {
+    "id": 151,
+    "name": "College Area Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      },
+      {
+        "name": "College Area",
+        "destination_id": 286
+      },
+      {
+        "name": "El Cerrito",
+        "destination_id": 295
+      },
+      {
+        "name": "Rolando Village",
+        "destination_id": 298
+      },
+      {
+        "name": "Alvarado Estates",
+        "destination_id": 301
+      }
+    ],
+    "contents": []
+  },
+  "154": {
+    "id": 154,
+    "name": "San Carlos Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      },
+      {
+        "name": "San Carlos",
+        "destination_id": 280
+      },
+      {
+        "name": "Del Cerro",
+        "destination_id": 283
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "157": {
+    "id": 157,
+    "name": "La Mesa Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      },
+      {
+        "name": "La Mesa",
+        "destination_id": 271
+      },
+      {
+        "name": "Mount Helix",
+        "destination_id": 277
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "160": {
+    "id": 160,
+    "name": "El Cajon Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      },
+      {
+        "name": "El Cajon",
+        "destination_id": 262
+      },
+      {
+        "name": "Rancho San Diego",
+        "destination_id": 265
+      },
+      {
+        "name": "Granite Hills",
+        "destination_id": 268
+      }
+    ],
+    "contents": []
+  },
+  "163": {
+    "id": 163,
+    "name": "Southern District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista Sector",
+        "destination_id": 173
+      },
+      {
+        "name": "Imperial Beach Sector",
+        "destination_id": 176
+      },
+      {
+        "name": "San Ysidro Mex Border",
+        "destination_id": 529
+      },
+      {
+        "name": "Central District",
+        "destination_id": 52
+      },
+      {
+        "name": "Southeastern District",
+        "destination_id": 202
+      }
+    ],
+    "contents": []
+  },
+  "164": {
+    "id": 164,
+    "name": "South Bay Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "Otay Mesa",
+        "destination_id": 304
+      },
+      {
+        "name": "San Ysidro",
+        "destination_id": 307
+      },
+      {
+        "name": "Nestor",
+        "destination_id": 310
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "167": {
+    "id": 167,
+    "name": "Paradise Hills Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "Paradise Hills",
+        "destination_id": 313
+      },
+      {
+        "name": "Skyline",
+        "destination_id": 319
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "170": {
+    "id": 170,
+    "name": "National City Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "National City",
+        "destination_id": 322
+      },
+      {
+        "name": "Lincoln Acres",
+        "destination_id": 325
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "173": {
+    "id": 173,
+    "name": "Chula Vista Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "Chula Vista",
+        "destination_id": 328
+      },
+      {
+        "name": "East Lake",
+        "destination_id": 331
+      },
+      {
+        "name": "Otay Ranch",
+        "destination_id": 334
+      },
+      {
+        "name": "Wildlife Refuge",
+        "destination_id": 526
+      },
+      {
+        "name": "Rancho Del Rey",
+        "destination_id": 704
+      }
+    ],
+    "contents": []
+  },
+  "176": {
+    "id": 176,
+    "name": "Imperial Beach Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "Imperial Beach",
+        "destination_id": 337
+      },
+      {
+        "name": "Silver Strand Beach",
+        "destination_id": 92
+      },
+      {
+        "name": "Tijuana River Estuary",
+        "destination_id": 342
+      }
+    ],
+    "contents": []
+  },
+  "179": {
+    "id": 179,
+    "name": "Northeastern District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Poway Sector",
+        "destination_id": 180
+      },
+      {
+        "name": "Ramona Sector",
+        "destination_id": 183
+      },
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      },
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      }
+    ],
+    "contents": []
+  },
+  "180": {
+    "id": 180,
+    "name": "Poway Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northeastern District",
+        "destination_id": 179
+      },
+      {
+        "name": "Poway",
+        "destination_id": 230
+      },
+      {
+        "name": "Blue Sky Ecological Reserve",
+        "destination_id": 233
+      }
+    ],
+    "contents": []
+  },
+  "183": {
+    "id": 183,
+    "name": "Ramona Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northeastern District",
+        "destination_id": 179
+      },
+      {
+        "name": "Ramona",
+        "destination_id": 236
+      },
+      {
+        "name": "San Diego Country Estates",
+        "destination_id": 241
+      },
+      {
+        "name": "Barona Resort & Casino",
+        "destination_id": 244
+      }
+    ],
+    "contents": []
+  },
+  "186": {
+    "id": 186,
+    "name": "Far North County District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside Sector",
+        "destination_id": 187
+      },
+      {
+        "name": "San Marcos Sector",
+        "destination_id": 199
+      },
+      {
+        "name": "Northeastern District",
+        "destination_id": 179
+      },
+      {
+        "name": "Northern District",
+        "destination_id": 128
+      }
+    ],
+    "contents": []
+  },
+  "187": {
+    "id": 187,
+    "name": "Oceanside Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      },
+      {
+        "name": "Oceanside",
+        "destination_id": 345
+      },
+      {
+        "name": "Camp Pendleton",
+        "destination_id": 348
+      },
+      {
+        "name": "San Luis Rey",
+        "destination_id": 351
+      }
+    ],
+    "contents": []
+  },
+  "190": {
+    "id": 190,
+    "name": "Carlsbad Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      },
+      {
+        "name": "Carlsbad",
+        "destination_id": 354
+      },
+      {
+        "name": "Omni La Costa Resort & Spa",
+        "destination_id": 357
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "193": {
+    "id": 193,
+    "name": "Encinitas Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      },
+      {
+        "name": "Encinitas",
+        "destination_id": 360
+      },
+      {
+        "name": "Leucadia",
+        "destination_id": 363
+      },
+      {
+        "name": "Cardiff-by-the-Sea",
+        "destination_id": 366
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "196": {
+    "id": 196,
+    "name": "Vista Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      },
+      {
+        "name": "Vista",
+        "destination_id": 369
+      },
+      {
+        "name": "Shadowridge",
+        "destination_id": 372
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "199": {
+    "id": 199,
+    "name": "San Marcos Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far North County District",
+        "destination_id": 186
+      },
+      {
+        "name": "San Marcos",
+        "destination_id": 375
+      },
+      {
+        "name": "Lake San Marcos",
+        "destination_id": 378
+      }
+    ],
+    "contents": []
+  },
+  "202": {
+    "id": 202,
+    "name": "Southeastern District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lemon Grove Sector",
+        "destination_id": 206
+      },
+      {
+        "name": "Jamul Sector",
+        "destination_id": 209
+      },
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      }
+    ],
+    "contents": []
+  },
+  "203": {
+    "id": 203,
+    "name": "Spring Valley Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southeastern District",
+        "destination_id": 202
+      },
+      {
+        "name": "Spring Valley",
+        "destination_id": 212
+      },
+      {
+        "name": "Casa de Oro",
+        "destination_id": 215
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "206": {
+    "id": 206,
+    "name": "Lemon Grove Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southeastern District",
+        "destination_id": 202
+      },
+      {
+        "name": "Lemon Grove",
+        "destination_id": 218
+      },
+      {
+        "name": "Jamacha-Lomita",
+        "destination_id": 221
+      }
+    ],
+    "contents": []
+  },
+  "209": {
+    "id": 209,
+    "name": "Jamul Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southeastern District",
+        "destination_id": 202
+      },
+      {
+        "name": "Jamul",
+        "destination_id": 224
+      },
+      {
+        "name": "Dulzura",
+        "destination_id": 227
+      }
+    ],
+    "contents": []
+  },
+  "212": {
+    "id": 212,
+    "name": "Spring Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Spring Valley Sector",
+        "destination_id": 203
+      },
+      {
+        "name": "Pecos St",
+        "destination_id": 1165
+      }
+    ],
+    "contents": []
+  },
+  "215": {
+    "id": 215,
+    "name": "Casa de Oro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Spring Valley Sector",
+        "destination_id": 203
+      },
+      {
+        "name": "Avoyer Ave",
+        "destination_id": 1162
+      }
+    ],
+    "contents": []
+  },
+  "218": {
+    "id": 218,
+    "name": "Lemon Grove",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lemon Grove Sector",
+        "destination_id": 206
+      },
+      {
+        "name": "Lemon City Taphouse",
+        "destination_id": 1129
+      },
+      {
+        "name": "Orchard Apts",
+        "destination_id": 1132
+      },
+      {
+        "name": "Golden Ave",
+        "destination_id": 1135
+      }
+    ],
+    "contents": []
+  },
+  "221": {
+    "id": 221,
+    "name": "Jamacha-Lomita",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lemon Grove Sector",
+        "destination_id": 206
+      },
+      {
+        "name": "Radio Dr",
+        "destination_id": 1138
+      },
+      {
+        "name": "Jose's Bar",
+        "destination_id": 1141
+      },
+      {
+        "name": "Palm Village Apts",
+        "destination_id": 1144
+      }
+    ],
+    "contents": []
+  },
+  "224": {
+    "id": 224,
+    "name": "Jamul",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Jamul Sector",
+        "destination_id": 209
+      },
+      {
+        "name": "Casino",
+        "destination_id": 1153
+      },
+      {
+        "name": "Rustic Ridge Vineyards",
+        "destination_id": 1156
+      },
+      {
+        "name": "Honey Springs Rd",
+        "destination_id": 1159
+      }
+    ],
+    "contents": []
+  },
+  "227": {
+    "id": 227,
+    "name": "Dulzura",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Jamul Sector",
+        "destination_id": 209
+      },
+      {
+        "name": "Fig Grove Apts",
+        "destination_id": 1147
+      },
+      {
+        "name": "Cochera Ave",
+        "destination_id": 1150
+      }
+    ],
+    "contents": []
+  },
+  "230": {
+    "id": 230,
+    "name": "Poway",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Poway Sector",
+        "destination_id": 180
+      },
+      {
+        "name": "El Dolora Way",
+        "destination_id": 1359
+      },
+      {
+        "name": "Espola Apts",
+        "destination_id": 1362
+      }
+    ],
+    "contents": []
+  },
+  "233": {
+    "id": 233,
+    "name": "Blue Sky Ecological Reserve",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Poway Sector",
+        "destination_id": 180
+      }
+    ],
+    "contents": []
+  },
+  "236": {
+    "id": 236,
+    "name": "Ramona",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ramona Sector",
+        "destination_id": 183
+      },
+      {
+        "name": "La Brea St",
+        "destination_id": 1365
+      }
+    ],
+    "contents": []
+  },
+  "239": {
+    "id": 239,
+    "name": "San Diego Country Estates",
+    "location_type": null,
+    "exits": [],
+    "contents": []
+  },
+  "241": {
+    "id": 241,
+    "name": "San Diego Country Estates",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ramona Sector",
+        "destination_id": 183
+      }
+    ],
+    "contents": []
+  },
+  "244": {
+    "id": 244,
+    "name": "Barona Resort & Casino",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ramona Sector",
+        "destination_id": 183
+      }
+    ],
+    "contents": []
+  },
+  "247": {
+    "id": 247,
+    "name": "Mission Valley East",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "Mission Valley Mall",
+        "destination_id": 754
+      },
+      {
+        "name": "Security Solutions Inc",
+        "destination_id": 858
+      },
+      {
+        "name": "Parkway Apt",
+        "destination_id": 1195
+      },
+      {
+        "name": "Acorn St",
+        "destination_id": 1198
+      }
+    ],
+    "contents": []
+  },
+  "250": {
+    "id": 250,
+    "name": "Mission Valley West",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "Fashion Valley Mall",
+        "destination_id": 719
+      },
+      {
+        "name": "Pinnacle Apts",
+        "destination_id": 1201
+      },
+      {
+        "name": "Quartz Rd",
+        "destination_id": 1204
+      }
+    ],
+    "contents": []
+  },
+  "253": {
+    "id": 253,
+    "name": "Serra Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "Rockaway Apts",
+        "destination_id": 1207
+      },
+      {
+        "name": "Summit Way",
+        "destination_id": 1210
+      }
+    ],
+    "contents": []
+  },
+  "256": {
+    "id": 256,
+    "name": "Morena",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "University of San Diego",
+        "destination_id": 998
+      },
+      {
+        "name": "Las Cumbres Rd",
+        "destination_id": 1213
+      },
+      {
+        "name": "Friar's Village",
+        "destination_id": 1216
+      },
+      {
+        "name": "Star-Mart",
+        "destination_id": 1219
+      }
+    ],
+    "contents": []
+  },
+  "259": {
+    "id": 259,
+    "name": "Linda Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "Skateworld",
+        "destination_id": 1222
+      },
+      {
+        "name": "Oak Rd",
+        "destination_id": 1225
+      }
+    ],
+    "contents": []
+  },
+  "262": {
+    "id": 262,
+    "name": "El Cajon",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "El Cajon Sector",
+        "destination_id": 160
+      },
+      {
+        "name": "Azure Apts",
+        "destination_id": 1258
+      },
+      {
+        "name": "Anza Way",
+        "destination_id": 1261
+      }
+    ],
+    "contents": []
+  },
+  "265": {
+    "id": 265,
+    "name": "Rancho San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "El Cajon Sector",
+        "destination_id": 160
+      },
+      {
+        "name": "Willow Glen Equine",
+        "destination_id": 1264
+      },
+      {
+        "name": "Sea Pines Rd",
+        "destination_id": 1267
+      },
+      {
+        "name": "Woodhaven Apts",
+        "destination_id": 1270
+      }
+    ],
+    "contents": []
+  },
+  "268": {
+    "id": 268,
+    "name": "Granite Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "El Cajon Sector",
+        "destination_id": 160
+      },
+      {
+        "name": "La Cresta Rd",
+        "destination_id": 1273
+      }
+    ],
+    "contents": []
+  },
+  "271": {
+    "id": 271,
+    "name": "La Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Mesa Sector",
+        "destination_id": 157
+      },
+      {
+        "name": "Hacienda Apts",
+        "destination_id": 1246
+      },
+      {
+        "name": "El Capitan Dr",
+        "destination_id": 1249
+      },
+      {
+        "name": "Flamenco Club",
+        "destination_id": 1665
+      }
+    ],
+    "contents": []
+  },
+  "277": {
+    "id": 277,
+    "name": "Mount Helix",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Mesa Sector",
+        "destination_id": 157
+      }
+    ],
+    "contents": []
+  },
+  "280": {
+    "id": 280,
+    "name": "San Carlos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Carlos Sector",
+        "destination_id": 154
+      },
+      {
+        "name": "Lake Murray",
+        "destination_id": 1063
+      },
+      {
+        "name": "Colehill Dr",
+        "destination_id": 1252
+      }
+    ],
+    "contents": []
+  },
+  "283": {
+    "id": 283,
+    "name": "Del Cerro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Carlos Sector",
+        "destination_id": 154
+      },
+      {
+        "name": "Canyon Way",
+        "destination_id": 1255
+      }
+    ],
+    "contents": []
+  },
+  "286": {
+    "id": 286,
+    "name": "College Area",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area Sector",
+        "destination_id": 151
+      },
+      {
+        "name": "San Diego State University",
+        "destination_id": 289
+      },
+      {
+        "name": "O'Tolleys",
+        "destination_id": 837
+      },
+      {
+        "name": "Star-Mart",
+        "destination_id": 1001
+      },
+      {
+        "name": "Paseo Place Apts",
+        "destination_id": 1240
+      },
+      {
+        "name": "Linda Paseo St",
+        "destination_id": 1243
+      }
+    ],
+    "contents": []
+  },
+  "289": {
+    "id": 289,
+    "name": "San Diego State University",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area",
+        "destination_id": 286
+      },
+      {
+        "name": "Dorms",
+        "destination_id": 924
+      }
+    ],
+    "contents": []
+  },
+  "295": {
+    "id": 295,
+    "name": "El Cerrito",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area Sector",
+        "destination_id": 151
+      },
+      {
+        "name": "Alverado St",
+        "destination_id": 1237
+      }
+    ],
+    "contents": []
+  },
+  "298": {
+    "id": 298,
+    "name": "Rolando Village",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area Sector",
+        "destination_id": 151
+      },
+      {
+        "name": "Campus Plaza Shopping Center",
+        "destination_id": 927
+      },
+      {
+        "name": "Aztec Pacific Apartments",
+        "destination_id": 930
+      }
+    ],
+    "contents": []
+  },
+  "301": {
+    "id": 301,
+    "name": "Alvarado Estates",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area Sector",
+        "destination_id": 151
+      }
+    ],
+    "contents": []
+  },
+  "304": {
+    "id": 304,
+    "name": "Otay Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "South Bay Sector",
+        "destination_id": 164
+      },
+      {
+        "name": "Senita Dr",
+        "destination_id": 1090
+      },
+      {
+        "name": "House of Cuban Flavor",
+        "destination_id": 1093
+      }
+    ],
+    "contents": []
+  },
+  "307": {
+    "id": 307,
+    "name": "San Ysidro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "South Bay Sector",
+        "destination_id": 164
+      },
+      {
+        "name": "Star-Mart",
+        "destination_id": 1007
+      },
+      {
+        "name": "Sunset Lane",
+        "destination_id": 1075
+      },
+      {
+        "name": "Valley Breeze Apartments",
+        "destination_id": 1081
+      }
+    ],
+    "contents": []
+  },
+  "310": {
+    "id": 310,
+    "name": "Nestor",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "South Bay Sector",
+        "destination_id": 164
+      },
+      {
+        "name": "Noodles Noodles",
+        "destination_id": 1084
+      },
+      {
+        "name": "Tocaya Ave",
+        "destination_id": 1087
+      }
+    ],
+    "contents": []
+  },
+  "313": {
+    "id": 313,
+    "name": "Paradise Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Paradise Hills Sector",
+        "destination_id": 167
+      },
+      {
+        "name": "Alta View Dr",
+        "destination_id": 1117
+      },
+      {
+        "name": "Tonawanda Apartments",
+        "destination_id": 1120
+      }
+    ],
+    "contents": []
+  },
+  "319": {
+    "id": 319,
+    "name": "Skyline",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Paradise Hills Sector",
+        "destination_id": 167
+      },
+      {
+        "name": "Meadowbrook Dr",
+        "destination_id": 1108
+      }
+    ],
+    "contents": []
+  },
+  "322": {
+    "id": 322,
+    "name": "National City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "National City Sector",
+        "destination_id": 170
+      },
+      {
+        "name": "Las Islas Filipinas Restaurant",
+        "destination_id": 1102
+      },
+      {
+        "name": "Plaza Blvd",
+        "destination_id": 1105
+      }
+    ],
+    "contents": []
+  },
+  "325": {
+    "id": 325,
+    "name": "Lincoln Acres",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "National City Sector",
+        "destination_id": 170
+      },
+      {
+        "name": "La Hacienda Restaurant",
+        "destination_id": 1096
+      },
+      {
+        "name": "Orange Street",
+        "destination_id": 1099
+      }
+    ],
+    "contents": []
+  },
+  "328": {
+    "id": 328,
+    "name": "Chula Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista Sector",
+        "destination_id": 173
+      },
+      {
+        "name": "Marina",
+        "destination_id": 707
+      },
+      {
+        "name": "Sunny Vista",
+        "destination_id": 710
+      },
+      {
+        "name": "Castle Park",
+        "destination_id": 713
+      }
+    ],
+    "contents": []
+  },
+  "331": {
+    "id": 331,
+    "name": "East Lake",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista Sector",
+        "destination_id": 173
+      },
+      {
+        "name": "Brookstone Rd",
+        "destination_id": 1072
+      }
+    ],
+    "contents": []
+  },
+  "334": {
+    "id": 334,
+    "name": "Otay Ranch",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista Sector",
+        "destination_id": 173
+      },
+      {
+        "name": "Camino Cantera St",
+        "destination_id": 1066
+      }
+    ],
+    "contents": []
+  },
+  "337": {
+    "id": 337,
+    "name": "Imperial Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Imperial Beach Sector",
+        "destination_id": 176
+      },
+      {
+        "name": "Imperial Beach Pier",
+        "destination_id": 507
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1013
+      },
+      {
+        "name": "Seacoast Dr",
+        "destination_id": 1123
+      },
+      {
+        "name": "Mariners Point Apts",
+        "destination_id": 1126
+      }
+    ],
+    "contents": []
+  },
+  "342": {
+    "id": 342,
+    "name": "Tijuana River Estuary",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Imperial Beach Sector",
+        "destination_id": 176
+      }
+    ],
+    "contents": []
+  },
+  "345": {
+    "id": 345,
+    "name": "Oceanside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside Sector",
+        "destination_id": 187
+      },
+      {
+        "name": "Seabright Apts",
+        "destination_id": 1276
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1279
+      },
+      {
+        "name": "Breeze Cafe",
+        "destination_id": 1284
+      },
+      {
+        "name": "Mesa Dr",
+        "destination_id": 1287
+      }
+    ],
+    "contents": []
+  },
+  "348": {
+    "id": 348,
+    "name": "Camp Pendleton",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside Sector",
+        "destination_id": 187
+      },
+      {
+        "name": "Barracks",
+        "destination_id": 992
+      },
+      {
+        "name": "Officer Housing",
+        "destination_id": 995
+      }
+    ],
+    "contents": []
+  },
+  "351": {
+    "id": 351,
+    "name": "San Luis Rey",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside Sector",
+        "destination_id": 187
+      },
+      {
+        "name": "Coco Palm Dr",
+        "destination_id": 1290
+      }
+    ],
+    "contents": []
+  },
+  "354": {
+    "id": 354,
+    "name": "Carlsbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad Sector",
+        "destination_id": 190
+      },
+      {
+        "name": "Legoland",
+        "destination_id": 1293
+      },
+      {
+        "name": "Faraday Ave",
+        "destination_id": 1296
+      },
+      {
+        "name": "Pacific Crest Apts",
+        "destination_id": 1299
+      },
+      {
+        "name": "Fast Paced Club",
+        "destination_id": 1302
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1438
+      }
+    ],
+    "contents": []
+  },
+  "357": {
+    "id": 357,
+    "name": "Omni La Costa Resort & Spa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad Sector",
+        "destination_id": 190
+      }
+    ],
+    "contents": []
+  },
+  "360": {
+    "id": 360,
+    "name": "Encinitas",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas Sector",
+        "destination_id": 193
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1305
+      },
+      {
+        "name": "Woodwind Dr",
+        "destination_id": 1310
+      },
+      {
+        "name": "Willowspring Apts",
+        "destination_id": 1313
+      }
+    ],
+    "contents": []
+  },
+  "363": {
+    "id": 363,
+    "name": "Leucadia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas Sector",
+        "destination_id": 193
+      },
+      {
+        "name": "Capri Rd",
+        "destination_id": 1316
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1319
+      },
+      {
+        "name": "Pearce Grove Apts",
+        "destination_id": 1324
+      }
+    ],
+    "contents": []
+  },
+  "366": {
+    "id": 366,
+    "name": "Cardiff-by-the-Sea",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas Sector",
+        "destination_id": 193
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1327
+      },
+      {
+        "name": "Caretta Way",
+        "destination_id": 1335
+      },
+      {
+        "name": "Seaview Terraces Apts",
+        "destination_id": 1338
+      }
+    ],
+    "contents": []
+  },
+  "369": {
+    "id": 369,
+    "name": "Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Vista Sector",
+        "destination_id": 196
+      },
+      {
+        "name": "Botanical Gardens",
+        "destination_id": 1341
+      },
+      {
+        "name": "Avalon Dr",
+        "destination_id": 1344
+      },
+      {
+        "name": "Beaumont Apts",
+        "destination_id": 1347
+      }
+    ],
+    "contents": []
+  },
+  "372": {
+    "id": 372,
+    "name": "Shadowridge",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Vista Sector",
+        "destination_id": 196
+      },
+      {
+        "name": "Dawes Ct",
+        "destination_id": 1350
+      }
+    ],
+    "contents": []
+  },
+  "375": {
+    "id": 375,
+    "name": "San Marcos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Marcos District",
+        "destination_id": 199
+      },
+      {
+        "name": "Palomar Estates Apts",
+        "destination_id": 1353
+      },
+      {
+        "name": "Borden Rd",
+        "destination_id": 1356
+      },
+      {
+        "name": "CSU San Marcos",
+        "destination_id": 1749
+      }
+    ],
+    "contents": []
+  },
+  "378": {
+    "id": 378,
+    "name": "Lake San Marcos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Marcos District",
+        "destination_id": 199
+      }
+    ],
+    "contents": []
+  },
+  "381": {
+    "id": 381,
+    "name": "Torrey Pines",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Sector",
+        "destination_id": 80
+      },
+      {
+        "name": "Hidden Trail",
+        "destination_id": 933
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1410
+      }
+    ],
+    "contents": []
+  },
+  "384": {
+    "id": 384,
+    "name": "La Jolla Shores",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Sector",
+        "destination_id": 80
+      },
+      {
+        "name": "Tide Pools",
+        "destination_id": 728
+      }
+    ],
+    "contents": []
+  },
+  "387": {
+    "id": 387,
+    "name": "La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Sector",
+        "destination_id": 80
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1414
+      },
+      {
+        "name": "Nautlius St",
+        "destination_id": 1420
+      },
+      {
+        "name": "Playa Del Ray Apts",
+        "destination_id": 1423
+      }
+    ],
+    "contents": []
+  },
+  "390": {
+    "id": 390,
+    "name": "Campgrounds - Silver Strand",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Beach",
+        "destination_id": 1670
+      }
+    ],
+    "contents": []
+  },
+  "393": {
+    "id": 393,
+    "name": "Beach Cafe - Silver Strand",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Silver Strand Beach",
+        "destination_id": 92
+      }
+    ],
+    "contents": []
+  },
+  "400": {
+    "id": 400,
+    "name": "University of California San Diego - University City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "UCSD Hospital",
+        "destination_id": 404
+      },
+      {
+        "name": "Out",
+        "destination_id": 129
+      },
+      {
+        "name": "Dorms",
+        "destination_id": 1435
+      }
+    ],
+    "contents": []
+  },
+  "404": {
+    "id": 404,
+    "name": "UC San Diego Health System - University City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 400
+      }
+    ],
+    "contents": []
+  },
+  "407": {
+    "id": 407,
+    "name": "Naval Health Research Center - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 104
+      },
+      {
+        "name": "Applied Sciences Building",
+        "destination_id": 810
+      }
+    ],
+    "contents": []
+  },
+  "412": {
+    "id": 412,
+    "name": "Mira Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mira Mesa Sector",
+        "destination_id": 132
+      },
+      {
+        "name": "Gold Coast Dr",
+        "destination_id": 1368
+      },
+      {
+        "name": "Ivory Coast Apts",
+        "destination_id": 1371
+      }
+    ],
+    "contents": []
+  },
+  "415": {
+    "id": 415,
+    "name": "Sorento Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mira Mesa Sector",
+        "destination_id": 132
+      },
+      {
+        "name": "Wateridge Vista Dr",
+        "destination_id": 1374
+      }
+    ],
+    "contents": []
+  },
+  "418": {
+    "id": 418,
+    "name": "Carmel Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carmel Valley Sector",
+        "destination_id": 135
+      },
+      {
+        "name": "Vineyard",
+        "destination_id": 1377
+      },
+      {
+        "name": "Chapparal Rd",
+        "destination_id": 1380
+      }
+    ],
+    "contents": []
+  },
+  "421": {
+    "id": 421,
+    "name": "Del Mar Heights",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carmel Valley Sector",
+        "destination_id": 135
+      },
+      {
+        "name": "Overpark Rd",
+        "destination_id": 1383
+      }
+    ],
+    "contents": []
+  },
+  "424": {
+    "id": 424,
+    "name": "Del Mar",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar Sector",
+        "destination_id": 138
+      },
+      {
+        "name": "Del Mar Racing",
+        "destination_id": 430
+      },
+      {
+        "name": "Via Alta Dr",
+        "destination_id": 1647
+      },
+      {
+        "name": "Los Arboles Apts",
+        "destination_id": 1656
+      }
+    ],
+    "contents": []
+  },
+  "427": {
+    "id": 427,
+    "name": "Solano Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar Sector",
+        "destination_id": 138
+      },
+      {
+        "name": "Rios Ave",
+        "destination_id": 1639
+      },
+      {
+        "name": "Beach",
+        "destination_id": 1642
+      },
+      {
+        "name": "Ocean Crest Apts",
+        "destination_id": 1650
+      }
+    ],
+    "contents": []
+  },
+  "430": {
+    "id": 430,
+    "name": "Del Mar Racing",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar",
+        "destination_id": 424
+      }
+    ],
+    "contents": []
+  },
+  "433": {
+    "id": 433,
+    "name": "Torrey Pines State Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar Sector",
+        "destination_id": 138
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 682
+      }
+    ],
+    "contents": []
+  },
+  "436": {
+    "id": 436,
+    "name": "San Pasqual Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Escondido Sector",
+        "destination_id": 144
+      },
+      {
+        "name": "Safari Park",
+        "destination_id": 1404
+      },
+      {
+        "name": "Bandy Canyon RD",
+        "destination_id": 1407
+      }
+    ],
+    "contents": []
+  },
+  "439": {
+    "id": 439,
+    "name": "Escondido",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Escondido Sector",
+        "destination_id": 144
+      },
+      {
+        "name": "Spruce St",
+        "destination_id": 1398
+      },
+      {
+        "name": "Grand Apts",
+        "destination_id": 1401
+      }
+    ],
+    "contents": []
+  },
+  "443": {
+    "id": 443,
+    "name": "Rose Canyon Park - La Jolla Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "University City Sector",
+        "destination_id": 129
+      }
+    ],
+    "contents": []
+  },
+  "450": {
+    "id": 450,
+    "name": "Village of La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Sector",
+        "destination_id": 80
+      },
+      {
+        "name": "King's Tap House",
+        "destination_id": 733
+      },
+      {
+        "name": "Silverado St",
+        "destination_id": 1426
+      }
+    ],
+    "contents": []
+  },
+  "454": {
+    "id": 454,
+    "name": "Fiesta Island",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach Sector",
+        "destination_id": 83
+      },
+      {
+        "name": "Bay",
+        "destination_id": 1033
+      }
+    ],
+    "contents": []
+  },
+  "457": {
+    "id": 457,
+    "name": "SeaWorld San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach Sector",
+        "destination_id": 83
+      }
+    ],
+    "contents": []
+  },
+  "460": {
+    "id": 460,
+    "name": "Naval Medical Center - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "463": {
+    "id": 463,
+    "name": "Morley Field Sports Complex - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "466": {
+    "id": 466,
+    "name": "Spanish Village Art Center - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "469": {
+    "id": 469,
+    "name": "The San Diego Museum of Art - Balboa Park",
+    "location_type": null,
+    "exits": [],
+    "contents": []
+  },
+  "471": {
+    "id": 471,
+    "name": "Japanese Friendship Garden and Museum - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "474": {
+    "id": 474,
+    "name": "Museum of Us - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "477": {
+    "id": 477,
+    "name": "San Diego Natural History Museum - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "480": {
+    "id": 480,
+    "name": "San Diego Air & Space Museum - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "483": {
+    "id": 483,
+    "name": "San Diego Automotive Museum - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "486": {
+    "id": 486,
+    "name": "The San Diego Veterans Museum - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "489": {
+    "id": 489,
+    "name": "San Diego Zoo - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "492": {
+    "id": 492,
+    "name": "WorldBeat Cultural Center - Balboa Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Balboa Park",
+        "destination_id": 70
+      }
+    ],
+    "contents": []
+  },
+  "495": {
+    "id": 495,
+    "name": "Embarcadero - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "Embarcadero Marina Park",
+        "destination_id": 498
+      },
+      {
+        "name": "Seaport Village",
+        "destination_id": 501
+      },
+      {
+        "name": "Brigantine Bar",
+        "destination_id": 1189
+      }
+    ],
+    "contents": []
+  },
+  "498": {
+    "id": 498,
+    "name": "Embarcadero Marina Park - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Embarcadero",
+        "destination_id": 495
+      },
+      {
+        "name": "USS Midway Museum",
+        "destination_id": 504
+      },
+      {
+        "name": "Maritime Museum",
+        "destination_id": 1020
+      }
+    ],
+    "contents": []
+  },
+  "501": {
+    "id": 501,
+    "name": "Seaport Village - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Embarcadero",
+        "destination_id": 495
+      },
+      {
+        "name": "Edgewater Grill",
+        "destination_id": 1186
+      }
+    ],
+    "contents": []
+  },
+  "504": {
+    "id": 504,
+    "name": "USS Midway Museum - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marina Park",
+        "destination_id": 498
+      }
+    ],
+    "contents": []
+  },
+  "507": {
+    "id": 507,
+    "name": "Imperial Beach Pier - Imperial Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Imperial Beach",
+        "destination_id": 337
+      }
+    ],
+    "contents": []
+  },
+  "510": {
+    "id": 510,
+    "name": "Old Town San Diego State Historic Park - Old Town",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town",
+        "destination_id": 61
+      }
+    ],
+    "contents": []
+  },
+  "513": {
+    "id": 513,
+    "name": "Whaley House Museum - Old Town",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town",
+        "destination_id": 61
+      }
+    ],
+    "contents": []
+  },
+  "516": {
+    "id": 516,
+    "name": "Heritage County Park - Old Town",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town Sector",
+        "destination_id": 58
+      }
+    ],
+    "contents": []
+  },
+  "519": {
+    "id": 519,
+    "name": "New Orleans Creole Cafe - Old Town",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town",
+        "destination_id": 61
+      }
+    ],
+    "contents": []
+  },
+  "523": {
+    "id": 523,
+    "name": "Cafe Coyote - Old Town",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Old Town",
+        "destination_id": 61
+      }
+    ],
+    "contents": []
+  },
+  "526": {
+    "id": 526,
+    "name": "San Diego Bay National Wildlife Refuge",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista Sector",
+        "destination_id": 173
+      }
+    ],
+    "contents": []
+  },
+  "529": {
+    "id": 529,
+    "name": "San Ysidro Mex Border",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Southern District",
+        "destination_id": 163
+      },
+      {
+        "name": "Tijuana",
+        "destination_id": 532
+      }
+    ],
+    "contents": []
+  },
+  "532": {
+    "id": 532,
+    "name": "Tijuana - Mexico",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Ysidro Mex Border",
+        "destination_id": 529
+      }
+    ],
+    "contents": []
+  },
+  "648": {
+    "id": 648,
+    "name": "Hotel del Coronado - Coronado Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 95
+      }
+    ],
+    "contents": []
+  },
+  "652": {
+    "id": 652,
+    "name": "Northern Bay - San Diego Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Central Bay",
+        "destination_id": 653
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 688
+      },
+      {
+        "name": "Under The Bay",
+        "destination_id": 1569
+      }
+    ],
+    "contents": []
+  },
+  "653": {
+    "id": 653,
+    "name": "Central Bay - San Diego Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Northern Bay",
+        "destination_id": 652
+      },
+      {
+        "name": "Southern Bay",
+        "destination_id": 656
+      },
+      {
+        "name": "Coronado Yacht Club Docks",
+        "destination_id": 1487
+      },
+      {
+        "name": "Under The Bay",
+        "destination_id": 1572
+      }
+    ],
+    "contents": []
+  },
+  "656": {
+    "id": 656,
+    "name": "Southern Bay - San Diego Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Central Bay",
+        "destination_id": 653
+      },
+      {
+        "name": "Silver Strand",
+        "destination_id": 92
+      },
+      {
+        "name": "Under The Bay",
+        "destination_id": 1575
+      }
+    ],
+    "contents": []
+  },
+  "659": {
+    "id": 659,
+    "name": "Rancho Bernardo",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho Bernardo Sector",
+        "destination_id": 141
+      },
+      {
+        "name": "Acena Drive",
+        "destination_id": 1386
+      }
+    ],
+    "contents": []
+  },
+  "662": {
+    "id": 662,
+    "name": "4S Ranch",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho Bernardo Sector",
+        "destination_id": 141
+      },
+      {
+        "name": "Silver Pine Way",
+        "destination_id": 1389
+      }
+    ],
+    "contents": []
+  },
+  "665": {
+    "id": 665,
+    "name": "Carmel Mountain Ranch",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho Bernardo Sector",
+        "destination_id": 141
+      },
+      {
+        "name": "Cresta Bella St",
+        "destination_id": 1395
+      }
+    ],
+    "contents": []
+  },
+  "668": {
+    "id": 668,
+    "name": "Grantville",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "Mission Basilica",
+        "destination_id": 807
+      },
+      {
+        "name": "Mission Blvd",
+        "destination_id": 1228
+      }
+    ],
+    "contents": []
+  },
+  "671": {
+    "id": 671,
+    "name": "On the water - Oceanside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad Ocean",
+        "destination_id": 674
+      },
+      {
+        "name": "Oceanside",
+        "destination_id": 1279
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1518
+      }
+    ],
+    "contents": []
+  },
+  "674": {
+    "id": 674,
+    "name": "On The Ocean - Carlsbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside Ocean",
+        "destination_id": 671
+      },
+      {
+        "name": "Encinitas Ocean",
+        "destination_id": 679
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1521
+      }
+    ],
+    "contents": []
+  },
+  "679": {
+    "id": 679,
+    "name": "On The Ocean - Encinitas",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad Ocean",
+        "destination_id": 674
+      },
+      {
+        "name": "Torrey Pines Ocean",
+        "destination_id": 682
+      },
+      {
+        "name": "Encinitas",
+        "destination_id": 1305
+      },
+      {
+        "name": "Leucadia",
+        "destination_id": 1319
+      },
+      {
+        "name": "Cardiff",
+        "destination_id": 1327
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1524
+      }
+    ],
+    "contents": []
+  },
+  "682": {
+    "id": 682,
+    "name": "On The Ocean - Torrey Pines",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas Ocean",
+        "destination_id": 679
+      },
+      {
+        "name": "Pacific Beach Ocean",
+        "destination_id": 685
+      },
+      {
+        "name": "La Jolla",
+        "destination_id": 1414
+      },
+      {
+        "name": "Torrey Pines",
+        "destination_id": 1410
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1527
+      },
+      {
+        "name": "Solano Beach",
+        "destination_id": 1642
+      },
+      {
+        "name": "Torrey Pines State Beach",
+        "destination_id": 433
+      }
+    ],
+    "contents": []
+  },
+  "685": {
+    "id": 685,
+    "name": "On The Ocean - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Torrey Pines Ocean",
+        "destination_id": 682
+      },
+      {
+        "name": "Silver Strand Ocean",
+        "destination_id": 688
+      },
+      {
+        "name": "Pacific Beach",
+        "destination_id": 1051
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1530
+      }
+    ],
+    "contents": []
+  },
+  "688": {
+    "id": 688,
+    "name": "On The Ocean - Silver Strand",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach Ocean",
+        "destination_id": 685
+      },
+      {
+        "name": "Mission Beach Ocean",
+        "destination_id": 691
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1533
+      },
+      {
+        "name": "Bay",
+        "destination_id": 652
+      },
+      {
+        "name": "Silver Strand Beach",
+        "destination_id": 1670
+      }
+    ],
+    "contents": []
+  },
+  "691": {
+    "id": 691,
+    "name": "On The Ocean - Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Silver Strand Ocean",
+        "destination_id": 688
+      },
+      {
+        "name": "Ocean Beach Ocean",
+        "destination_id": 694
+      },
+      {
+        "name": "Mission Beach",
+        "destination_id": 1028
+      },
+      {
+        "name": "Mission Bay",
+        "destination_id": 1033
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1536
+      }
+    ],
+    "contents": [
+      {
+        "id": 11,
+        "name": "Charybdis",
+        "typeclass": "typeclasses.characters.Character"
+      }
+    ]
+  },
+  "694": {
+    "id": 694,
+    "name": "On The Ocean - Ocean Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Beach Ocean",
+        "destination_id": 691
+      },
+      {
+        "name": "Coronado Ocean",
+        "destination_id": 697
+      },
+      {
+        "name": "Ocean Beach",
+        "destination_id": 1443
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1539
+      }
+    ],
+    "contents": []
+  },
+  "697": {
+    "id": 697,
+    "name": "On The Ocean - Coronado",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ocean Beach Ocean",
+        "destination_id": 694
+      },
+      {
+        "name": "Imperial Beach",
+        "destination_id": 700
+      },
+      {
+        "name": "Coronado Beach",
+        "destination_id": 98
+      },
+      {
+        "name": "Sunset Cliffs",
+        "destination_id": 116
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1497
+      }
+    ],
+    "contents": []
+  },
+  "700": {
+    "id": 700,
+    "name": "On The Ocean - Imperial Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coronado Ocean",
+        "destination_id": 697
+      },
+      {
+        "name": "Imperial Beach",
+        "destination_id": 1013
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1542
+      }
+    ],
+    "contents": []
+  },
+  "704": {
+    "id": 704,
+    "name": "Rancho Del Rey",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista Sector",
+        "destination_id": 173
+      },
+      {
+        "name": "Casa Bonita Dr",
+        "destination_id": 1069
+      }
+    ],
+    "contents": []
+  },
+  "707": {
+    "id": 707,
+    "name": "Marina - Chula Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista",
+        "destination_id": 328
+      },
+      {
+        "name": "Bayside Park",
+        "destination_id": 716
+      }
+    ],
+    "contents": []
+  },
+  "710": {
+    "id": 710,
+    "name": "Sunny Vista - Chula Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista",
+        "destination_id": 328
+      }
+    ],
+    "contents": []
+  },
+  "713": {
+    "id": 713,
+    "name": "Castle Park - Chula Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Chula Vista",
+        "destination_id": 328
+      },
+      {
+        "name": "Business Park",
+        "destination_id": 722
+      }
+    ],
+    "contents": []
+  },
+  "716": {
+    "id": 716,
+    "name": "Bayside Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marina",
+        "destination_id": 707
+      }
+    ],
+    "contents": []
+  },
+  "719": {
+    "id": 719,
+    "name": "Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley West",
+        "destination_id": 250
+      },
+      {
+        "name": "Food Court",
+        "destination_id": 739
+      },
+      {
+        "name": "Second Level",
+        "destination_id": 742
+      },
+      {
+        "name": "Siren Cosmetics",
+        "destination_id": 748
+      },
+      {
+        "name": "Sunburst Computers",
+        "destination_id": 751
+      }
+    ],
+    "contents": []
+  },
+  "722": {
+    "id": 722,
+    "name": "Rancho Bonita Business Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Castle Park",
+        "destination_id": 713
+      },
+      {
+        "name": "Evergreen Logistics",
+        "destination_id": 725
+      }
+    ],
+    "contents": []
+  },
+  "725": {
+    "id": 725,
+    "name": "Evergreen Logistics",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Business Park",
+        "destination_id": 722
+      }
+    ],
+    "contents": []
+  },
+  "728": {
+    "id": 728,
+    "name": "La Jolla Tide Pools",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla Shores",
+        "destination_id": 384
+      }
+    ],
+    "contents": []
+  },
+  "733": {
+    "id": 733,
+    "name": "King's Tap House - Village of La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Village of La Jolla",
+        "destination_id": 450
+      },
+      {
+        "name": "Back Area",
+        "destination_id": 736
+      }
+    ],
+    "contents": []
+  },
+  "736": {
+    "id": 736,
+    "name": "Back Area - King's Tap House - Village of La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Area",
+        "destination_id": 733
+      }
+    ],
+    "contents": []
+  },
+  "739": {
+    "id": 739,
+    "name": "Food Court - Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 719
+      }
+    ],
+    "contents": []
+  },
+  "742": {
+    "id": 742,
+    "name": "Second Level - Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "First Level",
+        "destination_id": 719
+      },
+      {
+        "name": "Black Dog Gaming",
+        "destination_id": 745
+      },
+      {
+        "name": "Avalon Toys",
+        "destination_id": 760
+      }
+    ],
+    "contents": []
+  },
+  "745": {
+    "id": 745,
+    "name": "Black Dog Gaming - Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 742
+      }
+    ],
+    "contents": []
+  },
+  "748": {
+    "id": 748,
+    "name": "Siren Cosmetics - Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 719
+      }
+    ],
+    "contents": []
+  },
+  "751": {
+    "id": 751,
+    "name": "Sunburst Computers - Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 719
+      }
+    ],
+    "contents": []
+  },
+  "754": {
+    "id": 754,
+    "name": "Mission Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley East",
+        "destination_id": 247
+      },
+      {
+        "name": "Food Court",
+        "destination_id": 757
+      },
+      {
+        "name": "Pangloss Cosmetics",
+        "destination_id": 763
+      },
+      {
+        "name": "Stardom Arcade",
+        "destination_id": 772
+      }
+    ],
+    "contents": []
+  },
+  "757": {
+    "id": 757,
+    "name": "Food Court - Mission Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 754
+      }
+    ],
+    "contents": []
+  },
+  "760": {
+    "id": 760,
+    "name": "Avalon Toys - Fashion Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 742
+      }
+    ],
+    "contents": []
+  },
+  "763": {
+    "id": 763,
+    "name": "Pangloss Cosmetics - Mission Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 754
+      }
+    ],
+    "contents": []
+  },
+  "766": {
+    "id": 766,
+    "name": "East Village - Downtown Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Downtown Sector",
+        "destination_id": 39
+      },
+      {
+        "name": "DNA Headquarters",
+        "destination_id": 769
+      },
+      {
+        "name": "Petco Park",
+        "destination_id": 1472
+      },
+      {
+        "name": "Central Library",
+        "destination_id": 1633
+      }
+    ],
+    "contents": []
+  },
+  "769": {
+    "id": 769,
+    "name": "Developmental Neogenetics Amalgamated HQ",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "East Village",
+        "destination_id": 766
+      }
+    ],
+    "contents": []
+  },
+  "772": {
+    "id": 772,
+    "name": "Stardom Arcade - Mission Valley Mall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Mall",
+        "destination_id": 754
+      }
+    ],
+    "contents": []
+  },
+  "789": {
+    "id": 789,
+    "name": "Boardwalk - Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Beach",
+        "destination_id": 122
+      }
+    ],
+    "contents": []
+  },
+  "792": {
+    "id": 792,
+    "name": "Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley Sector",
+        "destination_id": 148
+      },
+      {
+        "name": "Convoy District",
+        "destination_id": 795
+      },
+      {
+        "name": "Star-Mart",
+        "destination_id": 1004
+      },
+      {
+        "name": "Heron Apts",
+        "destination_id": 1231
+      },
+      {
+        "name": "San Fernando Blvd",
+        "destination_id": 1234
+      }
+    ],
+    "contents": []
+  },
+  "795": {
+    "id": 795,
+    "name": "Convoy District - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Kearny Mesa",
+        "destination_id": 792
+      },
+      {
+        "name": "O Billiard Cafe",
+        "destination_id": 798
+      },
+      {
+        "name": "Realm Of The 52 Remedies",
+        "destination_id": 801
+      },
+      {
+        "name": "Melody Karaoke & Cafe",
+        "destination_id": 804
+      },
+      {
+        "name": "Baekho Tea Shop",
+        "destination_id": 1682
+      }
+    ],
+    "contents": []
+  },
+  "798": {
+    "id": 798,
+    "name": "O Billiard Cafe - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Convoy District",
+        "destination_id": 795
+      }
+    ],
+    "contents": []
+  },
+  "801": {
+    "id": 801,
+    "name": "Realm Of The 52 Remedies - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Convoy District",
+        "destination_id": 795
+      }
+    ],
+    "contents": []
+  },
+  "804": {
+    "id": 804,
+    "name": "Melody Karaoke & Cafe - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Convoy District",
+        "destination_id": 795
+      }
+    ],
+    "contents": []
+  },
+  "807": {
+    "id": 807,
+    "name": "Mission Basilica San Diego de Acala",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Grantville",
+        "destination_id": 668
+      },
+      {
+        "name": "Rectory",
+        "destination_id": 861
+      },
+      {
+        "name": "Cemetery",
+        "destination_id": 864
+      },
+      {
+        "name": "Workshops",
+        "destination_id": 867
+      },
+      {
+        "name": "Courtyard",
+        "destination_id": 873
+      }
+    ],
+    "contents": []
+  },
+  "810": {
+    "id": 810,
+    "name": "NHRC Applied Sciences - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 407
+      },
+      {
+        "name": "Elevator",
+        "destination_id": 813
+      }
+    ],
+    "contents": []
+  },
+  "813": {
+    "id": 813,
+    "name": "NHRC Elevator - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 810
+      },
+      {
+        "name": "Down",
+        "destination_id": 816
+      }
+    ],
+    "contents": []
+  },
+  "816": {
+    "id": 816,
+    "name": "NHRC High Security Area - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Elevator",
+        "destination_id": 813
+      },
+      {
+        "name": "High Security Doors",
+        "destination_id": 819
+      }
+    ],
+    "contents": []
+  },
+  "819": {
+    "id": 819,
+    "name": "Construct 12A6-A Entrance - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 816
+      },
+      {
+        "name": "Sealab",
+        "destination_id": 822
+      },
+      {
+        "name": "Fabrication Lab",
+        "destination_id": 825
+      },
+      {
+        "name": "Armory",
+        "destination_id": 828
+      },
+      {
+        "name": "Essence Containment",
+        "destination_id": 831
+      }
+    ],
+    "contents": []
+  },
+  "822": {
+    "id": 822,
+    "name": "Construct 12A6-A Sealab - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Entrance",
+        "destination_id": 819
+      },
+      {
+        "name": "Moonpool",
+        "destination_id": 834
+      }
+    ],
+    "contents": []
+  },
+  "825": {
+    "id": 825,
+    "name": "Construct 12A6-A Fabrication Lab - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Entrance",
+        "destination_id": 819
+      }
+    ],
+    "contents": []
+  },
+  "828": {
+    "id": 828,
+    "name": "Construct 12A6-A Armory - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Entrance",
+        "destination_id": 819
+      }
+    ],
+    "contents": []
+  },
+  "831": {
+    "id": 831,
+    "name": "Construct 12A6-A Node - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Entrance",
+        "destination_id": 819
+      }
+    ],
+    "contents": []
+  },
+  "834": {
+    "id": 834,
+    "name": "Construct 12A6-B Moonpool Entrance - Deep Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Moonpool",
+        "destination_id": 822
+      }
+    ],
+    "contents": []
+  },
+  "837": {
+    "id": 837,
+    "name": "O'Tolleys - College Area",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area",
+        "destination_id": 286
+      }
+    ],
+    "contents": []
+  },
+  "846": {
+    "id": 846,
+    "name": "Far East County District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mid-City District",
+        "destination_id": 147
+      },
+      {
+        "name": "Sycuan Reservation Sector",
+        "destination_id": 855
+      }
+    ],
+    "contents": []
+  },
+  "849": {
+    "id": 849,
+    "name": "Bostonia Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far East County District",
+        "destination_id": 846
+      },
+      {
+        "name": "Bostonia",
+        "destination_id": 1451
+      },
+      {
+        "name": "Lakeside",
+        "destination_id": 1454
+      },
+      {
+        "name": "Builder's Paradise",
+        "destination_id": 1701
+      }
+    ],
+    "contents": []
+  },
+  "855": {
+    "id": 855,
+    "name": "Sycuan Reservation Sector",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Far East County District",
+        "destination_id": 846
+      },
+      {
+        "name": "Dehesa",
+        "destination_id": 1460
+      },
+      {
+        "name": "Sycuan Reservation Land",
+        "destination_id": 1463
+      },
+      {
+        "name": "Alpine Heights",
+        "destination_id": 1469
+      }
+    ],
+    "contents": []
+  },
+  "858": {
+    "id": 858,
+    "name": "Security Solutions Inc. Headquarters",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley East",
+        "destination_id": 247
+      }
+    ],
+    "contents": []
+  },
+  "861": {
+    "id": 861,
+    "name": "Mission Basilica Rectory",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 807
+      },
+      {
+        "name": "Unassuming Door",
+        "destination_id": 876
+      }
+    ],
+    "contents": []
+  },
+  "864": {
+    "id": 864,
+    "name": "Mission Basilica Cemetery",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 807
+      },
+      {
+        "name": "Bellwall",
+        "destination_id": 870
+      }
+    ],
+    "contents": []
+  },
+  "867": {
+    "id": 867,
+    "name": "Mission Basilica Workshops",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 807
+      }
+    ],
+    "contents": []
+  },
+  "870": {
+    "id": 870,
+    "name": "Mission Basilica Bellwall",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 864
+      }
+    ],
+    "contents": []
+  },
+  "873": {
+    "id": 873,
+    "name": "Mission Basilica Courtyard",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 807
+      },
+      {
+        "name": "Hidden Alcove",
+        "destination_id": 882
+      }
+    ],
+    "contents": []
+  },
+  "876": {
+    "id": 876,
+    "name": "Mission Basilica Hidden Room",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 861
+      },
+      {
+        "name": "Dark Tunnel",
+        "destination_id": 879
+      }
+    ],
+    "contents": []
+  },
+  "879": {
+    "id": 879,
+    "name": "Old Cahuilla Lodge",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 876
+      }
+    ],
+    "contents": []
+  },
+  "882": {
+    "id": 882,
+    "name": "Mission Basilica Balefire",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 873
+      }
+    ],
+    "contents": []
+  },
+  "887": {
+    "id": 887,
+    "name": "Hard Rock Hotel - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      },
+      {
+        "name": "Second Floor",
+        "destination_id": 890
+      },
+      {
+        "name": "Restaurant",
+        "destination_id": 894
+      }
+    ],
+    "contents": []
+  },
+  "890": {
+    "id": 890,
+    "name": "Second Floor - Hard Rock Hotel",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Floor",
+        "destination_id": 887
+      }
+    ],
+    "contents": []
+  },
+  "894": {
+    "id": 894,
+    "name": "Maryjanes Restaurant - Hard Rock Hotel",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lobby",
+        "destination_id": 887
+      }
+    ],
+    "contents": []
+  },
+  "897": {
+    "id": 897,
+    "name": "Leave of Absence - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      }
+    ],
+    "contents": []
+  },
+  "900": {
+    "id": 900,
+    "name": "Mad House Comedy Club - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      }
+    ],
+    "contents": []
+  },
+  "903": {
+    "id": 903,
+    "name": "The Cat Cafe - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      }
+    ],
+    "contents": []
+  },
+  "906": {
+    "id": 906,
+    "name": "The House of Blues - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      }
+    ],
+    "contents": []
+  },
+  "909": {
+    "id": 909,
+    "name": "Prohibition - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      }
+    ],
+    "contents": []
+  },
+  "912": {
+    "id": 912,
+    "name": "The Balboa Theatre - Gaslamp Quarter",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Gaslamp Quarter",
+        "destination_id": 43
+      }
+    ],
+    "contents": []
+  },
+  "915": {
+    "id": 915,
+    "name": "Wilma's Carousel Bar - Little Italy",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Little Italy",
+        "destination_id": 46
+      }
+    ],
+    "contents": []
+  },
+  "918": {
+    "id": 918,
+    "name": "James Coffee Co. - Little Italy",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Little Italy",
+        "destination_id": 46
+      }
+    ],
+    "contents": []
+  },
+  "921": {
+    "id": 921,
+    "name": "Landini's Pizzeria - Little Italy",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Little Italy",
+        "destination_id": 46
+      }
+    ],
+    "contents": []
+  },
+  "924": {
+    "id": 924,
+    "name": "Dorms - San Diego State University",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Campus",
+        "destination_id": 289
+      }
+    ],
+    "contents": []
+  },
+  "927": {
+    "id": 927,
+    "name": "Campus Plaza Shopping Center - Rolando",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rolando",
+        "destination_id": 298
+      }
+    ],
+    "contents": []
+  },
+  "930": {
+    "id": 930,
+    "name": "Aztec Pacific Apartments - Rolando",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rolando",
+        "destination_id": 298
+      }
+    ],
+    "contents": []
+  },
+  "933": {
+    "id": 933,
+    "name": "Hidden Trail - Torrey Pines",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Torrey Pines",
+        "destination_id": 381
+      },
+      {
+        "name": "Secluded Beach",
+        "destination_id": 936
+      }
+    ],
+    "contents": []
+  },
+  "936": {
+    "id": 936,
+    "name": "Secluded Beach - Torrey Pines",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Torrey Pines",
+        "destination_id": 933
+      },
+      {
+        "name": "North",
+        "destination_id": 939
+      },
+      {
+        "name": "South",
+        "destination_id": 942
+      }
+    ],
+    "contents": []
+  },
+  "939": {
+    "id": 939,
+    "name": "Secluded Beach - North",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "South",
+        "destination_id": 936
+      },
+      {
+        "name": "Wall Fissure",
+        "destination_id": 945
+      }
+    ],
+    "contents": []
+  },
+  "942": {
+    "id": 942,
+    "name": "Secluded Beach - South",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "North",
+        "destination_id": 936
+      },
+      {
+        "name": "Cave Entrance",
+        "destination_id": 964
+      }
+    ],
+    "contents": []
+  },
+  "945": {
+    "id": 945,
+    "name": "Submerged Cavern - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Secluded Beach",
+        "destination_id": 939
+      },
+      {
+        "name": "Narrow Tunnel",
+        "destination_id": 950
+      },
+      {
+        "name": "Downward Passage",
+        "destination_id": 956
+      },
+      {
+        "name": "Cavern Crossroads",
+        "destination_id": 961
+      },
+      {
+        "name": "Underwater",
+        "destination_id": 1527
+      }
+    ],
+    "contents": []
+  },
+  "950": {
+    "id": 950,
+    "name": "Submerged Cavern Keyhole - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cave Entrance",
+        "destination_id": 945
+      },
+      {
+        "name": "Glowing Cavern",
+        "destination_id": 953
+      }
+    ],
+    "contents": []
+  },
+  "953": {
+    "id": 953,
+    "name": "Heart of the Caern - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 950
+      }
+    ],
+    "contents": []
+  },
+  "956": {
+    "id": 956,
+    "name": "USS North America - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cave Entrance",
+        "destination_id": 945
+      },
+      {
+        "name": "Emergency Exit",
+        "destination_id": 1527
+      }
+    ],
+    "contents": []
+  },
+  "961": {
+    "id": 961,
+    "name": "Cavern Crossroads - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "North Entrance",
+        "destination_id": 945
+      },
+      {
+        "name": "Southern Entrance",
+        "destination_id": 964
+      },
+      {
+        "name": "Narrow Branch",
+        "destination_id": 969
+      },
+      {
+        "name": "Wide Branch",
+        "destination_id": 972
+      },
+      {
+        "name": "Twisting Passage",
+        "destination_id": 975
+      },
+      {
+        "name": "Shadowy Alcove",
+        "destination_id": 988
+      }
+    ],
+    "contents": []
+  },
+  "964": {
+    "id": 964,
+    "name": "Southern Cavern Antechamber - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cavern Crossroads",
+        "destination_id": 961
+      },
+      {
+        "name": "Secluded Beach",
+        "destination_id": 942
+      }
+    ],
+    "contents": []
+  },
+  "969": {
+    "id": 969,
+    "name": "Training Area - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cave Crossroads",
+        "destination_id": 961
+      }
+    ],
+    "contents": []
+  },
+  "972": {
+    "id": 972,
+    "name": "Meeting Place - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cave Crossroads",
+        "destination_id": 961
+      }
+    ],
+    "contents": []
+  },
+  "975": {
+    "id": 975,
+    "name": "Officer Dens - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cavern Crossroads",
+        "destination_id": 961
+      },
+      {
+        "name": "Alpha's Den",
+        "destination_id": 978
+      },
+      {
+        "name": "Warden's Den",
+        "destination_id": 981
+      },
+      {
+        "name": "Truthcatcher's Den",
+        "destination_id": 984
+      }
+    ],
+    "contents": []
+  },
+  "978": {
+    "id": 978,
+    "name": "Alpha Den - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 975
+      }
+    ],
+    "contents": []
+  },
+  "981": {
+    "id": 981,
+    "name": "Warden Den - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 975
+      }
+    ],
+    "contents": []
+  },
+  "984": {
+    "id": 984,
+    "name": "Truthcatcher Den - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 975
+      }
+    ],
+    "contents": []
+  },
+  "988": {
+    "id": 988,
+    "name": "Grotto of the Rite - Sept of the Rising Tide",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Out",
+        "destination_id": 961
+      }
+    ],
+    "contents": []
+  },
+  "992": {
+    "id": 992,
+    "name": "Barracks - Camp Pendleton",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Camp Pendleton",
+        "destination_id": 348
+      }
+    ],
+    "contents": []
+  },
+  "995": {
+    "id": 995,
+    "name": "Officer Housing - Camp Pendleton",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Camp Pendleton",
+        "destination_id": 348
+      }
+    ],
+    "contents": []
+  },
+  "998": {
+    "id": 998,
+    "name": "University of San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Morena",
+        "destination_id": 256
+      },
+      {
+        "name": "Dorms",
+        "destination_id": 1745
+      }
+    ],
+    "contents": []
+  },
+  "1001": {
+    "id": 1001,
+    "name": "Star-Mart - College Area",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area",
+        "destination_id": 286
+      }
+    ],
+    "contents": []
+  },
+  "1004": {
+    "id": 1004,
+    "name": "Star-Mart - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Kearny Mesa",
+        "destination_id": 792
+      }
+    ],
+    "contents": []
+  },
+  "1007": {
+    "id": 1007,
+    "name": "Star-Mart - San Ysidro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Ysidro",
+        "destination_id": 307
+      }
+    ],
+    "contents": []
+  },
+  "1010": {
+    "id": 1010,
+    "name": "Star-Mart - University City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "University City",
+        "destination_id": 129
+      }
+    ],
+    "contents": []
+  },
+  "1013": {
+    "id": 1013,
+    "name": "Beach - Imperial Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Imperial Beach",
+        "destination_id": 337
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 700
+      }
+    ],
+    "contents": []
+  },
+  "1020": {
+    "id": 1020,
+    "name": "Maritime Museum - Embarcadero",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marina Park",
+        "destination_id": 498
+      }
+    ],
+    "contents": []
+  },
+  "1023": {
+    "id": 1023,
+    "name": "Glorietta Bay Marina - Coronado",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "City",
+        "destination_id": 95
+      }
+    ],
+    "contents": []
+  },
+  "1028": {
+    "id": 1028,
+    "name": "Ocean Beach - Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Beach",
+        "destination_id": 122
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 691
+      }
+    ],
+    "contents": []
+  },
+  "1033": {
+    "id": 1033,
+    "name": "Mission Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ocean",
+        "destination_id": 691
+      },
+      {
+        "name": "Mission Beach",
+        "destination_id": 1036
+      },
+      {
+        "name": "Crown Point",
+        "destination_id": 125
+      },
+      {
+        "name": "Fiesta Island",
+        "destination_id": 454
+      },
+      {
+        "name": "Under The Bay",
+        "destination_id": 1564
+      }
+    ],
+    "contents": []
+  },
+  "1036": {
+    "id": 1036,
+    "name": "Campland on the Bay - Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Beach",
+        "destination_id": 122
+      },
+      {
+        "name": "Bay",
+        "destination_id": 1033
+      },
+      {
+        "name": "Marina",
+        "destination_id": 1620
+      }
+    ],
+    "contents": []
+  },
+  "1045": {
+    "id": 1045,
+    "name": "Rockaway Court - Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Beach",
+        "destination_id": 122
+      }
+    ],
+    "contents": []
+  },
+  "1048": {
+    "id": 1048,
+    "name": "Rosemarie's Burgers - Mission Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Beach",
+        "destination_id": 122
+      }
+    ],
+    "contents": []
+  },
+  "1051": {
+    "id": 1051,
+    "name": "Beach - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach",
+        "destination_id": 119
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 685
+      }
+    ],
+    "contents": []
+  },
+  "1057": {
+    "id": 1057,
+    "name": "Turquoise Street - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach",
+        "destination_id": 119
+      }
+    ],
+    "contents": []
+  },
+  "1060": {
+    "id": 1060,
+    "name": "Iron Pig Alehouse - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach",
+        "destination_id": 119
+      }
+    ],
+    "contents": []
+  },
+  "1063": {
+    "id": 1063,
+    "name": "Lake Murray",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Carlos",
+        "destination_id": 280
+      }
+    ],
+    "contents": []
+  },
+  "1066": {
+    "id": 1066,
+    "name": "Camino Cantera Street - Otay Ranch",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Otay Ranch",
+        "destination_id": 334
+      }
+    ],
+    "contents": []
+  },
+  "1069": {
+    "id": 1069,
+    "name": "Casa Bonita Drive - Rancho Del Rey",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho Del Rey",
+        "destination_id": 704
+      }
+    ],
+    "contents": []
+  },
+  "1072": {
+    "id": 1072,
+    "name": "Brookstone Road - East Lake",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "East Lake",
+        "destination_id": 331
+      }
+    ],
+    "contents": []
+  },
+  "1075": {
+    "id": 1075,
+    "name": "Sunset Lane - San Ysidro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Ysidro",
+        "destination_id": 307
+      },
+      {
+        "name": "Villa Serena",
+        "destination_id": 1078
+      }
+    ],
+    "contents": []
+  },
+  "1078": {
+    "id": 1078,
+    "name": "Villa Serena - San Ysidro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sunset Lane",
+        "destination_id": 1075
+      }
+    ],
+    "contents": []
+  },
+  "1081": {
+    "id": 1081,
+    "name": "Valley Breeze Apartments - San Ysidro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Ysidro",
+        "destination_id": 307
+      }
+    ],
+    "contents": []
+  },
+  "1084": {
+    "id": 1084,
+    "name": "Noodles Noodles - Nestor",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Nestor",
+        "destination_id": 310
+      }
+    ],
+    "contents": []
+  },
+  "1087": {
+    "id": 1087,
+    "name": "Tocaya Avenue - Nestor",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Nestor",
+        "destination_id": 310
+      }
+    ],
+    "contents": []
+  },
+  "1090": {
+    "id": 1090,
+    "name": "Senita Drive - Otay Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Otay Mesa",
+        "destination_id": 304
+      }
+    ],
+    "contents": []
+  },
+  "1093": {
+    "id": 1093,
+    "name": "The House of Cuban Flavor - Otay Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Otay Mesa",
+        "destination_id": 304
+      }
+    ],
+    "contents": []
+  },
+  "1096": {
+    "id": 1096,
+    "name": "La Hacienda Restaurant - Lincoln Acres",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lincoln Acres",
+        "destination_id": 325
+      }
+    ],
+    "contents": []
+  },
+  "1099": {
+    "id": 1099,
+    "name": "Orange Street - Lincoln Acres",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lincoln Acres",
+        "destination_id": 325
+      }
+    ],
+    "contents": []
+  },
+  "1102": {
+    "id": 1102,
+    "name": "Las Islas Filipinas Restaurant - National City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "National City",
+        "destination_id": 322
+      }
+    ],
+    "contents": []
+  },
+  "1105": {
+    "id": 1105,
+    "name": "Plaza Boulevard - National City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "National City",
+        "destination_id": 322
+      }
+    ],
+    "contents": []
+  },
+  "1108": {
+    "id": 1108,
+    "name": "Meadowbrook Drive - Skyline",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Meadowbrook",
+        "destination_id": 319
+      }
+    ],
+    "contents": []
+  },
+  "1111": {
+    "id": 1111,
+    "name": "Orange Avenue - Coronado",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coronado",
+        "destination_id": 95
+      }
+    ],
+    "contents": []
+  },
+  "1114": {
+    "id": 1114,
+    "name": "Buccaneer Way - Silver Strand",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Silver Strand",
+        "destination_id": 92
+      }
+    ],
+    "contents": []
+  },
+  "1117": {
+    "id": 1117,
+    "name": "Alta View Drive - Paradise Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Paradise Hills",
+        "destination_id": 313
+      }
+    ],
+    "contents": []
+  },
+  "1120": {
+    "id": 1120,
+    "name": "Tonawanda Apartments - Paradise Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Paradise Hills",
+        "destination_id": 313
+      }
+    ],
+    "contents": []
+  },
+  "1123": {
+    "id": 1123,
+    "name": "Seacoast Drive - Imperial Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Imperial Beach",
+        "destination_id": 337
+      }
+    ],
+    "contents": []
+  },
+  "1126": {
+    "id": 1126,
+    "name": "Mariners Point Apartments - Imperial Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Imperial Beach",
+        "destination_id": 337
+      }
+    ],
+    "contents": []
+  },
+  "1129": {
+    "id": 1129,
+    "name": "Lemon City Taphouse - Lemon Grove",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lemon Grove",
+        "destination_id": 218
+      }
+    ],
+    "contents": []
+  },
+  "1132": {
+    "id": 1132,
+    "name": "Orchard Apartments - Lemon Grove",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lemon Grove",
+        "destination_id": 218
+      }
+    ],
+    "contents": []
+  },
+  "1135": {
+    "id": 1135,
+    "name": "Golden Avenue - Lemon Grove",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lemon Grove",
+        "destination_id": 218
+      }
+    ],
+    "contents": []
+  },
+  "1138": {
+    "id": 1138,
+    "name": "Radio Drive - Lomita",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lomita",
+        "destination_id": 221
+      }
+    ],
+    "contents": []
+  },
+  "1141": {
+    "id": 1141,
+    "name": "Jose's Bar - Lomita",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lomita",
+        "destination_id": 221
+      }
+    ],
+    "contents": []
+  },
+  "1144": {
+    "id": 1144,
+    "name": "Palm Village Apartments - Lomita",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lomita",
+        "destination_id": 221
+      }
+    ],
+    "contents": []
+  },
+  "1147": {
+    "id": 1147,
+    "name": "Fig Grove Apartments - Dulzura",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Dulzura",
+        "destination_id": 227
+      }
+    ],
+    "contents": []
+  },
+  "1150": {
+    "id": 1150,
+    "name": "Cochera Avenue - Dulzura",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Dulzura",
+        "destination_id": 227
+      }
+    ],
+    "contents": []
+  },
+  "1153": {
+    "id": 1153,
+    "name": "Jamul Casino - Jamul",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Jamul",
+        "destination_id": 224
+      }
+    ],
+    "contents": []
+  },
+  "1156": {
+    "id": 1156,
+    "name": "Rustic Ridge Vineyards - Jamul",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Jamul",
+        "destination_id": 224
+      }
+    ],
+    "contents": []
+  },
+  "1159": {
+    "id": 1159,
+    "name": "Honey Springs Road - Jamul",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Jamul",
+        "destination_id": 224
+      }
+    ],
+    "contents": []
+  },
+  "1162": {
+    "id": 1162,
+    "name": "Avoyer Avenue - Casa de Oro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Casa de Oro",
+        "destination_id": 215
+      }
+    ],
+    "contents": []
+  },
+  "1165": {
+    "id": 1165,
+    "name": "Pecos Street - Spring Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Spring Valley",
+        "destination_id": 212
+      }
+    ],
+    "contents": []
+  },
+  "1168": {
+    "id": 1168,
+    "name": "Palmetto Way - Mission Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Hills",
+        "destination_id": 64
+      }
+    ],
+    "contents": []
+  },
+  "1171": {
+    "id": 1171,
+    "name": "Hills Cafe - Mission Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Hills",
+        "destination_id": 64
+      }
+    ],
+    "contents": []
+  },
+  "1174": {
+    "id": 1174,
+    "name": "Kettner Boulevard - Little Italy",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Little Italy",
+        "destination_id": 46
+      }
+    ],
+    "contents": []
+  },
+  "1177": {
+    "id": 1177,
+    "name": "Camden Apartments - Little Italy",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Little Italy",
+        "destination_id": 46
+      }
+    ],
+    "contents": []
+  },
+  "1180": {
+    "id": 1180,
+    "name": "Columbia Tower Apartments - Columbia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Columbia",
+        "destination_id": 49
+      }
+    ],
+    "contents": []
+  },
+  "1183": {
+    "id": 1183,
+    "name": "Queenstown Public House - Columbia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Columbia",
+        "destination_id": 49
+      }
+    ],
+    "contents": []
+  },
+  "1186": {
+    "id": 1186,
+    "name": "Edgewater Grill - Seaport Village",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Seaport Village",
+        "destination_id": 501
+      }
+    ],
+    "contents": []
+  },
+  "1189": {
+    "id": 1189,
+    "name": "Brigantine Seafood and Oyster Bar - Embarcadero",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Embarcadero",
+        "destination_id": 495
+      }
+    ],
+    "contents": []
+  },
+  "1192": {
+    "id": 1192,
+    "name": "Harborview Apartments - Marina",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marina",
+        "destination_id": 40
+      }
+    ],
+    "contents": []
+  },
+  "1195": {
+    "id": 1195,
+    "name": "Parkway Apartments - Mission Valley East",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley East",
+        "destination_id": 247
+      }
+    ],
+    "contents": []
+  },
+  "1198": {
+    "id": 1198,
+    "name": "Acorn Street - Mission Valley East",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley East",
+        "destination_id": 247
+      }
+    ],
+    "contents": []
+  },
+  "1201": {
+    "id": 1201,
+    "name": "Pinnacle Apartments - Mission Valley West",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley West",
+        "destination_id": 250
+      }
+    ],
+    "contents": []
+  },
+  "1204": {
+    "id": 1204,
+    "name": "Quartz Road - Mission Valley West",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mission Valley West",
+        "destination_id": 250
+      }
+    ],
+    "contents": []
+  },
+  "1207": {
+    "id": 1207,
+    "name": "Rockaway Apartments - Serra Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Serra Mesa",
+        "destination_id": 253
+      }
+    ],
+    "contents": []
+  },
+  "1210": {
+    "id": 1210,
+    "name": "Summit Way - Serra Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Serra Mesa",
+        "destination_id": 253
+      }
+    ],
+    "contents": []
+  },
+  "1213": {
+    "id": 1213,
+    "name": "Las Cumbres Road - Morena",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Morena",
+        "destination_id": 256
+      }
+    ],
+    "contents": []
+  },
+  "1216": {
+    "id": 1216,
+    "name": "Friar's Village - Morena",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Morena",
+        "destination_id": 256
+      }
+    ],
+    "contents": []
+  },
+  "1219": {
+    "id": 1219,
+    "name": "Star-Mart - Morena",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Morena",
+        "destination_id": 256
+      }
+    ],
+    "contents": []
+  },
+  "1222": {
+    "id": 1222,
+    "name": "Skateworld - Linda Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Linda Vista",
+        "destination_id": 259
+      }
+    ],
+    "contents": []
+  },
+  "1225": {
+    "id": 1225,
+    "name": "Oak Road - Linda Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Linda Visat",
+        "destination_id": 259
+      }
+    ],
+    "contents": []
+  },
+  "1228": {
+    "id": 1228,
+    "name": "Mission Boulevard - Grantville",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Grantville",
+        "destination_id": 668
+      }
+    ],
+    "contents": []
+  },
+  "1231": {
+    "id": 1231,
+    "name": "Heron Apartments - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Kearny Mesa",
+        "destination_id": 792
+      }
+    ],
+    "contents": []
+  },
+  "1234": {
+    "id": 1234,
+    "name": "San Fernando Boulevard - Kearny Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Kearny Mesa",
+        "destination_id": 792
+      }
+    ],
+    "contents": []
+  },
+  "1237": {
+    "id": 1237,
+    "name": "Alverado Street - El Cerrito",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "El Cerrito",
+        "destination_id": 295
+      }
+    ],
+    "contents": []
+  },
+  "1240": {
+    "id": 1240,
+    "name": "Paseo Place Apartments - College Area",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area",
+        "destination_id": 286
+      }
+    ],
+    "contents": []
+  },
+  "1243": {
+    "id": 1243,
+    "name": "Lindo Paseo Street - College Area",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "College Area",
+        "destination_id": 286
+      }
+    ],
+    "contents": []
+  },
+  "1246": {
+    "id": 1246,
+    "name": "Hacienda Apartments - La Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Mesa",
+        "destination_id": 271
+      }
+    ],
+    "contents": []
+  },
+  "1249": {
+    "id": 1249,
+    "name": "El Capitan Drive - La Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Mesa",
+        "destination_id": 271
+      }
+    ],
+    "contents": []
+  },
+  "1252": {
+    "id": 1252,
+    "name": "Colehill Drive - San Carlos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Carlos",
+        "destination_id": 280
+      }
+    ],
+    "contents": []
+  },
+  "1255": {
+    "id": 1255,
+    "name": "Canyon Way - Del Cerro",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Cerro",
+        "destination_id": 283
+      }
+    ],
+    "contents": []
+  },
+  "1258": {
+    "id": 1258,
+    "name": "Azure Apartments - El Cajon",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "El Cajon",
+        "destination_id": 262
+      }
+    ],
+    "contents": []
+  },
+  "1261": {
+    "id": 1261,
+    "name": "Anza Way - El Cajon",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "El Cajon",
+        "destination_id": 262
+      }
+    ],
+    "contents": []
+  },
+  "1264": {
+    "id": 1264,
+    "name": "Willow Glen Equestrian Center - Rancho San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho San Diego",
+        "destination_id": 265
+      }
+    ],
+    "contents": []
+  },
+  "1267": {
+    "id": 1267,
+    "name": "Sea Pines Road - Rancho San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho San Diego",
+        "destination_id": 265
+      }
+    ],
+    "contents": []
+  },
+  "1270": {
+    "id": 1270,
+    "name": "Woodhaven Apartments - Rancho San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho San Diego",
+        "destination_id": 265
+      }
+    ],
+    "contents": []
+  },
+  "1273": {
+    "id": 1273,
+    "name": "La Cresta Road - Granite Hills",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Granite Hills",
+        "destination_id": 268
+      }
+    ],
+    "contents": []
+  },
+  "1276": {
+    "id": 1276,
+    "name": "Seabright Apartments - Oceanside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside",
+        "destination_id": 345
+      }
+    ],
+    "contents": []
+  },
+  "1279": {
+    "id": 1279,
+    "name": "Beach - Oceanside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside",
+        "destination_id": 345
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 671
+      }
+    ],
+    "contents": []
+  },
+  "1284": {
+    "id": 1284,
+    "name": "Breeze Cafe - Oceanside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside",
+        "destination_id": 345
+      }
+    ],
+    "contents": []
+  },
+  "1287": {
+    "id": 1287,
+    "name": "Mesa Drive - Oceanside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Oceanside",
+        "destination_id": 345
+      }
+    ],
+    "contents": []
+  },
+  "1290": {
+    "id": 1290,
+    "name": "Coco Palm Drive - San Luis Rey",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Luis Rey",
+        "destination_id": 351
+      }
+    ],
+    "contents": []
+  },
+  "1293": {
+    "id": 1293,
+    "name": "Legoland - Carlsbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad",
+        "destination_id": 354
+      }
+    ],
+    "contents": []
+  },
+  "1296": {
+    "id": 1296,
+    "name": "Faraday Avenue - Carlsbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad",
+        "destination_id": 354
+      }
+    ],
+    "contents": []
+  },
+  "1299": {
+    "id": 1299,
+    "name": "Pacific Crest Apartments - Carslbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsad",
+        "destination_id": 354
+      }
+    ],
+    "contents": []
+  },
+  "1302": {
+    "id": 1302,
+    "name": "Fast Paced Club - Carlsbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad",
+        "destination_id": 354
+      }
+    ],
+    "contents": []
+  },
+  "1305": {
+    "id": 1305,
+    "name": "Beach - Encinitas",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas",
+        "destination_id": 360
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 679
+      }
+    ],
+    "contents": []
+  },
+  "1310": {
+    "id": 1310,
+    "name": "Woodwind Drive - Encinitas",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas",
+        "destination_id": 360
+      }
+    ],
+    "contents": []
+  },
+  "1313": {
+    "id": 1313,
+    "name": "Willowspring Apartments - Encinitas",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Encinitas",
+        "destination_id": 360
+      },
+      {
+        "name": "Rooftop",
+        "destination_id": 1624
+      },
+      {
+        "name": "Pool",
+        "destination_id": 1627
+      }
+    ],
+    "contents": []
+  },
+  "1316": {
+    "id": 1316,
+    "name": "Capri Road - Leucadia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Leucadia",
+        "destination_id": 363
+      }
+    ],
+    "contents": []
+  },
+  "1319": {
+    "id": 1319,
+    "name": "Beach - Leucadia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Leucadia",
+        "destination_id": 363
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 679
+      }
+    ],
+    "contents": []
+  },
+  "1324": {
+    "id": 1324,
+    "name": "Pearce Grove Apartments - Leucadia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Leucadia",
+        "destination_id": 363
+      }
+    ],
+    "contents": []
+  },
+  "1327": {
+    "id": 1327,
+    "name": "San Elijo State Beach - Cardiff-by-the-Sea",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cardiff",
+        "destination_id": 366
+      },
+      {
+        "name": "Campgrounds",
+        "destination_id": 1330
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 679
+      }
+    ],
+    "contents": []
+  },
+  "1330": {
+    "id": 1330,
+    "name": "San Elijo State Beach Campground - Cardiff-by-the-Sea",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Beach",
+        "destination_id": 1327
+      }
+    ],
+    "contents": []
+  },
+  "1335": {
+    "id": 1335,
+    "name": "Caretta Way - Cardiff-by-the-Sea",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cardiff",
+        "destination_id": 366
+      }
+    ],
+    "contents": []
+  },
+  "1338": {
+    "id": 1338,
+    "name": "Seaview Terraces Apartments - Cardiff-by-the-Sea",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Cardiff",
+        "destination_id": 366
+      }
+    ],
+    "contents": []
+  },
+  "1341": {
+    "id": 1341,
+    "name": "Alta Vista Botanical Gardens - Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Vista",
+        "destination_id": 369
+      }
+    ],
+    "contents": []
+  },
+  "1344": {
+    "id": 1344,
+    "name": "Avalon Drive - Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Vista",
+        "destination_id": 369
+      }
+    ],
+    "contents": []
+  },
+  "1347": {
+    "id": 1347,
+    "name": "Beaumont Apartments - Vista",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Vista",
+        "destination_id": 369
+      }
+    ],
+    "contents": []
+  },
+  "1350": {
+    "id": 1350,
+    "name": "Dawes Court - Shadowridge",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Shadowridge",
+        "destination_id": 372
+      }
+    ],
+    "contents": []
+  },
+  "1353": {
+    "id": 1353,
+    "name": "Palomar Estates Apartments - San Marcos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Marcos",
+        "destination_id": 375
+      }
+    ],
+    "contents": []
+  },
+  "1356": {
+    "id": 1356,
+    "name": "Borden Road - San Marcos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Marcos",
+        "destination_id": 375
+      }
+    ],
+    "contents": []
+  },
+  "1359": {
+    "id": 1359,
+    "name": "El Dolora Way - Poway",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Poway",
+        "destination_id": 230
+      }
+    ],
+    "contents": []
+  },
+  "1362": {
+    "id": 1362,
+    "name": "Espola Apartments - Poway",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Poway",
+        "destination_id": 230
+      }
+    ],
+    "contents": []
+  },
+  "1365": {
+    "id": 1365,
+    "name": "La Brea Street - Ramona",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ramona",
+        "destination_id": 236
+      }
+    ],
+    "contents": []
+  },
+  "1368": {
+    "id": 1368,
+    "name": "Gold Coast Drive - Mira Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mira Mesa",
+        "destination_id": 412
+      }
+    ],
+    "contents": []
+  },
+  "1371": {
+    "id": 1371,
+    "name": "Ivory Coast Apartments - Mira Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Mira Mesa",
+        "destination_id": 412
+      }
+    ],
+    "contents": []
+  },
+  "1374": {
+    "id": 1374,
+    "name": "Wateridge Vista Drive - Sorrento Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sorento Valley",
+        "destination_id": 415
+      }
+    ],
+    "contents": []
+  },
+  "1377": {
+    "id": 1377,
+    "name": "Weathertop Ranch Vineyard - Carmel Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carmel Valley",
+        "destination_id": 418
+      }
+    ],
+    "contents": []
+  },
+  "1380": {
+    "id": 1380,
+    "name": "Chapparal Road - Carmel Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carmel Valley",
+        "destination_id": 418
+      }
+    ],
+    "contents": []
+  },
+  "1383": {
+    "id": 1383,
+    "name": "Overpark Road - Del Mar Heights",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar Heights",
+        "destination_id": 421
+      }
+    ],
+    "contents": []
+  },
+  "1386": {
+    "id": 1386,
+    "name": "Acena Drive - Rancho Bernardo",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho Bernardo",
+        "destination_id": 659
+      }
+    ],
+    "contents": []
+  },
+  "1389": {
+    "id": 1389,
+    "name": "Silver Pine Way - 4S Ranch",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "4S Ranch",
+        "destination_id": 662
+      }
+    ],
+    "contents": []
+  },
+  "1392": {
+    "id": 1392,
+    "name": "Black Mountain Open Space Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Rancho Bernando Sector",
+        "destination_id": 141
+      }
+    ],
+    "contents": []
+  },
+  "1395": {
+    "id": 1395,
+    "name": "Cresta Bella Street - Carmel Mountain Ranch",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carmel Mountain Ranch",
+        "destination_id": 665
+      }
+    ],
+    "contents": []
+  },
+  "1398": {
+    "id": 1398,
+    "name": "Spruce Street - Escondido",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Escondido",
+        "destination_id": 439
+      }
+    ],
+    "contents": []
+  },
+  "1401": {
+    "id": 1401,
+    "name": "Grand Apartments - Escondido",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Escondido",
+        "destination_id": 439
+      }
+    ],
+    "contents": []
+  },
+  "1404": {
+    "id": 1404,
+    "name": "San Diego Zoo Safari Park - San Pasqual Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Pasqual Valley",
+        "destination_id": 436
+      }
+    ],
+    "contents": []
+  },
+  "1407": {
+    "id": 1407,
+    "name": "Bandy Canyon Road - San Pasqual Valley",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Pasqual Valley",
+        "destination_id": 436
+      }
+    ],
+    "contents": []
+  },
+  "1410": {
+    "id": 1410,
+    "name": "Beach - Torrey Pines",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Torrey Pines",
+        "destination_id": 381
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 682
+      }
+    ],
+    "contents": []
+  },
+  "1414": {
+    "id": 1414,
+    "name": "Beach - La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla",
+        "destination_id": 387
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 682
+      }
+    ],
+    "contents": []
+  },
+  "1420": {
+    "id": 1420,
+    "name": "Nautilus Street - La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla",
+        "destination_id": 387
+      }
+    ],
+    "contents": []
+  },
+  "1423": {
+    "id": 1423,
+    "name": "Playa Del Ray Apartments - La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Jolla",
+        "destination_id": 387
+      }
+    ],
+    "contents": []
+  },
+  "1426": {
+    "id": 1426,
+    "name": "Silverado Street - Village of La Jolla",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Village of La Jolla",
+        "destination_id": 450
+      }
+    ],
+    "contents": []
+  },
+  "1429": {
+    "id": 1429,
+    "name": "Nobel Drive - University City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "University City",
+        "destination_id": 129
+      }
+    ],
+    "contents": []
+  },
+  "1432": {
+    "id": 1432,
+    "name": "Sparks Apartments - University City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "University City",
+        "destination_id": 129
+      }
+    ],
+    "contents": []
+  },
+  "1435": {
+    "id": 1435,
+    "name": "Dorms - University of California San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Campus",
+        "destination_id": 400
+      }
+    ],
+    "contents": []
+  },
+  "1438": {
+    "id": 1438,
+    "name": "Beach - Carlsbad",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Carlsbad",
+        "destination_id": 354
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 674
+      }
+    ],
+    "contents": []
+  },
+  "1443": {
+    "id": 1443,
+    "name": "Beach - Ocean Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ocean Beach",
+        "destination_id": 107
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 694
+      }
+    ],
+    "contents": []
+  },
+  "1448": {
+    "id": 1448,
+    "name": "Cape May Avenue - Ocean Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ocean Beach",
+        "destination_id": 107
+      }
+    ],
+    "contents": []
+  },
+  "1451": {
+    "id": 1451,
+    "name": "Bostonia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Bostonia Sector",
+        "destination_id": 849
+      },
+      {
+        "name": "Magnolia Ave",
+        "destination_id": 1600
+      }
+    ],
+    "contents": []
+  },
+  "1454": {
+    "id": 1454,
+    "name": "Lakeside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Bostonia Sector",
+        "destination_id": 849
+      },
+      {
+        "name": "Lake Jennings",
+        "destination_id": 1457
+      },
+      {
+        "name": "Mapleview St",
+        "destination_id": 1606
+      }
+    ],
+    "contents": []
+  },
+  "1457": {
+    "id": 1457,
+    "name": "Lake Jennings",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lakeside",
+        "destination_id": 1454
+      },
+      {
+        "name": "Campgrounds",
+        "destination_id": 1603
+      }
+    ],
+    "contents": []
+  },
+  "1460": {
+    "id": 1460,
+    "name": "Dehesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sycuan Reservation Sector",
+        "destination_id": 855
+      }
+    ],
+    "contents": []
+  },
+  "1463": {
+    "id": 1463,
+    "name": "Sycuan Reservation Land",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sycuan Reservation Sector",
+        "destination_id": 855
+      },
+      {
+        "name": "Sycuan Casino Resort",
+        "destination_id": 1466
+      }
+    ],
+    "contents": []
+  },
+  "1466": {
+    "id": 1466,
+    "name": "Sycuan Casino Resort",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sycuan Reservation Land",
+        "destination_id": 1463
+      }
+    ],
+    "contents": []
+  },
+  "1469": {
+    "id": 1469,
+    "name": "Alpine Heights",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Sycuan Reservation Sector",
+        "destination_id": 855
+      }
+    ],
+    "contents": []
+  },
+  "1472": {
+    "id": 1472,
+    "name": "Petco Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "East Village",
+        "destination_id": 766
+      }
+    ],
+    "contents": []
+  },
+  "1475": {
+    "id": 1475,
+    "name": "Kobey's Swap Meet",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Midway",
+        "destination_id": 110
+      }
+    ],
+    "contents": []
+  },
+  "1481": {
+    "id": 1481,
+    "name": "Coronado Yacht Club - Coronado",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coronado",
+        "destination_id": 95
+      },
+      {
+        "name": "Members Area",
+        "destination_id": 1484
+      },
+      {
+        "name": "Docks",
+        "destination_id": 1487
+      }
+    ],
+    "contents": []
+  },
+  "1484": {
+    "id": 1484,
+    "name": "Members Area - Coronado Yacht Club",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Room",
+        "destination_id": 1481
+      }
+    ],
+    "contents": []
+  },
+  "1487": {
+    "id": 1487,
+    "name": "Docks - Coronado Yacht Club",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Room",
+        "destination_id": 1481
+      },
+      {
+        "name": "Bay",
+        "destination_id": 653
+      },
+      {
+        "name": "Oisin's Odyssey",
+        "destination_id": 1494
+      }
+    ],
+    "contents": []
+  },
+  "1494": {
+    "id": 1494,
+    "name": "Oisin's Odyssey - Coronado Yacht Club",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Docks",
+        "destination_id": 1487
+      }
+    ],
+    "contents": []
+  },
+  "1497": {
+    "id": 1497,
+    "name": "Under The Ocean - Coronado",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 697
+      },
+      {
+        "name": "Fortress of Halia",
+        "destination_id": 1500
+      },
+      {
+        "name": "Under Imperial Beach Ocean",
+        "destination_id": 1542
+      },
+      {
+        "name": "Under Ocean Beach Ocean",
+        "destination_id": 1539
+      }
+    ],
+    "contents": []
+  },
+  "1500": {
+    "id": 1500,
+    "name": "Fortress of Halia - Coronado Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Ocean",
+        "destination_id": 1497
+      },
+      {
+        "name": "Undersea Caverns",
+        "destination_id": 1503
+      },
+      {
+        "name": "Kelp Forest",
+        "destination_id": 1506
+      },
+      {
+        "name": "Coral Castle",
+        "destination_id": 1509
+      }
+    ],
+    "contents": []
+  },
+  "1503": {
+    "id": 1503,
+    "name": "Undersea Caverns - Fortress of Halia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Fortress of Halia",
+        "destination_id": 1500
+      }
+    ],
+    "contents": []
+  },
+  "1506": {
+    "id": 1506,
+    "name": "Kelp Forest - Fortress of Halia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Fortress of Halia",
+        "destination_id": 1500
+      }
+    ],
+    "contents": []
+  },
+  "1509": {
+    "id": 1509,
+    "name": "Coral Castle - Fortress of Halia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Fortress of Halia",
+        "destination_id": 1500
+      },
+      {
+        "name": "Great Hall",
+        "destination_id": 1512
+      },
+      {
+        "name": "Rorqual's Rest",
+        "destination_id": 1515
+      },
+      {
+        "name": "Throne Room",
+        "destination_id": 1611
+      }
+    ],
+    "contents": []
+  },
+  "1512": {
+    "id": 1512,
+    "name": "Great Hall - Coral Castle - Fortress of Halia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Coral Castle",
+        "destination_id": 1509
+      }
+    ],
+    "contents": []
+  },
+  "1515": {
+    "id": 1515,
+    "name": "Rorqual's Rest - Coral Castle - Fortress of Halia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Castle",
+        "destination_id": 1509
+      }
+    ],
+    "contents": []
+  },
+  "1518": {
+    "id": 1518,
+    "name": "Under The Ocean - Oceanside Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 671
+      },
+      {
+        "name": "Under Carlsbad Ocean",
+        "destination_id": 1521
+      }
+    ],
+    "contents": []
+  },
+  "1521": {
+    "id": 1521,
+    "name": "Under The Ocean - Carlsbad Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 674
+      },
+      {
+        "name": "Under Oceanside Ocean",
+        "destination_id": 1518
+      },
+      {
+        "name": "Under Encinitas Ocean",
+        "destination_id": 1524
+      }
+    ],
+    "contents": []
+  },
+  "1524": {
+    "id": 1524,
+    "name": "Under The Ocean - Encinitas Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 679
+      },
+      {
+        "name": "Under Torrey Pines Ocean",
+        "destination_id": 1527
+      },
+      {
+        "name": "Under Carlsbad Ocean",
+        "destination_id": 1521
+      }
+    ],
+    "contents": []
+  },
+  "1527": {
+    "id": 1527,
+    "name": "Under The Ocean - Torrey Pines Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 682
+      },
+      {
+        "name": "Under Pacific Beach Ocean",
+        "destination_id": 1530
+      },
+      {
+        "name": "Under Encinitas Ocean",
+        "destination_id": 1524
+      },
+      {
+        "name": "Sunken Ship",
+        "destination_id": 956
+      },
+      {
+        "name": "Sea Cave",
+        "destination_id": 945
+      }
+    ],
+    "contents": []
+  },
+  "1530": {
+    "id": 1530,
+    "name": "Under The Ocean - Pacific Beach Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 685
+      },
+      {
+        "name": "Under Silver Strand Ocean",
+        "destination_id": 1533
+      },
+      {
+        "name": "Under Torrey Pines Ocean",
+        "destination_id": 1527
+      }
+    ],
+    "contents": []
+  },
+  "1533": {
+    "id": 1533,
+    "name": "Under The Ocean - Silver Strand Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 688
+      },
+      {
+        "name": "Under Mission Beach Ocean",
+        "destination_id": 1536
+      },
+      {
+        "name": "Under Pacific Beach Ocean",
+        "destination_id": 1530
+      },
+      {
+        "name": "Under The Bay",
+        "destination_id": 1569
+      }
+    ],
+    "contents": []
+  },
+  "1536": {
+    "id": 1536,
+    "name": "Under The Ocean - Mission Beach Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 691
+      },
+      {
+        "name": "Under Ocean Beach Ocean",
+        "destination_id": 1539
+      },
+      {
+        "name": "Under Silver Strand Ocean",
+        "destination_id": 1533
+      },
+      {
+        "name": "Under The Bay",
+        "destination_id": 1564
+      }
+    ],
+    "contents": []
+  },
+  "1539": {
+    "id": 1539,
+    "name": "Under The Ocean - Ocean Beach Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 694
+      },
+      {
+        "name": "Under Coronado Ocean",
+        "destination_id": 1497
+      },
+      {
+        "name": "Under Mission Beach Ocean",
+        "destination_id": 1536
+      }
+    ],
+    "contents": []
+  },
+  "1542": {
+    "id": 1542,
+    "name": "Under The Ocean - Imperial Beach Ocean",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 700
+      },
+      {
+        "name": "Under Coronado Ocean",
+        "destination_id": 1497
+      }
+    ],
+    "contents": []
+  },
+  "1564": {
+    "id": 1564,
+    "name": "Under The Bay - Mission Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 1033
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1536
+      }
+    ],
+    "contents": []
+  },
+  "1569": {
+    "id": 1569,
+    "name": "Under Northern Bay - San Diego Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 652
+      },
+      {
+        "name": "Under Central Bay",
+        "destination_id": 1572
+      },
+      {
+        "name": "Under The Ocean",
+        "destination_id": 1533
+      }
+    ],
+    "contents": []
+  },
+  "1572": {
+    "id": 1572,
+    "name": "Under Central Bay - San Diego Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 653
+      },
+      {
+        "name": "Under Southern Bay",
+        "destination_id": 1575
+      },
+      {
+        "name": "Under Northern Bay",
+        "destination_id": 1569
+      }
+    ],
+    "contents": []
+  },
+  "1575": {
+    "id": 1575,
+    "name": "Under Southern Bay - San Diego Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Surface",
+        "destination_id": 656
+      },
+      {
+        "name": "Under Central Bay",
+        "destination_id": 1572
+      }
+    ],
+    "contents": []
+  },
+  "1588": {
+    "id": 1588,
+    "name": "Caminito Pescado Street - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Point Loma",
+        "destination_id": 104
+      }
+    ],
+    "contents": []
+  },
+  "1591": {
+    "id": 1591,
+    "name": "Anchorage Apartments - Point Loma",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Point Loma",
+        "destination_id": 104
+      }
+    ],
+    "contents": []
+  },
+  "1594": {
+    "id": 1594,
+    "name": "Rosecran Street - Midway",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Midway",
+        "destination_id": 110
+      }
+    ],
+    "contents": []
+  },
+  "1597": {
+    "id": 1597,
+    "name": "Greenwood Apartments - Midway",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Midway",
+        "destination_id": 110
+      }
+    ],
+    "contents": []
+  },
+  "1600": {
+    "id": 1600,
+    "name": "Magnolia Avenue - Bostonia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Bostonia",
+        "destination_id": 1451
+      }
+    ],
+    "contents": []
+  },
+  "1603": {
+    "id": 1603,
+    "name": "Campgrounds - Lake Jennings",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lake Jennings",
+        "destination_id": 1457
+      }
+    ],
+    "contents": []
+  },
+  "1606": {
+    "id": 1606,
+    "name": "Mapleview Street - Lakeside",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Lakeside",
+        "destination_id": 1454
+      }
+    ],
+    "contents": []
+  },
+  "1611": {
+    "id": 1611,
+    "name": "Throne Room - Castle Coral - Fortress of Halia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Area",
+        "destination_id": 1509
+      }
+    ],
+    "contents": []
+  },
+  "1614": {
+    "id": 1614,
+    "name": "Dolphin Cove Apartments - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach",
+        "destination_id": 119
+      },
+      {
+        "name": "Pool",
+        "destination_id": 1617
+      }
+    ],
+    "contents": []
+  },
+  "1617": {
+    "id": 1617,
+    "name": "Pool - Dolphin Cove Apartments",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Complex",
+        "destination_id": 1614
+      }
+    ],
+    "contents": []
+  },
+  "1620": {
+    "id": 1620,
+    "name": "Marina - Campland on the Bay",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Campland",
+        "destination_id": 1036
+      }
+    ],
+    "contents": []
+  },
+  "1624": {
+    "id": 1624,
+    "name": "Rooftop - Willowspring Apartments",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Lobby",
+        "destination_id": 1313
+      }
+    ],
+    "contents": []
+  },
+  "1627": {
+    "id": 1627,
+    "name": "Pool - Willowspring Apartments",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Lobby",
+        "destination_id": 1313
+      }
+    ],
+    "contents": []
+  },
+  "1630": {
+    "id": 1630,
+    "name": "Pantoja Park",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Marina",
+        "destination_id": 40
+      }
+    ],
+    "contents": []
+  },
+  "1633": {
+    "id": 1633,
+    "name": "San Diego Central Library",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "East Village",
+        "destination_id": 766
+      }
+    ],
+    "contents": []
+  },
+  "1636": {
+    "id": 1636,
+    "name": "O'Tolley's - University City",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "University City",
+        "destination_id": 129
+      }
+    ],
+    "contents": []
+  },
+  "1639": {
+    "id": 1639,
+    "name": "Rios Avenue - Solano Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Solano Beach",
+        "destination_id": 427
+      }
+    ],
+    "contents": []
+  },
+  "1642": {
+    "id": 1642,
+    "name": "Beach - Solano Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Solano Beach",
+        "destination_id": 427
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 682
+      }
+    ],
+    "contents": []
+  },
+  "1647": {
+    "id": 1647,
+    "name": "Via Alta Drive - Del Mar",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar",
+        "destination_id": 424
+      }
+    ],
+    "contents": []
+  },
+  "1650": {
+    "id": 1650,
+    "name": "Ocean Crest Apartments - Solano Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Solano Beach",
+        "destination_id": 427
+      },
+      {
+        "name": "Pool",
+        "destination_id": 1653
+      }
+    ],
+    "contents": []
+  },
+  "1653": {
+    "id": 1653,
+    "name": "Pool - Ocean Crest Apartments - Solano Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Area",
+        "destination_id": 1650
+      }
+    ],
+    "contents": []
+  },
+  "1656": {
+    "id": 1656,
+    "name": "Los Arboles Apartments - Del Mar",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Del Mar",
+        "destination_id": 424
+      },
+      {
+        "name": "Pool",
+        "destination_id": 1659
+      }
+    ],
+    "contents": []
+  },
+  "1659": {
+    "id": 1659,
+    "name": "Pool - Los Arboles Apartments",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Area",
+        "destination_id": 1656
+      }
+    ],
+    "contents": []
+  },
+  "1665": {
+    "id": 1665,
+    "name": "La Flamenco Club - La Mesa",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "La Mesa",
+        "destination_id": 271
+      }
+    ],
+    "contents": []
+  },
+  "1670": {
+    "id": 1670,
+    "name": "Beach - Silver Strand",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Silver Strand",
+        "destination_id": 92
+      },
+      {
+        "name": "Ocean",
+        "destination_id": 688
+      },
+      {
+        "name": "Campgrounds",
+        "destination_id": 390
+      }
+    ],
+    "contents": []
+  },
+  "1677": {
+    "id": 1677,
+    "name": "The Perils - Columbia",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Columbia",
+        "destination_id": 49
+      }
+    ],
+    "contents": []
+  },
+  "1682": {
+    "id": 1682,
+    "name": "Baekho Tea Shop - Convoy District",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Convoy District",
+        "destination_id": 795
+      },
+      {
+        "name": "Employees Only",
+        "destination_id": 1685
+      }
+    ],
+    "contents": []
+  },
+  "1685": {
+    "id": 1685,
+    "name": "Tea Garden - Baekho Tea Shop",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Shop",
+        "destination_id": 1682
+      },
+      {
+        "name": "Emerald Sun Caern",
+        "destination_id": 1688
+      }
+    ],
+    "contents": []
+  },
+  "1688": {
+    "id": 1688,
+    "name": "Entrance - Emerald Sun Caern",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Tea Garden",
+        "destination_id": 1685
+      }
+    ],
+    "contents": []
+  },
+  "1691": {
+    "id": 1691,
+    "name": "Alleyway - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Pacific Beach",
+        "destination_id": 119
+      },
+      {
+        "name": "Unassuming Door",
+        "destination_id": 1694
+      }
+    ],
+    "contents": []
+  },
+  "1694": {
+    "id": 1694,
+    "name": "Fish Warehouse - Pacific Beach",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Leave",
+        "destination_id": 1691
+      },
+      {
+        "name": "Hatch Door",
+        "destination_id": 1697
+      }
+    ],
+    "contents": []
+  },
+  "1697": {
+    "id": 1697,
+    "name": "Halls of the Flooded Path - Entry",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Leave",
+        "destination_id": 1694
+      }
+    ],
+    "contents": []
+  },
+  "1701": {
+    "id": 1701,
+    "name": "Builder's Paradise",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Staff Nexus",
+        "destination_id": 30
+      },
+      {
+        "name": "Carlsbad Sector",
+        "destination_id": 190
+      },
+      {
+        "name": "Encinitas Sector",
+        "destination_id": 193
+      },
+      {
+        "name": "Vista Sector",
+        "destination_id": 196
+      },
+      {
+        "name": "Rancho Bernardo Sector",
+        "destination_id": 141
+      },
+      {
+        "name": "Carmel Valley Sector",
+        "destination_id": 135
+      },
+      {
+        "name": "San Carlos Sector",
+        "destination_id": 154
+      },
+      {
+        "name": "La Mesa Sector",
+        "destination_id": 157
+      },
+      {
+        "name": "Bostonia Sector",
+        "destination_id": 849
+      },
+      {
+        "name": "South Bay Sector",
+        "destination_id": 164
+      },
+      {
+        "name": "Paradise Hills Sector",
+        "destination_id": 167
+      },
+      {
+        "name": "National City Sector",
+        "destination_id": 170
+      },
+      {
+        "name": "Spring Valley Sector",
+        "destination_id": 203
+      }
+    ],
+    "contents": []
+  },
+  "1729": {
+    "id": 1729,
+    "name": "OOC Nexus",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Quiet Room",
+        "destination_id": 1731
+      },
+      {
+        "name": "RP Rooms",
+        "destination_id": 1734
+      },
+      {
+        "name": "Building Nexus",
+        "destination_id": 1737
+      },
+      {
+        "name": "Staff Nexus",
+        "destination_id": 30
+      },
+      {
+        "name": "Chargen",
+        "destination_id": 1742
+      }
+    ],
+    "contents": []
+  },
+  "1731": {
+    "id": 1731,
+    "name": "Quiet Room - OOC Nexus",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "OOC Nexus",
+        "destination_id": 1729
+      }
+    ],
+    "contents": []
+  },
+  "1734": {
+    "id": 1734,
+    "name": "RP Rooms",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "OOC Nexus",
+        "destination_id": 1729
+      }
+    ],
+    "contents": []
+  },
+  "1737": {
+    "id": 1737,
+    "name": "Building Nexus",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "OOC Nexus",
+        "destination_id": 1729
+      }
+    ],
+    "contents": []
+  },
+  "1742": {
+    "id": 1742,
+    "name": "Chargen",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "OOC Nexus",
+        "destination_id": 1729
+      }
+    ],
+    "contents": []
+  },
+  "1745": {
+    "id": 1745,
+    "name": "Dorms - University of San Diego",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "Main Campus",
+        "destination_id": 998
+      }
+    ],
+    "contents": []
+  },
+  "1749": {
+    "id": 1749,
+    "name": "California State University San Marcos - San Marcos",
+    "location_type": null,
+    "exits": [
+      {
+        "name": "San Marcos",
+        "destination_id": 375
+      }
+    ],
+    "contents": []
+  }
+}
