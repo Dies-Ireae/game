@@ -13,14 +13,27 @@ def roll_dice(dice_pool: int, difficulty: int) -> Tuple[List[int], int, int]:
     rolls = [randint(1, 10) for _ in range(max(0, dice_pool))]
     successes = sum(1 for roll in rolls if roll >= difficulty)
     ones = sum(1 for roll in rolls if roll == 1)
-    successes = max(0, successes - ones)  # Ensure successes don't go negative
+    
+    # Subtract ones from successes, but don't go below 0
+    successes = max(0, successes - ones)
+    
+    # A botch occurs only if there are no successes (after subtraction) AND there are ones
+    if successes == 0 and ones > 0:
+        successes = -1  # Indicate a botch with -1
+        
     return rolls, successes, ones
 
 def interpret_roll_results(successes, ones, diff=6, rolls=None):
+    # A botch only occurs if there are no successes AND there are ones
+    is_botch = successes < 0
+    
     success_string = f"|g{successes}|n" if successes > 0 else f"|y{successes}|n" if successes == 0 else f"|r{successes}|n"
     
     msg = f"|w(|n{success_string}|w)|n"
-    msg += f"|r Botch!|n" if successes == 0 and ones > 0 else "|y Successes|n" if successes != 1 else "|y Success|n"
+    if is_botch:
+        msg += f"|r Botch!|n"
+    else:
+        msg += "|y Successes|n" if successes != 1 else "|y Success|n"
     
     if rolls:
         msg += " |w(|n"
@@ -73,6 +86,34 @@ class CmdShift(default_cmds.MuxCommand):
     help_category = "Shapeshifting"
 
     def func(self):
+        if "debug" in self.switches:
+            # No need to re-import ShapeshifterForm here since it's imported at the top
+            all_forms = ShapeshifterForm.objects.all()
+            
+            if not all_forms:
+                self.caller.msg("No forms found in database.")
+                return
+                
+            table = evtable.EvTable(
+                "|wForm Name|n",
+                "|wShifter Type|n",
+                "|wStat Modifiers|n",
+                "|wDifficulty|n",
+                border="header"
+            )
+            
+            for form in all_forms:
+                mods = ", ".join([f"{stat} {mod:+d}" for stat, mod in form.stat_modifiers.items()])
+                table.add_row(
+                    form.name,
+                    form.shifter_type,
+                    mods,
+                    str(form.difficulty)
+                )
+            
+            self.caller.msg(table)
+            return
+            
         character = self.caller
 
         # Check if the character is a Shifter
@@ -107,16 +148,20 @@ class CmdShift(default_cmds.MuxCommand):
 
         form_name = self.args.strip()
         try:
-            form = ShapeshifterForm.objects.get(name__iexact=form_name)
+            # Get the character's shifter type
+            shifter_type = self.caller.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '').lower()
+            
+            # Look up form by both name and shifter type
+            form = ShapeshifterForm.objects.get(
+                name__iexact=form_name,
+                shifter_type=shifter_type
+            )
         except ShapeshifterForm.DoesNotExist:
-            self.caller.msg(f"The form '{form_name}' does not exist.")
+            self.caller.msg(f"The form '{form_name}' is not available to your shifter type.")
             return
-
-        if form.lock_string and not form.access(character, "use"):
-            self.caller.msg(f"You don't have permission to use the {form_name} form.")
+        except ShapeshifterForm.MultipleObjectsReturned:
+            self.caller.msg(f"Error: Multiple forms found with name '{form_name}'. Please contact an admin.")
             return
-
-        self._reset_stats(character)
 
         if "roll" in self.switches:
             success = self._shift_with_roll(character, form)
@@ -137,13 +182,56 @@ class CmdShift(default_cmds.MuxCommand):
 
     def _list_available_forms(self):
         character = self.caller
-        available_forms = ShapeshifterForm.objects.filter(lock_string="").order_by('name')
+        shifter_type = character.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '').lower()
         
-        if character.locks.check_lockstring(character, "admin:perm(Admin)"):
-            available_forms = ShapeshifterForm.objects.all().order_by('name')
+        # Get all available forms for the character's shifter type
+        if shifter_type == 'ananasi':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='ananasi').order_by('name')
+        elif shifter_type == 'ajaba':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='ajaba').order_by('name')
+        elif shifter_type == 'bastet':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='bastet').order_by('name')
+        elif shifter_type == 'corax':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='corax').order_by('name')
+        elif shifter_type == 'garou':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='garou').order_by('name')
+        elif shifter_type == 'gurahl':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='gurahl').order_by('name')
+        elif shifter_type == 'ratkin':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='ratkin').order_by('name')
+        elif shifter_type == 'rokea':
+            available_forms = ShapeshifterForm.objects.filter(shifter_type='rokea').order_by('name')
+        else:
+            self.caller.msg(f"Unknown shifter type: {shifter_type}")
+            return
 
+        # Always include Homid form for shapeshifters that can use it
+        homid_capable = ['garou', 'ananasi', 'ajaba', 'bastet', 'corax', 'gurahl', 'ratkin']
+        if shifter_type.lower() in homid_capable:
+            homid_form = ShapeshifterForm.objects.filter(name__iexact='homid').first()
+        else:
+            homid_form = None
         
-
+        table = evtable.EvTable(
+            "|wForm|n",
+            "|wStat Modifiers|n",
+            "|wDifficulty|n",
+            border="header"
+        )
+        
+        if homid_form:
+            table.add_row("Homid", "Base Stats", "6")
+        
+        for form in available_forms:
+            if form.name.lower() != 'homid':
+                mods = ", ".join([f"{stat} {mod:+d}" for stat, mod in form.stat_modifiers.items()])
+                table.add_row(form.name, mods, str(form.difficulty))
+        
+        if not available_forms and not homid_form:
+            self.caller.msg(f"No forms found for shifter type: {shifter_type}")
+            return
+            
+        self.caller.msg(table)
 
     def _reset_stats(self, character):
         # Reset all stats that can be modified by shapeshifting
@@ -155,98 +243,110 @@ class CmdShift(default_cmds.MuxCommand):
                character.set_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name, curr_stat, temp=True)
 
     def _shift_with_roll(self, character, form):
-        # Use the character's Primal-Urge (or equivalent) + relevant Attribute for the dice pool
-        primal_urge = character.db.stats['abilities'].get('talent', {}).get('Primal-Urge', {}).get('perm', 0)
-        relevant_attribute = character.db.stats['attributes'].get('physical', {}).get('Stamina', {}).get('perm', 1)
-        dice_pool = primal_urge + relevant_attribute
+        """Attempt to shift using a dice roll."""
+        primal_urge = character.get_stat('abilities', 'talent', 'Primal-Urge', temp=False) or 0
+        stamina = character.get_stat('attributes', 'physical', 'Stamina', temp=False) or 0
+        
+        dice_pool = primal_urge + stamina
         difficulty = form.difficulty
-
+        
         rolls, successes, ones = roll_dice(dice_pool, difficulty)
-        result_msg = interpret_roll_results(successes, ones, difficulty, rolls)
-
-        self.caller.msg(f"Attempting to shift into {form.name} form...")
-        self.caller.msg(f"Rolling {dice_pool} dice (Primal-Urge {primal_urge} + Stamina {relevant_attribute}) against difficulty {difficulty}.")
-        self.caller.msg(f"Roll result: {result_msg}")
-
-        if successes > 0:
-            self.caller.msg(f"Success! You shift into {form.name} form.")
-            return True
-        elif successes == 0 and ones > 0:
-            self.caller.msg(f"Botch! Your attempt to shift goes horribly wrong!")
-            # Implement botch consequences here
+        
+        self.caller.msg(f"Rolling {dice_pool} dice (Primal-Urge {primal_urge} + Stamina {stamina}) against difficulty {difficulty}.")
+        self.caller.msg(f"Roll result: {interpret_roll_results(successes, ones, difficulty, rolls)}")
+        
+        # A botch is indicated by successes being -1
+        if successes < 0:
+            self.caller.msg("Failure. You are unable to shift into {form.name} form.")
             return False
+        elif successes > 0:
+            self.caller.msg(f"Success! You shift into {form.name} form.")
+            self._reset_stats(character)  # Reset stats before applying new form
+            return True
         else:
             self.caller.msg(f"Failure. You are unable to shift into {form.name} form.")
             return False
 
     def _shift_with_rage(self, character, form):
-        current_rage = character.db.stats['other'].get('other', {}).get('Rage', {}).get('temp', 0)
-        if current_rage >= form.rage_cost:
-            character.db.stats['other']['other']['Rage']['temp'] = current_rage - form.rage_cost
-            self.caller.msg(f"You spend {form.rage_cost} Rage to shift into {form.name} form. (Remaining Rage: {character.db.stats['other']['other']['Rage']['temp']})")
+        current_rage = character.db.stats.get('pools', {}).get('dual', {}).get('Rage', {}).get('temp', 0)
+        if current_rage >= 1:
+            # Spend 1 Rage point for automatic shift
+            character.db.stats['pools']['dual']['Rage']['temp'] = current_rage - 1
+            self.caller.msg(f"You spend a point of Rage to force the change into {form.name} form. (Remaining Rage: {current_rage - 1})")
             return True
         else:
-            self.caller.msg(f"You don't have enough Rage to shift into {form.name} form. (Required: {form.rage_cost}, Current: {current_rage})")
+            self.caller.msg("You don't have any Rage points to spend for an automatic shift.")
             return False
 
     def _shift_default(self, character, form):
-        # Implement your default shift logic here
-        # For now, we'll just make it always succeed
-        self.caller.msg(f"You shift into {form.name} form.")
-        return True
+        # Get character's breed form
+        breed = character.db.stats.get('other', {}).get('identity', {}).get('Breed', {}).get('perm', 'homid').lower()
+        shifter_type = character.db.stats.get('other', {}).get('identity', {}).get('Shifter Type', {}).get('perm', '').lower()
+        
+        # Check if they're shifting to their breed form
+        if shifter_type == 'garou':
+            if (breed == 'homid' and form.name.lower() == 'homid' or
+                breed == 'metis' and form.name.lower() == 'crinos' or
+                breed == 'lupus' and form.name.lower() == 'lupus'):
+                self.caller.msg(f"You easily shift back to your natural {form.name} form.")
+                return True
+        
+        # If not shifting to breed form, use the roll method
+        return self._shift_with_roll(character, form)
 
     def _apply_form_changes(self, character, form):
-        # Apply stat modifiers
-        if not form.stat_modifiers:
-            # reset all attributes.
-            self._reset_stats(character)
+        # Reset stats to base values first
+        self._reset_stats(character)
+        
+        # If it's Homid form, we're done (using base stats)
+        if form.name.lower() == 'homid':
+            character.db.current_form = 'Homid'
             return
         
+        # Apply stat modifiers for non-Homid forms
         for stat, modifier in form.stat_modifiers.items():
-            stat_obj = Stat.objects.get(name__iexact=stat)  # Get the Stat object for the stat name
+            stat_obj = Stat.objects.get(name__iexact=stat)
             
-            if not stat:
-                self.caller.msg(f"Stat '{stat}' not found.")
-                continue
-
             if stat_obj.category and stat_obj.stat_type:
-                current_value = self.caller.get_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name, default=1)
-                new_value = int(current_value) + int(modifier)
+                current_value = character.get_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name, temp=False)
+                
+                # Handle special case where Appearance is set to 0
+                if stat.lower() == 'appearance' and modifier == 0:
+                    new_value = 0
+                else:
+                    new_value = current_value + modifier
+                
+                # Ensure stats don't go below 0 or above 10
+                new_value = max(0, min(10, new_value))
+                
                 character.set_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name, new_value, temp=True)
-                text_val = f"|g{new_value}" if new_value >= 0 else f"|r{new_value}|n"
-                self.caller.msg("|YSHIFT>|n" + format_stat(stat_obj.name, current_value) +  f" -> {text_val}")
-              
-            else:
-                self.caller.msg(f"Stat '{stat}' not found.")
-
-        # Set the current form
-        character.db.current_form = form.name
+                self.caller.msg("|YSHIFT>|n" + format_stat(stat_obj.name, current_value) + f" -> |g{new_value}|n")
 
     def _display_shift_message(self, character, form):
-        player_message = self._get_player_custom_message(character, form)
-        true_name = character.db.original_name or character.key
-        deed_name = character.db.deed_name or "Unnamed"
-        form_name = self._get_form_name(character, form)
-           
-        if player_message:
-            message = player_message.format(truename=true_name, deedname=deed_name, formname=form_name, form=form.name)
-        elif form.form_message:
-            message = form.shift_message.format(truename=true_name, deedname=deed_name, formname=form_name, form=form.name)
+        """Display the appropriate shift message."""
+        # Get the custom message for this form if it exists
+        custom_message = character.attributes.get(f"shift_message_{form.name.lower()}")
+        
+        if custom_message:
+            # Replace placeholders in custom message
+            message = custom_message.format(
+                truename=character.key,
+                deedname=character.db.deed_name or character.key,
+                formname=self._get_form_name(character, form)
+            )
+            self.caller.location.msg_contents(message)
         else:
-            if form.name.lower() == 'homid':
-                message = f"{true_name} shifts back to their |whuman|n form."
-            else:
-                message = f"{true_name} shifts into |w{form.name}|n form, now known as {form_name}."
-    
-        character.location.msg_contents(message, exclude=character)
-        character.msg(f"You shift into |w{form.name}|n form, taking on the appearance of {form_name}.")
+            # Default message if no custom message exists
+            self.caller.location.msg_contents(
+                f"{character.key} shifts into {form.name} form."
+            )
 
         # Change the character's visible name
         character.db.current_form = form.name
         if form.name.lower() == 'homid':
             character.db.display_name = character.db.original_name
         else:
-            character.db.display_name = form_name
+            character.db.display_name = form.name
 
         # Add the original name as an alias if it's not already there
         if character.db.original_name not in character.aliases.all():
@@ -332,3 +432,44 @@ class CmdShift(default_cmds.MuxCommand):
         if form.name.lower() == 'homid':
             return character.db.original_name or character.db.gradient_name or character.key
         return character.attributes.get(f"form_name_{form.name.lower()}", character.db.deed_name or character.db.gradient_name or character.key)
+
+    def _apply_form_modifiers(self, character, form):
+        """Apply stat modifiers from the form."""
+        # First reset all stats
+        self._reset_stats(character)
+        
+        # List of forms that set Appearance to 0
+        zero_appearance_forms = [
+            'crinos',      # All shapeshifters
+            'anthros',     # Ajaba war form
+            'arthren',     # Gurahl war form
+            'sokto',       # Bastet war form
+            'chatro'       # Bastet battle form
+        ]
+
+        # Debug output
+        print(f"Form name: {form.name.lower()}")
+        print(f"Is zero appearance form? {form.name.lower() in zero_appearance_forms}")
+        print(f"Current Appearance: {character.get_stat('attributes', 'social', 'Appearance', temp=True)}")
+
+        # Handle Appearance first to ensure it takes precedence
+        if form.name.lower() in zero_appearance_forms:
+            stat_obj = Stat.objects.get(name__iexact='appearance', category='attributes')
+            # Force temp value to 0 and add a flag to indicate it should stay 0
+            character.set_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name, 0, temp=True)
+            character.attributes.add('appearance_override', True)
+            print(f"Set appearance to 0 and added override flag")
+            print(f"New Appearance value: {character.get_stat('attributes', 'social', 'Appearance', temp=True)}")
+        else:
+            # Clear the override flag if it exists
+            character.attributes.remove('appearance_override')
+            print(f"Removed override flag")
+
+        # Then apply all other modifiers
+        for stat, mod in form.stat_modifiers.items():
+            if stat.lower() != 'appearance':  # Skip Appearance since we handled it above
+                stat_obj = Stat.objects.get(name__iexact=stat, category='attributes')
+                if stat_obj.category and stat_obj.stat_type:
+                    current_stat = character.get_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name)
+                    new_value = current_stat + mod
+                    character.set_stat(stat_obj.category, stat_obj.stat_type, stat_obj.name, new_value, temp=True)
