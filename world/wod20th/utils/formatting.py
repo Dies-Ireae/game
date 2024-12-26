@@ -1,7 +1,11 @@
 from evennia.utils.ansi import ANSIString
 
-def format_stat(stat, value, width=25, default=None, tempvalue=None):
-    if default is not None and (value is None or value == 0 or value == ""):
+def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=False):
+    """Format a stat for display with proper spacing and temporary values."""
+    if stat == "Appearance":
+        print(f"Formatting Appearance: value={value}, tempvalue={tempvalue}, allow_zero={allow_zero}")
+    
+    if default is not None and (value is None or (not allow_zero and value == 0) or value == ""):
         value = default
 
     stat_str = f" {stat}"
@@ -12,8 +16,10 @@ def format_stat(stat, value, width=25, default=None, tempvalue=None):
     elif stat == "Arete":
         # For Arete, don't show temporary value
         value_str = str(value)
-    elif tempvalue is not None and str(value).strip() != str(tempvalue).strip() and tempvalue != 0:
-        # For other stats, show both permanent and temporary values if they differ and temp is not 0
+    elif tempvalue is not None and str(value).strip() != str(tempvalue).strip():
+        if not allow_zero and tempvalue == 0:
+            tempvalue = 1
+        # For other stats, show both permanent and temporary values if they differ
         value_str = f"{value}({tempvalue})"
     else:
         value_str = str(value)

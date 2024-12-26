@@ -22,48 +22,36 @@ def roll_dice(dice_pool: int, difficulty: int) -> Tuple[List[int], int, int]:
     
     return rolls, successes, ones
 
-def interpret_roll_results(successes, ones, diff=6, rolls=None):
-    """
-    Interpret the results of a dice roll.
-
-    Args:
-    successes (int): The number of successes rolled.
-    ones (int): The number of ones rolled.
-
-    Returns:
-    str: A string describing the result of the roll.
-    """
-    success_string = ""
+def interpret_roll_results(successes, ones, rolls=None, diff=6):
+    """Interpret the results of a dice roll."""
+    # Format success count with color
     if successes == 0:
         success_string = f"|y{successes}|n"
     elif successes > 0:
         success_string = f"|g{successes}|n"
     else:
         success_string = f"|r{successes}|n"
-        
 
-    msg =  f"|w(|n{success_string}|w)|n"
+    msg = f"|w(|n{success_string}|w)|n"
+    
+    # Add Success/Successes text
     if successes == -1 and ones > 0:
         msg += f"|r Botch!|n"
     else:
         msg += "|y Successes|n" if successes != 1 else "|y Success|n"
     
-
-   # colorize the succesess to green, botches to red and everything else to yellow
-    msg += " |w(|n"
+    # Format dice results with color
     if rolls:
-        rolls.sort( reverse=True )
-        for roll in rolls:
+        msg += " |w(|n"
+        colored_rolls = []
+        for roll in sorted(rolls, reverse=True):
             if roll == 1:
-                msg += f"|r{roll}|n"
+                colored_rolls.append(f"|r{roll}|n")
             elif roll >= diff:
-                msg += f"|g{roll}|n"
+                colored_rolls.append(f"|g{roll}|n")
             else:
-                msg += f"|y{roll}|n"
-            
-            if roll != rolls[-1]:
-                msg += " "
-
-
-    msg += "|w)|n"
+                colored_rolls.append(f"|y{roll}|n")
+        msg += " ".join(colored_rolls)
+        msg += "|w)|n"
+    
     return msg
