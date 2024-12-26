@@ -210,7 +210,10 @@ class ShapeshifterForm(models.Model):
     shifter_type = models.CharField(max_length=50)
     description = models.TextField()
     stat_modifiers = models.JSONField(default=dict)
+    rage_cost = models.IntegerField(default=0)
     difficulty = models.IntegerField(default=6)
+    lock_string = models.CharField(max_length=255, default='examine:all();control:perm(Admin)')
+
 
     class Meta:
         unique_together = ('name', 'shifter_type')
