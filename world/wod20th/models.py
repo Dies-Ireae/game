@@ -214,6 +214,7 @@ class ShapeshifterForm(models.Model):
     difficulty = models.IntegerField(default=6)
     lock_string = models.CharField(max_length=255, default='examine:all();control:perm(Admin)')
 
+
     class Meta:
         unique_together = ('name', 'shifter_type')
 

@@ -21,6 +21,7 @@ class Command(BaseCommand):
 def create_shifter_forms():
     forms_data = {
         'garou': {
+
             'Homid': {'stat_modifiers': {}, 'difficulty': 6, 'rage_cost': 0},
             'Glabro': {'stat_modifiers': {'Strength': 2, 'Stamina': 2, 'Manipulation': -1, 'Appearance': -1}, 'difficulty': 7, 'rage_cost': 1},
             'Crinos': {'stat_modifiers': {'Strength': 4, 'Dexterity': 1, 'Stamina': 3, 'Manipulation': -3}, 'difficulty': 6, 'rage_cost': 1},
@@ -113,6 +114,7 @@ def create_shifter_forms():
                         'difficulty': data.get('difficulty', 6),
                         'rage_cost': data.get('rage_cost', 1),
                         'lock_string': 'examine:all();control:perm(Admin)'  # Default lock string
+
                     }
                 )
                 print(f"  {'Created' if created else 'Found'} form: {form_name}")

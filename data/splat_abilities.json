@@ -1,0 +1,146 @@
+{
+    "Shifter": {
+        "talents": {
+            "Primal-Urge": {
+                "name": "Primal-Urge",
+                "description": "Your connection to your animal nature and instincts.",
+                "game_line": "Werewolf",
+                "category": "abilities",
+                "stat_type": "talent",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Shifter"
+            }
+        }
+    },
+    "Changeling": {
+        "talents": {
+            "Kenning": {
+                "name": "Kenning",
+                "description": "The ability to perceive the supernatural world.",
+                "game_line": "Changeling",
+                "category": "abilities",
+                "stat_type": "talent",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Changeling"
+            }
+        },
+        "knowledges": {
+            "Gremayre": {
+                "name": "Gremayre",
+                "description": "Knowledge of faerie lore and traditions.",
+                "game_line": "Changeling",
+                "category": "abilities",
+                "stat_type": "knowledge",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Changeling"
+            },
+            "Gematria": {
+                "name": "Gematria",
+                "description": "Understanding of faerie numerology and mystical mathematics.",
+                "game_line": "Changeling",
+                "category": "abilities",
+                "stat_type": "knowledge",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Changeling"
+            }
+        }
+    },
+    "Mage": {
+        "secondary_talents": {
+            "High Ritual": {
+                "name": "High Ritual",
+                "description": "Knowledge of complex magical ceremonies and rituals.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_talent",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Blatancy": {
+                "name": "Blatancy",
+                "description": "Ability to perform obvious magic without drawing Paradox.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_talent",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            }
+        },
+        "secondary_skills": {
+            "Microgravity Ops": {
+                "name": "Microgravity Ops",
+                "description": "Training in zero-gravity environments.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_skill",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Energy Weapons": {
+                "name": "Energy Weapons",
+                "description": "Proficiency with advanced energy-based weaponry.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_skill",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Helmsman": {
+                "name": "Helmsman",
+                "description": "Skill in piloting advanced vehicles and spacecraft.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_skill",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Biotech": {
+                "name": "Biotech",
+                "description": "Skill with biological technology and enhancement.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_skill",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            }
+        },
+        "secondary_knowledges": {
+            "Hypertech": {
+                "name": "Hypertech",
+                "description": "Understanding of advanced technological principles.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_knowledge",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Cybernetics": {
+                "name": "Cybernetics",
+                "description": "Knowledge of cybernetic systems and enhancement.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_knowledge",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Paraphysics": {
+                "name": "Paraphysics",
+                "description": "Understanding of supernatural physics and phenomena.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_knowledge",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            },
+            "Xenobiology": {
+                "name": "Xenobiology",
+                "description": "Study of alien and supernatural life forms.",
+                "game_line": "Mage",
+                "category": "secondary_abilities",
+                "stat_type": "secondary_knowledge",
+                "values": [1, 2, 3, 4, 5],
+                "splat": "Mage"
+            }
+        }
+    }
+} 

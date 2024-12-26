@@ -290,11 +290,21 @@ class CmdStats(default_cmds.MuxCommand):
             self.caller.msg(f"|gRecalculated Road to {new_road}.|n")
 
     def update_virtues_for_enlightenment(self, character):
+        """Update virtues based on enlightenment path"""
+        # Initialize virtues if they don't exist
+        if 'virtues' not in character.db.stats:
+            character.db.stats['virtues'] = {'moral': {}}
+        
+        # Get or set default enlightenment
         enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
+        if not enlightenment:
+            enlightenment = 'Humanity'
+            character.set_stat('identity', 'personal', 'Enlightenment', enlightenment)
+        
+        # Define virtue mappings
         path_virtues = {
             'Humanity': ['Conscience', 'Self-Control', 'Courage'],
             'Night': ['Conviction', 'Instinct', 'Courage'],
-            'Metamorphosis': ['Conviction', 'Instinct', 'Courage'],
             'Beast': ['Conviction', 'Instinct', 'Courage'],
             'Harmony': ['Conscience', 'Instinct', 'Courage'],
             'Evil Revelations': ['Conviction', 'Self-Control', 'Courage'],
@@ -319,19 +329,20 @@ class CmdStats(default_cmds.MuxCommand):
             'Hive': ['Conviction', 'Instinct', 'Courage']
         }
         
-        if enlightenment in path_virtues:
-            virtues = path_virtues[enlightenment]
-            
-            # Remove all existing virtues
-            character.db.stats['virtues']['moral'] = {}
-            
-            # Set new virtues
-            for virtue in virtues:
-                character.set_stat('virtues', 'moral', virtue, 1, temp=False)
-            
-            self.caller.msg(f"|gUpdated virtues for {enlightenment}: {', '.join(virtues)}.|n")
-        else:
-            self.caller.msg(f"|rUnknown path of enlightenment: {enlightenment}|n")
+        # Get the appropriate virtues for the path
+        virtues = path_virtues.get(enlightenment, ['Conscience', 'Self-Control', 'Courage'])
+        
+        # Remove any existing virtues that aren't in the new set
+        current_virtues = list(character.db.stats['virtues']['moral'].keys())
+        for virtue in current_virtues:
+            if virtue not in virtues:
+                del character.db.stats['virtues']['moral'][virtue]
+        
+        # Set default values for new virtues
+        for virtue in virtues:
+            if virtue not in character.db.stats['virtues']['moral']:
+                character.db.stats['virtues']['moral'][virtue] = {'perm': 1, 'temp': 1}
+
     def apply_splat_pools(self, character, splat):
         """Apply the correct pools and bio stats based on the character's splat."""
         # Remove all existing pools except Willpower
@@ -355,27 +366,15 @@ class CmdStats(default_cmds.MuxCommand):
         character.msg(f"|gYour default stats for {splat} have been applied.|n")
 
     def apply_vampire_stats(self, character):
-        # Add Vampire-specific pools
-        character.set_stat('pools', 'dual', 'Blood', 10, temp=False)
+        """Apply vampire-specific stats"""
+        # Set Blood pool
         character.set_stat('pools', 'dual', 'Blood', 10, temp=True)
-        character.set_stat('pools', 'moral', 'Road', 1, temp=False)
-
-        # Set default Enlightenment to Humanity if not already set
-        enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
-        if not enlightenment:
-            character.set_stat('identity', 'personal', 'Enlightenment', 'Humanity', temp=False)
-            enlightenment = 'Humanity'
-
-        # Set virtues based on Enlightenment
+        character.set_stat('pools', 'dual', 'Blood', 10, temp=False)
+        
+        # Set default Enlightenment and virtues
+        if not character.get_stat('identity', 'personal', 'Enlightenment', temp=False):
+            character.set_stat('identity', 'personal', 'Enlightenment', 'Humanity')
         self.update_virtues_for_enlightenment(character)
-
-        # Recalculate Willpower and Road after setting virtues
-        new_willpower = calculate_willpower(character)
-        character.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=False)
-        character.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=True)
-
-        new_road = calculate_road(character)
-        character.set_stat('pools', 'moral', 'Road', new_road, temp=False)
 
     def apply_shifter_stats(self, character):
         # Add Shifter-specific pools
