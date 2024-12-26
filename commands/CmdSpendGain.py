@@ -53,30 +53,36 @@ class CmdSpendGain(default_cmds.MuxCommand):
             caller.msg("The amount must be a positive number.")
             return
 
-        # Get the current pool value
-        current_value = caller.db.stats.get('pools', {}).get('dual', {}).get(pool.capitalize(), {}).get('temp', 0)
-        if current_value is None:
+        # Get both permanent and temporary values
+        pool_data = caller.db.stats.get('pools', {}).get('dual', {}).get(pool.capitalize(), {})
+        if not pool_data:
             caller.msg(f"Invalid pool: {pool}")
             return
 
+        current_temp = pool_data.get('temp', 0)
+        max_value = pool_data.get('perm', 0)
+
         if cmd == "+spend":
-            if current_value < amount:
-                caller.msg(f"You don't have enough {pool}. Current {pool}: {current_value}")
+            if current_temp < amount:
+                caller.msg(f"You don't have enough {pool}. Current {pool}: {current_temp}")
                 return
-            new_value = current_value - amount
+            new_value = current_temp - amount
             action = "spent"
         else:  # +gain
-            new_value = current_value + amount
+            new_value = min(current_temp + amount, max_value)  # Can't exceed permanent value
+            if new_value == current_temp and new_value == max_value:
+                caller.msg(f"You are already at maximum {pool} ({max_value}).")
+                return
             action = "gained"
 
-        # Update the pool value
+        # Update the temporary value
         caller.db.stats['pools']['dual'][pool.capitalize()]['temp'] = new_value
 
         # Prepare the message
         msg = f"You have {action} {amount} point{'s' if amount > 1 else ''} of {pool}."
         if reason:
             msg += f" Reason: {reason}"
-        msg += f" New {pool} value: {new_value}"
+        msg += f" New {pool} value: {new_value}/{max_value}"
 
         caller.msg(msg)
 
@@ -84,7 +90,7 @@ class CmdSpendGain(default_cmds.MuxCommand):
         log_msg = f"{caller.key} {action} {amount} {pool}"
         if reason:
             log_msg += f" for: {reason}"
-        log_msg += f" (New value: {new_value})"
+        log_msg += f" (New value: {new_value}/{max_value})"
         self.log_action(log_msg)
 
     def log_action(self, message):

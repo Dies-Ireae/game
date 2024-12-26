@@ -123,7 +123,6 @@ class Stat(models.Model):
     class Meta:
         app_label = 'wod20th'
 
-
 class CharacterSheet(SharedMemoryModel):
     account = models.OneToOneField(AccountDB, related_name='character_sheet', on_delete=models.CASCADE, null=True)
     character = models.OneToOneField(ObjectDB, related_name='character_sheet', on_delete=models.CASCADE, null=True, unique=True)
@@ -154,12 +153,16 @@ class Note(SharedMemoryModel):
 
 def calculate_willpower(character):
     courage = character.get_stat('virtues', 'moral', 'Courage', temp=False)
-    if courage is None:
-        # If Courage is not present, use the highest virtue
-        virtues = character.db.stats.get('virtues', {}).get('moral', {})
-        highest_virtue = max(virtues.values(), key=lambda x: x.get('perm', 0))
-        return highest_virtue.get('perm', 1)
-    return courage if courage is not None else 1
+    if courage is not None:
+        return courage
+    
+    virtues = character.db.stats.get('virtues', {}).get('moral', {})
+    if not virtues:
+        # If there are no virtues defined, return a default value
+        return 1
+    
+    highest_virtue = max(virtues.values(), key=lambda x: x.get('perm', 0))
+    return highest_virtue.get('perm', 1)
 
 def calculate_road(character):
     enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
@@ -203,20 +206,14 @@ def calculate_road(character):
         return 0
 
 class ShapeshifterForm(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=50)
     shifter_type = models.CharField(max_length=50)
-    description = models.TextField(blank=True)
-    stat_modifiers = models.JSONField(default=dict, blank=True)
-    rage_cost = models.PositiveIntegerField(default=0)
-    difficulty = models.PositiveIntegerField(default=6)
-    lock_string = models.CharField(max_length=255, blank=True)
-    form_message = models.TextField(blank=True, help_text="Message to display when this form is assumed.")
+    description = models.TextField()
+    stat_modifiers = models.JSONField(default=dict)
+    difficulty = models.IntegerField(default=6)
 
     class Meta:
-        verbose_name = "Shapeshifter Form"
-        verbose_name_plural = "Shapeshifter Forms"
-        ordering = ['shifter_type', 'name']
-        app_label = 'wod20th'   
+        unique_together = ('name', 'shifter_type')
 
     def __str__(self):
         return f"{self.shifter_type.capitalize()} - {self.name}"
@@ -233,6 +230,10 @@ class ShapeshifterForm(models.Model):
         if self.difficulty < 1 or self.difficulty > 10:
             raise ValidationError({'difficulty': 'Difficulty must be between 1 and 10'})
 
+        # Allow underscores in form names
+        if not re.match(r'^[\w\s_-]+$', self.name):
+            raise ValidationError({'name': 'Form name can only contain letters, numbers, spaces, underscores, and hyphens'})
+
     def save(self, *args, **kwargs):
         self.clean()
         self.shifter_type = self.sanitize_shifter_type(self.shifter_type)
@@ -240,8 +241,8 @@ class ShapeshifterForm(models.Model):
 
     @staticmethod
     def sanitize_shifter_type(shifter_type):
-        # Convert to lowercase and remove any non-alphanumeric characters except spaces
-        sanitized = re.sub(r'[^\w\s]', '', shifter_type.lower())
+        # Convert to lowercase and remove any non-alphanumeric characters except spaces and underscores
+        sanitized = re.sub(r'[^\w\s_]', '', shifter_type.lower())
         # Replace spaces with underscores
         return re.sub(r'\s+', '_', sanitized)
 
@@ -482,3 +483,4 @@ ARTS = {
 REALMS = {
     'Actor', 'Fae', 'Nature', 'Prop', 'Scene', 'Time'
 }
+

@@ -661,6 +661,9 @@ def get_attributes_for_category(category):
         return ['Perception', 'Intelligence', 'Wits']
 
 def node_abilities(caller):
+    """
+    Show available abilities based on character's splat
+    """
     if 'ability_order' not in caller.db.chargen:
         caller.db.chargen['ability_order'] = []
     
@@ -669,21 +672,30 @@ def node_abilities(caller):
     else:
         return node_distribute_ability_points(caller)
 
-def node_select_ability_category(caller):
-    remaining_categories = [cat for cat in ABILITY_CATEGORIES if cat not in caller.db.chargen['ability_order']]
-    text = f"Select {'primary' if len(caller.db.chargen['ability_order']) == 0 else 'secondary' if len(caller.db.chargen['ability_order']) == 1 else 'tertiary'} ability category:"
-    options = [{"key": str(i+1), "desc": cat, "goto": (_set_ability_category, {"category": cat})} 
-               for i, cat in enumerate(remaining_categories)]
-    return text, options
-
-def _set_ability_category(caller, raw_string, **kwargs):
-    category = kwargs.get("category")
-    caller.db.chargen['ability_order'].append(category)
-    caller.msg(f"Added {category} to ability order.")
-    return "node_abilities"
+def get_available_abilities(character, category):
+    """Get both basic and splat-specific abilities for the category"""
+    splat = character.db.chargen.get('splat', '')
+    
+    # Get basic abilities
+    abilities = list(Stat.objects.filter(
+        category='abilities',
+        stat_type=category,
+        splat__isnull=True
+    ))
+    
+    # Get splat-specific abilities if splat is set
+    if splat:
+        splat_abilities = list(Stat.objects.filter(
+            category='abilities',
+            stat_type=category,
+            splat__iexact=splat
+        ))
+        abilities.extend(splat_abilities)
+    
+    return sorted(abilities, key=lambda x: x.name)
 
 def node_distribute_ability_points(caller):
-    current_category = caller.db.chargen['ability_order'][0]  # Start with primary
+    current_category = caller.db.chargen['ability_order'][0]
     points_to_distribute = 13 if len(caller.db.chargen['ability_order']) == 3 else 9 if len(caller.db.chargen['ability_order']) == 2 else 5
     
     if 'abilities' not in caller.db.chargen:
@@ -692,17 +704,26 @@ def node_distribute_ability_points(caller):
             caller.db.chargen['abilities'][cat]['points_left'] = 13 if cat == caller.db.chargen['ability_order'][0] else 9 if cat == caller.db.chargen['ability_order'][1] else 5
     
     if caller.db.chargen['abilities'][current_category]['points_left'] == 0:
-        # Move to next category or finish
         caller.db.chargen['ability_order'].pop(0)
         if not caller.db.chargen['ability_order']:
-            return "node_next_step"  # All abilities distributed, move to next step
+            return "node_next_step"
         return "node_distribute_ability_points"
     
-    text = f"Distribute points for {current_category}. Points left: {caller.db.chargen['abilities'][current_category]['points_left']}"
-    options = [{"key": str(i+1), "desc": ability, "goto": (_set_ability_value, {"category": current_category, "ability": ability, "is_secondary": False})} 
-               for i, ability in enumerate(ABILITIES[current_category])]
-    options.extend([{"key": str(i+1+len(ABILITIES[current_category])), "desc": f"{ability} (Secondary)", "goto": (_set_ability_value, {"category": current_category, "ability": ability, "is_secondary": True})} 
-                    for i, ability in enumerate(SECONDARY_ABILITIES[current_category])])
+    text = f"Distribute points for {current_category}. Points left: {caller.db.chargen['abilities'][current_category]['points_left']}\n"
+    
+    # Get both basic and splat-specific abilities
+    available_abilities = get_available_abilities(caller, current_category)
+    
+    options = []
+    for i, ability in enumerate(available_abilities):
+        current_value = caller.db.chargen['abilities'][current_category]['abilities'].get(ability.name, 0)
+        text += f"{ability.name}: {current_value}\n"
+        options.append({
+            "key": str(i+1),
+            "desc": ability.name,
+            "goto": (_set_ability_value, {"category": current_category, "ability": ability.name})
+        })
+    
     options.append({"key": "0", "desc": "Finish this category", "goto": "node_distribute_ability_points"})
     return text, options
 

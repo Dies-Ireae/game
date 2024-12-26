@@ -176,6 +176,14 @@
         "values": [1, 2, 3, 4, 5]
     },
     {
+        "name": "Cosmology",
+        "description": "You know the basics of the universe, including the Umbra, spirits, and mystical celestial objects.",
+        "game_line": "Various",
+        "category": "abilities",
+        "stat_type": "knowledge",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
         "name": "Finance",
         "description": "You know the ins and outs of commerce, from evaluating an item's relative worth to understanding the vagaries of the market. This Knowledge can be invaluable when you're trying to run a business, handle investments, or keep your resources up and running.",
         "game_line": "Various",
@@ -233,10 +241,10 @@
     },
     {
         "name": "Technology",
-        "description": "The Technology Knowledge represents a broad acumen with electronics, computer hardware, and devices more elaborate than “machines,” which fall under the Crafts Skill. If it has a processor, a transistor, or an integrated circuit — if it's electronic rather than electrical — manipulating it uses the Technology Knowledge. This is the wide-ranging Ability used to build one's own computer, install (or subvert) a security system, repair a mobile phone, or kitbash a shortwave radio. You must always choose a specialization in Technology, even though you possess some skill in multiple fields.",
+        "description": "The Technology Knowledge represents a broad acumen with electronics, computer hardware, and devices more elaborate than 'machines,' which fall under the Crafts Skill. If it has a processor, a transistor, or an integrated circuit — if it's electronic rather than electrical — manipulating it uses the Technology Knowledge. This is the wide-ranging Ability used to build one's own computer, install (or subvert) a security system, repair a mobile phone, or kitbash a shortwave radio. You must always choose a specialization in Technology, even though you possess some skill in multiple fields.",
         "game_line": "Various",
         "category": "abilities",
-        "stat_type": "knowledge",
+        "stat_type": "skill",
         "values": [1, 2, 3, 4, 5]
     },
     {

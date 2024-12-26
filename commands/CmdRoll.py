@@ -52,19 +52,52 @@ class CmdRoll(default_cmds.MuxCommand):
         difficulty = int(difficulty) if difficulty else 6
 
         # Process the expression
-        components = re.findall(r'([+-])?\s*(\w+|\d+)', expression)
+        # First split by operators while preserving them
+        components = []
+        current = ''
+        in_quotes = False
+        quote_char = None
+        
+        for char in expression:
+            if char in '"\'':
+                if not in_quotes:
+                    in_quotes = True
+                    quote_char = char
+                    current += char
+                elif char == quote_char:
+                    in_quotes = False
+                    current += char
+                else:
+                    current += char
+            elif char in '+-' and not in_quotes:
+                if current:
+                    components.append(('+' if not current.startswith('-') else '-', current.strip('+-')))
+                    current = char
+                else:
+                    current = char
+            else:
+                current += char
+        
+        if current:
+            components.append(('+' if not current.startswith('-') else '-', current.strip('+-')))
+
         dice_pool = 0
         description = []
         detailed_description = []
         warnings = []
 
         for sign, value in components:
-            sign = sign or '+'  # Default to '+' if no sign is given
-            if value.isdigit():
-                modifier = int(value)
-                dice_pool += modifier if sign == '+' else -modifier
-                description.append(f"{sign} |w{value}|n")
-                detailed_description.append(f"{sign} |w{value}|n")
+            # Remove quotes if present
+            value = value.strip().strip('"\'').strip()
+            
+            if value.replace('-', '').isdigit():  # Handle negative numbers in value
+                try:
+                    modifier = int(value)
+                    dice_pool += modifier if sign == '+' else -modifier
+                    description.append(f"{sign} |w{abs(modifier)}|n")
+                    detailed_description.append(f"{sign} |w{abs(modifier)}|n")
+                except ValueError:
+                    warnings.append(f"|rWarning: Invalid number '{value}'.|n")
             else:
                 try:
                     stat_value, full_name = self.get_stat_value_and_name(value)
@@ -118,44 +151,103 @@ class CmdRoll(default_cmds.MuxCommand):
     def get_stat_value_and_name(self, stat_name):
         """
         Retrieve the value and full name of a stat for the character by searching the character's stats.
-        Returns the closest matching stat if an exact match is not found.
-        Uses 'temp' value if available and non-zero, otherwise uses 'perm'.
+        Uses fuzzy matching to handle abbreviations and partial matches.
+        Always uses 'temp' value if available, otherwise uses 'perm'.
         """
         if not inherits_from(self.caller, "typeclasses.characters.Character"):
             self.caller.msg("Error: This command can only be used by characters.")
             return 0, stat_name.capitalize()
 
         character_stats = self.caller.db.stats or {}
-        all_stats = []
-
-        # Flatten the nested dictionary structure
-        for category in character_stats.values():
-            for stat_type in category.values():
-                all_stats.extend(stat_type.keys())
-
-        # Find the closest matching stat name
-        closest_matches = get_close_matches(stat_name.lower(), [s.lower() for s in all_stats], n=1, cutoff=0.6)
         
-        if closest_matches:
-            closest_match = next(s for s in all_stats if s.lower() == closest_matches[0])
-            
-            # Find the category and stat_type for the matched stat
-            for category, cat_stats in character_stats.items():
-                for stat_type, stats in cat_stats.items():
-                    if closest_match in stats:
-                        stat_data = stats[closest_match]
-                        temp_value = stat_data.get('temp', 0)
-                        perm_value = stat_data.get('perm', 0)
-                        
-                        # Use temp value if it's non-zero, otherwise use perm value
-                        value = temp_value if temp_value != 0 else perm_value
-                        
-                        try:
-                            return int(value), closest_match
-                        except ValueError:
-                            return 0, closest_match
+        # Normalize input but preserve spaces for exact matching
+        normalized_input = stat_name.lower().strip()
+        normalized_nospace = normalized_input.replace('-', '').replace(' ', '')
 
-        # If no matching stat is found, return 0 and the capitalized input
+        # Common abbreviations mapping
+        abbreviations = {
+            'str': 'strength',
+            'dex': 'dexterity',
+            'sta': 'stamina',
+            'cha': 'charisma',
+            'man': 'manipulation',
+            'app': 'appearance',
+            'per': 'perception',
+            'int': 'intelligence',
+            'wit': 'wits'
+        }
+
+        # Check if input is a common abbreviation
+        if normalized_nospace in abbreviations:
+            normalized_input = abbreviations[normalized_nospace]
+            normalized_nospace = normalized_input
+
+        print(f"DEBUG: Looking for stat: '{normalized_input}' (nospace: '{normalized_nospace}')")
+        print(f"DEBUG: Character stats structure: {character_stats.keys()}")
+        print(f"DEBUG: Secondary abilities: {character_stats.get('secondary_abilities', {})}")
+
+        # Special handling for Primal-Urge
+        if normalized_nospace in ['primalurge', 'primal']:
+            if 'abilities' in character_stats and 'talent' in character_stats['abilities']:
+                stat_data = character_stats['abilities']['talent'].get('Primal-Urge', {})
+                if stat_data:
+                    if 'temp' in stat_data and stat_data['temp'] != 0:
+                        return stat_data['temp'], 'Primal-Urge'
+                    return stat_data.get('perm', 0), 'Primal-Urge'
+            return 0, 'Primal-Urge'
+
+        # Direct check for secondary abilities first
+        if 'secondary_abilities' in character_stats:
+            for ability_type, abilities in character_stats['secondary_abilities'].items():
+                print(f"DEBUG: Checking {ability_type}: {abilities}")
+                for stat, stat_data in abilities.items():
+                    print(f"DEBUG: Comparing '{stat.lower()}' with '{normalized_input}'")
+                    if stat.lower() == normalized_input:
+                        print(f"DEBUG: Found direct match in secondary abilities: {stat} with data {stat_data}")
+                        if 'temp' in stat_data and stat_data['temp'] != 0:
+                            return stat_data['temp'], stat
+                        return stat_data.get('perm', 0), stat
+
+        # Gather all stats with their full paths
+        all_stats = []
+        
+        # Check regular stats
+        for category, cat_stats in character_stats.items():
+            if category == 'secondary_abilities':
+                continue  # Skip here, we'll handle secondary abilities separately
+            for stat_type, stats in cat_stats.items():
+                for stat, stat_data in stats.items():
+                    if stat == 'Primal-Urge':
+                        continue
+                    normalized_name = stat.lower()
+                    normalized_nospace_name = normalized_name.replace('-', '').replace(' ', '')
+                    all_stats.append((normalized_name, normalized_nospace_name, stat, category, stat_type, stat_data))
+
+        # First try exact matches with spaces
+        exact_matches = [s for s in all_stats if s[0] == normalized_input]
+        if exact_matches:
+            _, _, full_name, category, stat_type, stat_data = exact_matches[0]
+            if 'temp' in stat_data:
+                return stat_data['temp'], full_name
+            return stat_data.get('perm', 0), full_name
+
+        # Try without spaces
+        exact_matches = [s for s in all_stats if s[1] == normalized_nospace]
+        if exact_matches:
+            _, _, full_name, category, stat_type, stat_data = exact_matches[0]
+            if 'temp' in stat_data:
+                return stat_data['temp'], full_name
+            return stat_data.get('perm', 0), full_name
+
+        # If no exact match, try prefix matching
+        prefix_matches = [s for s in all_stats if s[0].startswith(normalized_input) or s[1].startswith(normalized_nospace)]
+        if prefix_matches:
+            prefix_matches.sort(key=lambda x: len(x[0]))  # Sort by length to get shortest match
+            _, _, full_name, category, stat_type, stat_data = prefix_matches[0]
+            if 'temp' in stat_data:
+                return stat_data['temp'], full_name
+            return stat_data.get('perm', 0), full_name
+
         return 0, stat_name.capitalize()
 
     def display_roll_log(self):

@@ -147,21 +147,71 @@ class CmdSheet(MuxCommand):
         string += format_stat("Manipulation", character.get_stat('attributes', 'social', 'Manipulation'), default=1, tempvalue=character.get_stat('attributes', 'social', 'Manipulation', temp=True)) + " "
         string += pad_attribute(format_stat("Intelligence", character.get_stat('attributes', 'mental', 'Intelligence'), default=1, tempvalue=character.get_stat('attributes', 'mental', 'Intelligence', temp=True))) + "\n"
         string += format_stat("Stamina", character.get_stat('attributes', 'physical', 'Stamina'), default=1, tempvalue=character.get_stat('attributes', 'physical', 'Stamina', temp=True)) + " "
-        string += format_stat("Appearance", character.get_stat('attributes', 'social', 'Appearance'), default=1, tempvalue=character.get_stat('attributes', 'social', 'Appearance', temp=True)) + " "
-        string += pad_attribute(format_stat("Wits", character.get_stat('attributes', 'mental', 'Wits'), default=1, tempvalue=character.get_stat('attributes', 'mental', 'Wits', temp=True))) + "\n"
-
-        talents = Stat.objects.filter(category='abilities', stat_type='talent')
-        talents = [talent for talent in talents if not talent.lock_string or character.check_permstring(talent.lock_string)]
         
-        skills = Stat.objects.filter(category='abilities', stat_type='skill')
-        skills = [skill for skill in skills if not skill.lock_string or character.check_permstring(skill.lock_string)]
-        knowledges = Stat.objects.filter(category='abilities', stat_type='knowledge')
-        knowledges = [knowledge for knowledge in knowledges if not knowledge.lock_string or character.check_permstring(knowledge.lock_string)]
+        # Special handling for Appearance
+        appearance_value = character.get_stat('attributes', 'social', 'Appearance', temp=False)
+        appearance_temp = character.get_stat('attributes', 'social', 'Appearance', temp=True)
+        
+        # Check if character is in a form that should have 0 Appearance
+        current_form = character.db.current_form
+        zero_appearance_forms = ['crinos', 'anthros', 'arthren', 'sokto', 'chatro']
+        
+        if current_form and current_form.lower() in zero_appearance_forms:
+            string += format_stat("Appearance", appearance_value, default=1, tempvalue=0, allow_zero=True) + " "
+        else:
+            string += format_stat("Appearance", appearance_value, default=1, tempvalue=appearance_temp) + " "
+        
+        string += pad_attribute(format_stat("Wits", character.get_stat('attributes', 'mental', 'Wits'), default=1, tempvalue=character.get_stat('attributes', 'mental', 'Wits', temp=True))) + "\n"
 
         string += header("Abilities", width=78, color="|y")
         string += " " + divider("Talents", width=25, fillchar=" ") + " "
         string += divider("Skills", width=25, fillchar=" ") + " "
         string += divider("Knowledges", width=25, fillchar=" ") + "\n"
+
+
+        def get_abilities_for_splat(character, stat_type):
+            """Helper function to get both basic and splat-specific abilities"""
+            splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            
+            # Define base abilities for each category
+            BASE_ABILITIES = {
+                'talent': ['Alertness', 'Athletics', 'Awareness', 'Brawl', 'Empathy', 
+                          'Expression', 'Intimidation', 'Leadership', 'Streetwise', 'Subterfuge'],
+                'skill': ['Animal Ken', 'Crafts', 'Drive', 'Etiquette', 'Firearms', 
+                         'Larceny', 'Melee', 'Performance', 'Stealth', 'Survival', 'Technology'],
+                'knowledge': ['Academics', 'Computer', 'Cosmology', 'Finance', 'Investigation', 
+                            'Law', 'Medicine', 'Occult', 'Politics', 'Science']
+            }
+            
+            # Get base abilities first
+            abilities = list(Stat.objects.filter(
+                category='abilities',
+                stat_type=stat_type,
+                name__in=BASE_ABILITIES[stat_type]
+            ))
+            
+            # Then get splat-specific abilities
+            if splat:
+                splat_abilities = list(Stat.objects.filter(
+                    category='abilities',
+                    stat_type=stat_type,
+                    splat__iexact=splat
+                ).exclude(name__in=BASE_ABILITIES[stat_type]))
+                abilities.extend(splat_abilities)
+            
+            # Sort abilities: base abilities first in predefined order, then others alphabetically
+            base_order = {name: i for i, name in enumerate(BASE_ABILITIES[stat_type])}
+            
+            def sort_key(ability):
+                if ability.name in base_order:
+                    return (0, base_order[ability.name])  # Base abilities come first, in predefined order
+                return (1, ability.name)  # Other abilities come after, in alphabetical order
+            
+            return sorted(abilities, key=sort_key)
+
+        talents = get_abilities_for_splat(character, 'talent')
+        skills = get_abilities_for_splat(character, 'skill')
+        knowledges = get_abilities_for_splat(character, 'knowledge')
 
         # Function to format abilities with padding for skills and knowledges
         def format_ability(ability, category):
@@ -188,10 +238,11 @@ class CmdSheet(MuxCommand):
                         formatted_specialty = format_ability(Stat(name=f"`{specialty}"), ability_type)
                         formatted_list.append(formatted_specialty)
 
+        # For primary abilities
         max_len = max(len(formatted_talents), len(formatted_skills), len(formatted_knowledges))
-        formatted_talents.extend(["" * 25] * (max_len - len(formatted_talents)))
-        formatted_skills.extend(["" * 25] * (max_len - len(formatted_skills)))
-        formatted_knowledges.extend(["" * 25] * (max_len - len(formatted_knowledges)))
+        formatted_talents.extend([" " * 25] * (max_len - len(formatted_talents)))
+        formatted_skills.extend([" " * 25] * (max_len - len(formatted_skills)))
+        formatted_knowledges.extend([" " * 25] * (max_len - len(formatted_knowledges)))
 
         for talent, skill, knowledge in zip(formatted_talents, formatted_skills, formatted_knowledges):
             string += f"{talent}{skill}{knowledge}\n"
@@ -201,29 +252,79 @@ class CmdSheet(MuxCommand):
         string += divider("Skills", width=25, fillchar=" ") + " "
         string += divider("Knowledges", width=25, fillchar=" ") + "\n"
 
+        # Get splat-specific secondary abilities
+        splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+        
         # Function to format abilities with padding for skills and knowledges
-        def format_ability(secondary_ability, category):
-            value = character.get_stat('secondary_abilities', category, secondary_ability.name)
-            formatted = format_stat(secondary_ability.name, value, default=0)
+        def format_secondary_ability(ability_name, category):
+            value = character.get_stat('secondary_abilities', category, ability_name)
+            formatted = format_stat(ability_name, value, default=0)
             if category in ['secondary_knowledge']:
                 return " " * 1 + formatted.ljust(22)
             return formatted.ljust(25)
 
-        secondary_talents = Stat.objects.filter(category='secondary_abilities', stat_type='secondary_talent')
-        secondary_skills = Stat.objects.filter(category='secondary_abilities', stat_type='secondary_skill')
-        secondary_knowledges = Stat.objects.filter(category='secondary_abilities', stat_type='secondary_knowledge')
+        # Initialize empty lists for each category
+        formatted_secondary_talents = []
+        formatted_secondary_skills = []
+        formatted_secondary_knowledges = []
 
-        formatted_secondary_talents = [format_ability(talent, 'secondary_talent') for talent in secondary_talents]
-        formatted_secondary_skills = [format_ability(skill, 'secondary_skill') for skill in secondary_skills]
-        formatted_secondary_knowledges = [format_ability(knowledge, 'secondary_knowledge') for knowledge in secondary_knowledges]
+        # Base secondary abilities for all characters
+        base_secondary_talents = ['Carousing', 'Diplomacy', 'Intrigue', 'Mimicry', 'Scrounging', 'Seduction', 'Style']
+        base_secondary_skills = ['Archery', 'Fortune-Telling', 'Fencing', 'Gambling', 'Jury-Rigging', 'Pilot', 'Torture']
+        base_secondary_knowledges = ['Area Knowledge', 'Cultural Savvy', 'Demolitions', 'Herbalism', 'Media', 'Power-Brokering', 'Vice']
 
-        max_len = max(len(formatted_secondary_talents), len(formatted_secondary_skills), len(formatted_secondary_knowledges))
-        formatted_secondary_talents.extend(["" * 25] * (max_len - len(formatted_secondary_talents)))
-        formatted_secondary_skills.extend(["" * 25] * (max_len - len(formatted_secondary_skills)))
-        formatted_secondary_knowledges.extend(["" * 25] * (max_len - len(formatted_secondary_knowledges)))
+        # Add base secondary abilities for all characters
+        formatted_secondary_talents.extend([
+            format_secondary_ability(talent, 'secondary_talent') 
+            for talent in base_secondary_talents
+        ])
+        formatted_secondary_skills.extend([
+            format_secondary_ability(skill, 'secondary_skill') 
+            for skill in base_secondary_skills
+        ])
+        formatted_secondary_knowledges.extend([
+            format_secondary_ability(knowledge, 'secondary_knowledge') 
+            for knowledge in base_secondary_knowledges
+        ])
 
-        for secondary_talent, secondary_skill, secondary_knowledge in zip(formatted_secondary_talents, formatted_secondary_skills, formatted_secondary_knowledges):
-            string += f"{secondary_talent}{secondary_skill}{secondary_knowledge}\n"
+        # If character is a Mage, add Mage-specific secondary abilities
+        if splat.lower() == 'mage':
+            # Secondary Talents
+            mage_secondary_talents = ['High Ritual', 'Blatancy']
+            formatted_secondary_talents.extend([
+                format_secondary_ability(talent, 'secondary_talent') 
+                for talent in mage_secondary_talents
+            ])
+
+            # Secondary Skills
+            mage_secondary_skills = ['Microgravity Ops', 'Energy Weapons', 'Helmsman', 'Biotech']
+            formatted_secondary_skills.extend([
+                format_secondary_ability(skill, 'secondary_skill') 
+                for skill in mage_secondary_skills
+            ])
+
+            # Secondary Knowledges
+            mage_secondary_knowledges = ['Hypertech', 'Cybernetics', 'Paraphysics', 'Xenobiology']
+            formatted_secondary_knowledges.extend([
+                format_secondary_ability(knowledge, 'secondary_knowledge') 
+                for knowledge in mage_secondary_knowledges
+            ])
+
+        # For secondary abilities
+        max_len = max(
+            len(formatted_secondary_talents),
+            len(formatted_secondary_skills),
+            len(formatted_secondary_knowledges)
+        )
+
+        # Pad the lists with actual spaces instead of empty strings
+        formatted_secondary_talents.extend([" " * 25] * (max_len - len(formatted_secondary_talents)))
+        formatted_secondary_skills.extend([" " * 25] * (max_len - len(formatted_secondary_skills)))
+        formatted_secondary_knowledges.extend([" " * 25] * (max_len - len(formatted_secondary_knowledges)))
+
+        # Display the secondary abilities in columns
+        for talent, skill, knowledge in zip(formatted_secondary_talents, formatted_secondary_skills, formatted_secondary_knowledges):
+            string += f"{talent}{skill}{knowledge}\n"
 
         string += header("Advantages", width=78, color="|y")
         
