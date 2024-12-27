@@ -247,14 +247,20 @@ class CmdStats(default_cmds.MuxCommand):
         # Update the stat
         character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
         
-        # If the stat is in the 'pools' category or has a 'dual' stat_type, update the temporary value as well
-        if stat.category == 'pools' or stat.stat_type == 'dual':
+        # During character generation (when character is not approved), 
+        # always set temp value equal to permanent value
+        if not character.db.approved:
             character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
             self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
-            character.msg(f"|y{self.caller.name}|n |gupdated your|n '|y{full_stat_name}|n' |gto|n '|y{new_value}|n' |g(both permanent and temporary).|n")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
+        # If already approved, only update temp for pools and dual stats
+        elif stat.category == 'pools' or stat.stat_type == 'dual':
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+            self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
         else:
             self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value}.|n")
-            character.msg(f"|y{self.caller.name}|n |gupdated your|n '|y{full_stat_name}|n' |gto|n '|y{new_value}|n'.")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value}.|n")
 
         # If the stat is 'Type' for a Shifter, apply the correct pools and renown
         if full_stat_name == 'Type' and character.get_stat('other', 'splat', 'Splat').lower() == 'shifter':
