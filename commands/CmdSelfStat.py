@@ -161,8 +161,13 @@ class CmdSelfStat(default_cmds.MuxCommand):
         # Update the stat
         character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
         
-        # If the stat is in the 'pools' category or has a 'dual' stat_type, update the temporary value as well
-        if stat.category == 'pools' or stat.stat_type == 'dual':
+        # During character generation (when character is not approved), 
+        # always set temp value equal to permanent value
+        if not character.db.approved:
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+            self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
+        # If already approved, only update temp for pools and dual stats
+        elif stat.category == 'pools' or stat.stat_type == 'dual':
             character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
             self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
         else:
