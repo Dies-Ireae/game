@@ -84,7 +84,7 @@ class CmdWhere(default_cmds.MuxCommand):
                     'is_builder': account.check_permstring("Builder"),
                 })
 
-        players.sort(key=lambda x: x['name'].lower())
+        players.sort(key=lambda x: x['location'].lower())
         unfindable.sort(key=lambda x: x['name'].lower())
 
         output = ""
