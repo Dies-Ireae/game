@@ -1,8 +1,7 @@
 from evennia import default_cmds
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils.ansi import ANSIString
-from world.wod20th.utils.formatting import header
-import time
+from world.wod20th.utils.formatting import header, format_idle_time, get_idle_time
 
 class CmdWhere(default_cmds.MuxCommand):
     """
@@ -20,32 +19,6 @@ class CmdWhere(default_cmds.MuxCommand):
     locks = "cmd:all()"
     help_category = "General"
 
-    def format_idle_time(self, idle_seconds):
-        """
-        Formats the idle time into human-readable format.
-        """
-        if idle_seconds < 60:
-            return f"{int(idle_seconds)}s"
-        elif idle_seconds < 3600:
-            return f"{int(idle_seconds / 60)}m"
-        elif idle_seconds < 86400:
-            return f"{int(idle_seconds / 3600)}h"
-        elif idle_seconds < 604800:
-            return f"{int(idle_seconds / 86400)}d"
-        else:
-            return f"{int(idle_seconds / 604800)}w"
-
-    def get_idle_time(self, character):
-        """
-        Get the idle time for a character.
-        """
-        if not character.sessions.count():
-            return 0
-        sessions = character.sessions.all()
-        if sessions:
-            return time.time() - max(session.cmd_last_visible for session in sessions)
-        return 0
-
     def func(self):
         """
         Implement the command.
@@ -60,7 +33,7 @@ class CmdWhere(default_cmds.MuxCommand):
                 continue
             character = session.puppet
             if character:
-                idle_time = self.format_idle_time(self.get_idle_time(character))
+                idle_time = format_idle_time(get_idle_time(character))
                 if character.location and not character.db.unfindable and not character.location.db.unfindable:
                     location = character.location.get_display_name(self.caller)
                     location = location[:40]  # Shortened to accommodate Umbra status
