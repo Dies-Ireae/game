@@ -1,4 +1,5 @@
 from evennia.utils.ansi import ANSIString
+import time
 
 def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=False):
     """Format a stat for display with proper spacing and temporary values."""
@@ -38,7 +39,6 @@ def header(title, width=78,  color="|y", fillchar=ANSIString("|b-|n"), bcolor="|
 def footer(width=78, fillchar=ANSIString("|b-|n")):
     return ANSIString(fillchar) * width + "\n"
 
-
 def divider(title, width=78, fillchar="-", color="|r", text_color="|n"):
     """
     Create a divider with a title.
@@ -77,3 +77,39 @@ def divider(title, width=78, fillchar="-", color="|r", text_color="|n"):
 
     # Remove any trailing whitespace and add the color terminator
     return ANSIString(f"{inner_content.rstrip()}|n")
+
+def format_idle_time(idle_seconds):
+        """
+        Formats the idle time into human-readable format.
+        """
+        if idle_seconds < 60:
+            return f"{int(idle_seconds)}s"
+        elif idle_seconds < 3600:
+            return f"{int(idle_seconds / 60)}m"
+        elif idle_seconds < 86400:
+            return f"{int(idle_seconds / 3600)}h"
+        elif idle_seconds < 604800:
+            return f"{int(idle_seconds / 86400)}d"
+        else:
+            return f"{int(idle_seconds / 604800)}w"
+
+def get_idle_time(character):
+    """
+    Get the idle time for a character.
+    """
+    if not character.sessions.count():
+        return 0
+    sessions = character.sessions.all()
+    if sessions:
+        return time.time() - max(session.cmd_last_visible for session in sessions)
+    return 0
+
+def english_list(items, none_str="None", join_str=" and ", comma_str=", "):
+    if not items:
+        return none_str  # Return an empty string for an empty list
+    if len(items) == 1:
+        return items[0]  # Return the single item
+    if len(items) == 2:
+        return join_str.join(items)  # Join with "and" for two items
+    # Join all but the last item with commas, and append the last item with "and"
+    return comma_str.join(items[:-1]) + comma_str.strip() + join_str + items[-1]

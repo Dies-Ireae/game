@@ -76,6 +76,9 @@ class Character( DefaultCharacter):
         self.db.speaking_language = None
         self.db.approved = False
         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
+        self.db.dossier = {
+            'shown_stats': {} # Structure: {category: [stats]}
+        } # used for finger/wiki info
 
     @lazy_property
     def notes(self):
@@ -115,6 +118,13 @@ class Character( DefaultCharacter):
             note.save()
             return True
         return False
+    
+    def get_dossier(self):
+        if not self.db.dossier:
+            self.db.dossier = { 'shown_stats': {} }
+        if not self.db.dossier['shown_stats']:
+            self.db.dossier['shown_stats'] = {}
+        return self.db.dossier
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -133,7 +143,7 @@ class Character( DefaultCharacter):
             name += f"({self.dbref})"
 
         return name
-
+    
     def get_languages(self):
         """
         Get the character's known languages.

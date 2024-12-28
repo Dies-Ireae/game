@@ -27,6 +27,7 @@ import evennia.contrib.game_systems.mail as mail
 from  commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
 from commands.CmdEmit import CmdEmit
+from commands.CmdFinger import CmdFinger
 from commands.CmdNotes import CmdNotes
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.building import CmdSetRoomResources, CmdSetRoomType, CmdSetUmbraDesc, CmdSetGauntlet, CmdUmbraInfo
@@ -84,6 +85,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdEvents())
         self.add(mail.CmdMail())
         self.add(mail.CmdMailCharacter())
+        self.add(CmdFinger())
         self.add(CmdRoll())
         self.add(CmdShift())
         self.add(CmdWeather())
