@@ -43,6 +43,17 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
             caller.msg("Usage: @emit <message>")
             return
 
+        # Check if the room is an OOC Area
+        if hasattr(caller.location, 'db') and caller.location.db.roomtype == 'OOC Area':
+            # Process special characters in the message
+            processed_args = self.process_special_characters(self.args)
+            
+            # Send message without pose break in OOC Area
+            for obj in caller.location.contents:
+                if obj.has_account:
+                    obj.msg(processed_args)
+            return
+
         # Process special characters in the message
         processed_args = self.process_special_characters(self.args)
 
