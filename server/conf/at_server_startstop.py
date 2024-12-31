@@ -22,7 +22,6 @@ def at_server_init():
     """
     This is called first as the server is starting up, regardless of how.
     """
-    pass
 
 
 def at_server_start():
@@ -30,7 +29,28 @@ def at_server_start():
     This is called every time the server starts up, regardless of
     how it was shut down.
     """
-    pass
+    try:
+        from world.wod20th.forms import create_shifter_forms
+        from world.wod20th.utils.init_db import load_stats
+        from world.wod20th.locks import LOCK_FUNCS  # Import the lock functions
+        from django.conf import settings
+        from evennia.locks import lockfuncs
+        import os
+        
+        # Get the absolute path to the data directory
+        data_dir = os.path.join(settings.GAME_DIR, 'data')
+        
+        create_shifter_forms()
+        load_stats(data_dir)
+        
+        # Register the lock functions
+        for name, func in LOCK_FUNCS.items():
+            setattr(lockfuncs, name, func)
+        
+        print("Initialized shapeshifter forms, stats, and custom locks")
+    except Exception as e:
+        print(f"Error during initialization: {e}")
+
 
 
 def at_server_stop():

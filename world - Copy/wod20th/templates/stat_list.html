@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stats List</title>
+</head>
+<body>
+    <h1>Stats List</h1>
+    <a href="{% url 'add_stat' %}">Add Stat</a>
+    <ul>
+        {% for stat in stats %}
+        <li>{{ stat.name }} ({{ stat.game_line }} - {{ stat.category }} - {{ stat.stat_type }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

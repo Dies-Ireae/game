@@ -1,0 +1,11 @@
+#!C:\diesirae\env\Scripts\python.exe
+"""
+Linux launcher
+
+This is copied directly into the python bin directory and makes the
+'evennia' program available on $PATH.
+"""
+
+from evennia.server.evennia_launcher import main
+
+main()
