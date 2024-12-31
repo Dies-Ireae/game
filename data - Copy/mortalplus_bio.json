@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Subsplat",
+        "description": "Sorcerer, Psychic, Faithful, Ghoul, Kinain, Kinfolk, etc.",
+        "game_line": "Various",
+        "category": "identity",
+        "stat_type": "lineage",
+        "values": ["Sorcerer", "Psychic", "Faithful", "Ghoul", "Kinain", "Kinfolk", "Consor"],
+        "splat": "Mortal"
+    },
+    {
+        "name": "Fellowship",
+        "description": "Various groups that work with sorcerers and psychics, which provide them with training and support.",
+        "game_line": "Mage: The Ascension",
+        "category": "identity",
+        "stat_type": "lineage",
+        "values": ["None", "Order of Hermes", "Sons of Ether", "Akashayana", "Celestial Chorus", "Virtual Adepts", "Dreamspeakers", "Euthanatos", "Verbena", "Cult of Ecstasy",
+                    "Iteration X", "New World Order", "Progenitors", "Syndicate", "Void Engineers", "Hollow Ones",
+                    "Arcanum", "Asatru Futhark", "Balamo'ob", "Children of Osiris", "Cult of Isis", "Cult of Mercury",
+                    "Pythian Order", "Weeping Moon", "The Fenian", "Friends of Foster", "Maison Liban", "Mogen HaChav",
+                    "Nebuu-Afef", "Nephite Priesthood", "Seven Thunders", "Silver Portal", "Society of Leopold", "Strike Force Zero",
+                    "Star Council", "Uzoma"],
+        "splat": "Mortal"
+    },
+    {
+        "name": "Psychic",
+        "description": "Psychic",
+        "game_line": "Various",
+        "category": "identity",
+        "stat_type": "lineage",
+        "values": ["Sorcerer", "Psychic", "Faithful", "Ghoul", "Kinain", "Kinfolk", "Consor"],
+        "splat": "Mortal"
+    },
+    {
+        "name": "Societies",
+        "description": "Societies of the Church that work with the faithful.",
+        "game_line": "Various",
+        "category": "identity",
+        "stat_type": "lineage",
+        "values": ["Oculi Dei", "Red Order", "Poor Knights of Acre", "Order of the Holy Sepulchre", "Rifa'i", "Sanctified Flame", 
+                   "Keepers of the Holy Writ", "Purifying Tempest", "Illuminated Crusade", "Sacred Thorn", "Order of the Divine Vigil"],
+        "splat": "Mortal"
+    }
+]

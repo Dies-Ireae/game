@@ -28,9 +28,6 @@ put secret game- or server-specific settings in secret_settings.py.
 from evennia.settings_default import *
 import os
 
-from evennia.contrib.base_systems import color_markups
-SITE_ID = 1  # This tells Django which site object to use
-DEBUG = True
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
 # Evennia base server config
@@ -42,23 +39,13 @@ DEFAULT_CMDSETS = [
     'commands.mycmdset.MyCmdset'
 ]
 
-DEFAULT_CMDSETS = [
-    'commands.mycmdset.MyCmdset'
-]
 
-
-TELNET_PORTS = [4000]  
+TELNET_PORTS = [4201]  
 WEBSERVER_PORTS = [(4200, 4005)] 
 WEBSOCKET_CLIENT_PORT = 4202
 EVENNIA_ADMIN=False
-
-CSRF_TRUSTED_ORIGINS = ['https:/diesiraemu.com', 'http://diesiraemu.com']
-
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-
-
 """
+
 SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']
@@ -68,46 +55,15 @@ if ENVIRONMENT == 'development':
 else:
   WEBSOCKET_CLIENT_URL = "wss://beta.diesiraemu.com/websocket"
 
-
 ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
 """
-
-BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
-LOCK_FUNC_MODULES = [
-    "evennia.locks.lockfuncs",
-    "world.wod20th.locks", 
-]
-
-CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000', 'https://diesiraemu.com']
-
-COLOR_ANSI_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
-COLOR_XTERM256_EXTRA_FG = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
-COLOR_XTERM256_EXTRA_BG = color_markups.MUX_COLOR_XTERM256_EXTRA_BG
-COLOR_XTERM256_EXTRA_GFG = color_markups.MUX_COLOR_XTERM256_EXTRA_GFG
-COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
-COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diesiraemu.com']
-WEBSOCKET_CLIENT_URL = None  # Let Evennia handle this automatically
-
-INSTALLED_APPS += (
-    "world.wod20th",
-    "wiki",
-)
-
-BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
-  
-# Change 8001 to your desired websocket port
-
-
-"""
 INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
-LOCK_FUNC_MODULES = [
+LOCK_FUNC_MODULES = (
     "evennia.locks.lockfuncs",
-    "world.wod20th.locks", 
-]
+    "world.wod20th.locks",
+)
   # Change 8001 to your desired websocket port
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
@@ -274,42 +230,8 @@ MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = [
     (r"%ch%cX", r"%c[222"),  # dark grey background
 ]
 
+AT_SERVER_STARTSTOP_MODULE = "world.wod20th.scripts"
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(GAME_DIR, 'evennia.db3'),
-    }
-}
+from world.wod20th.locks import LOCK_FUNCS
 
-# Maximum number of accounts that can be created
-MAX_ACCOUNTS = 10000  # Adjust this number as needed
-
-# Maximum number of characters per account
-MAX_CHARACTERS_PER_ACCOUNT = 5  # Adjust this number as needed
-
-import warnings
-
-warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.models.base')
-
-# Static files configuration (keep this in one place)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(GAME_DIR, 'static')
-STATICFILES_DIRS = [
-    os.path.join(GAME_DIR, "web", "static"),
-    os.path.join(GAME_DIR, "wiki", "static"),
-]
-
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(GAME_DIR, 'media')
-
-ENVIRONMENT = "production"
-# Update the WEBSOCKET_CLIENT_URL configuration
-if ENVIRONMENT == 'production':
-    WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
-elif ENVIRONMENT == 'development':
-    WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
-
-
+BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"
