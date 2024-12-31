@@ -12,10 +12,11 @@ to be modified.
 
 """
 
-from evennia.comms.comms import DefaultChannel
+from evennia.comms.models import ChannelDB
+from evennia.typeclasses.models import TypeclassBase
 
 
-class Channel(DefaultChannel):
+class Channel(ChannelDB, metaclass=TypeclassBase):
     """
     Custom channel class to handle message formatting and delivery.
     """

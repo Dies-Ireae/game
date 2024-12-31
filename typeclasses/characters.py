@@ -453,6 +453,7 @@ class Character(DefaultCharacter):
     def set_stat(self, category, stat_type, stat_name, value, temp=False):
         """
         Set the value of a stat, considering instances if applicable.
+        Also handles special cases like Appearance for certain splats/forms.
         """
         if not hasattr(self.db, "stats") or not self.db.stats:
             self.db.stats = {}
@@ -462,11 +463,27 @@ class Character(DefaultCharacter):
             self.db.stats[category][stat_type] = {}
         if stat_name not in self.db.stats[category][stat_type]:
             self.db.stats[category][stat_type][stat_name] = {'perm': 0, 'temp': 0}
+
+        # Special handling for Appearance stat
+        if stat_name == 'Appearance':
+            splat = self.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            clan = self.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+            form = self.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+
+            # Force Appearance to 0 for specific cases
+            if (splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']) or \
+               (splat == 'Shifter' and form == 'Crinos'):
+                value = 0
+                self.db.stats[category][stat_type][stat_name]['perm'] = 0
+                self.db.stats[category][stat_type][stat_name]['temp'] = 0
+                return
+
+        # Normal stat setting
         if temp:
             self.db.stats[category][stat_type][stat_name]['temp'] = value
         else:
             self.db.stats[category][stat_type][stat_name]['perm'] = value
-            
+
     def check_stat_value(self, category, stat_type, stat_name, value, temp=False):
         """
         Check if a value is valid for a stat, considering instances if applicable.
@@ -546,6 +563,51 @@ class Character(DefaultCharacter):
             note for note in self.get_all_notes()
             if search_term in note.name.lower() or search_term in note.text.lower()
         ]
+
+    def can_have_ability(self, ability_name):
+        """Check if character can have a specific ability based on splat."""
+        from world.wod20th.models import Stat
+        
+        stat = Stat.objects.filter(name=ability_name).first()
+        if not stat or not stat.splat:
+            return True
+            
+        # Get character's splat info
+        splat_type = self.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+        clan = self.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+        shifter_type = self.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '')
+
+        # Check allowed splats
+        allowed_splats = stat.splat
+        if isinstance(allowed_splats, list):
+            for allowed in allowed_splats:
+                if ':' in allowed:
+                    splat_name, subtype = allowed.split(':')
+                    if splat_type == splat_name:
+                        if splat_name == 'Vampire' and clan == subtype:
+                            return True
+                        elif splat_name == 'Shifter' and shifter_type == subtype:
+                            return True
+                else:
+                    if splat_type == allowed:
+                        return True
+                        
+        return False
+
+    def shift_form(self, new_form):
+        """Handle form changes for shifters, including Appearance adjustments."""
+        old_form = self.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+        
+        # Set the new form
+        self.set_stat('other', 'form', 'Form', new_form, temp=True)
+        
+        # Handle Appearance changes
+        if new_form == 'Crinos':
+            self.set_stat('attributes', 'social', 'Appearance', 0, temp=True)
+        elif old_form == 'Crinos' and new_form != 'Crinos':
+            # Restore original Appearance when leaving Crinos
+            perm_appearance = self.db.stats.get('attributes', {}).get('social', {}).get('Appearance', {}).get('perm', 1)
+            self.set_stat('attributes', 'social', 'Appearance', perm_appearance, temp=True)
 
 class Note:
     def __init__(self, name, text, category="General", is_public=False, is_approved=False, 

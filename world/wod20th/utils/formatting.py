@@ -1,12 +1,12 @@
 from evennia.utils.ansi import ANSIString
+from collections import defaultdict
+from world.wod20th.models import Stat
 
 def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=False):
     """Format a stat for display with proper spacing and temporary values."""
-    if stat == "Appearance":
-        print(f"Formatting Appearance: value={value}, tempvalue={tempvalue}, allow_zero={allow_zero}")
-    
     if default is not None and (value is None or (not allow_zero and value == 0) or value == ""):
         value = default
+        tempvalue = default  # Also set tempvalue to default if value is defaulted
 
     stat_str = f" {stat}"
     
@@ -16,18 +16,19 @@ def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=
     elif stat == "Arete":
         # For Arete, don't show temporary value
         value_str = str(value)
-    elif tempvalue is not None and str(value).strip() != str(tempvalue).strip():
+    elif tempvalue is not None and int(tempvalue) != int(value):  # Convert to int for comparison
         if not allow_zero and tempvalue == 0:
             tempvalue = 1
-        # For other stats, show both permanent and temporary values if they differ
+        # Only show temporary value if it's numerically different
         value_str = f"{value}({tempvalue})"
     else:
+        # Just show permanent value if temporary is same or not set
         value_str = str(value)
 
     # Truncate the stat name if it's too long
     max_stat_length = width - len(value_str) - 4  # 4 for the dots and spaces
     if len(stat_str) > max_stat_length:
-        stat_str = stat_str[:max_stat_length-3] + "..." 
+        stat_str = stat_str[:max_stat_length-3] + "..."
 
     dots = "." * (width - len(stat_str) - len(value_str) - 1)
     return f"{stat_str}{dots}{value_str}"
@@ -77,3 +78,32 @@ def divider(title, width=78, fillchar="-", color="|r", text_color="|n"):
 
     # Remove any trailing whitespace and add the color terminator
     return ANSIString(f"{inner_content.rstrip()}|n")
+
+def format_abilities(character):
+    """Format abilities section of character sheet."""
+    abilities = defaultdict(dict)
+    
+    # Get all standard abilities
+    for stat in Stat.objects.filter(stat_type__in=['talent', 'skill', 'knowledge']):
+        value = character.get_stat('abilities', stat.stat_type, stat.name)
+        if value is not None:
+            abilities[stat.category][stat.name] = value
+
+    # Get splat-specific abilities
+    for stat in Stat.objects.filter(stat_type='ability'):
+        if character.can_have_ability(stat.name):
+            value = character.get_stat('abilities', 'ability', stat.name)
+            if value is not None:
+                # Add to appropriate category based on the ability's category
+                abilities[stat.category][stat.name] = value
+    
+    # Format output
+    output = []
+    for category in ['Talents', 'Skills', 'Knowledges']:
+        if abilities[category]:
+            output.append(f"{category:^20}")
+            for name, value in sorted(abilities[category].items()):
+                if value is not None:
+                    output.append(f"{name:.<20}{value}")
+            
+    return "\n".join(output)

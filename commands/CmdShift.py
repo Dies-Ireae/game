@@ -14,14 +14,17 @@ def roll_dice(dice_pool: int, difficulty: int) -> Tuple[List[int], int, int]:
     successes = sum(1 for roll in rolls if roll >= difficulty)
     ones = sum(1 for roll in rolls if roll == 1)
     
-    # Subtract ones from successes, but don't go below 0
-    successes = max(0, successes - ones)
+    # If there are any successes, subtract ones from them
+    if successes > 0:
+        successes = max(0, successes - ones)
+        return rolls, successes, ones
     
-    # A botch occurs only if there are no successes (after subtraction) AND there are ones
+    # If there are no successes AND there are ones, it's a botch
     if successes == 0 and ones > 0:
-        successes = -1  # Indicate a botch with -1
-        
-    return rolls, successes, ones
+        return rolls, -1, ones  # Indicate botch with -1
+    
+    # No successes but also no ones - just a failure
+    return rolls, 0, ones
 
 def interpret_roll_results(successes, ones, diff=6, rolls=None):
     # A botch only occurs if there are no successes AND there are ones
@@ -257,7 +260,7 @@ class CmdShift(default_cmds.MuxCommand):
         
         # A botch is indicated by successes being -1
         if successes < 0:
-            self.caller.msg("Failure. You are unable to shift into {form.name} form.")
+            self.caller.msg(f"Failure. You are unable to shift into {form.name} form.")
             return False
         elif successes > 0:
             self.caller.msg(f"Success! You shift into {form.name} form.")

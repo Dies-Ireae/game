@@ -51,6 +51,7 @@ from commands.CmdLook import CmdLook
 from commands.CmdEvents import CmdEvents
 from commands.jobs.jobs_cmdset import JobSystemCmdSet
 from commands.CmdUnpuppet import CmdUnpuppet
+from commands.CmdPage import CmdPage
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -138,6 +139,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdJoin())
         self.add(CmdApprove())
         self.add(CmdUnapprove())
+        self.add(CmdPage())
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """

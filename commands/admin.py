@@ -1,5 +1,6 @@
 from commands.communication import AdminCommand
 from evennia.utils import logger
+from evennia.commands.default.general import CmdLook
 
 
 class CmdApprove(AdminCommand):
@@ -22,11 +23,14 @@ class CmdApprove(AdminCommand):
             self.caller.msg("Usage: approve <character_name>")
             return
 
-        target = self.caller.search(self.args)
+        # Use global search for admin commands
+        target = self.caller.search(self.args, global_search=True)
         if not target:
             return
 
-        if target.tags.has("approved", category="approval"):
+        # Check both tag and attribute for approval status
+        is_approved = target.tags.has("approved", category="approval") and target.db.approved
+        if is_approved:
             self.caller.msg(f"{target.name} is already approved.")
             return
 
@@ -61,15 +65,22 @@ class CmdUnapprove(AdminCommand):
             self.caller.msg("Usage: unapprove <character_name>")
             return
 
-        target = self.caller.search(self.args)
+        # Use global search for admin commands
+        target = self.caller.search(self.args, global_search=True)
         if not target:
             return
 
-        if not target.db.approved:
+        # Check both tag and attribute for approval status
+        is_approved = target.tags.has("approved", category="approval") or target.db.approved
+        if not is_approved:
             self.caller.msg(f"{target.name} is already unapproved.")
             return
 
+        # Remove approved status and add unapproved tag
         target.db.approved = False
+        target.tags.remove("approved", category="approval")
+        target.tags.add("unapproved", category="approval")
+        
         logger.log_info(f"{target.name} has been unapproved by {self.caller.name}")
 
         self.caller.msg(f"You have unapproved {target.name}.")
@@ -127,3 +138,42 @@ class CmdMassUnapprove(AdminCommand):
                 logger.log_info(f"{char.name} has been mass-unapproved by {caller.name}")
 
         caller.msg(f"Successfully set {count} character(s) to unapproved status.")
+
+class CmdAdminLook(CmdLook, AdminCommand):
+    """
+    look at location or object
+
+    Usage:
+      look
+      look <obj>
+      look *<character>  (Admin only - global search)
+      look [in|at|inside] <obj>
+
+    Observes your location, an object, or a character globally with '*'.
+    The 'in' preposition lets you look inside containers.
+    """
+
+    key = "look"
+    aliases = ["l", "ls"]
+    locks = "cmd:all()"
+    help_category = "General"
+
+    def func(self):
+        """Handle the looking."""
+        caller = self.caller
+        args = self.args.strip()
+        
+        # Handle global search for admin using *character format
+        if args.startswith('*') and caller.check_permstring("Admin"):
+            # Remove the * and any leading/trailing spaces
+            target_name = args[1:].strip()
+            # Perform global search
+            target = caller.search(target_name, global_search=True)
+            if not target:
+                return
+            # Show the target's description
+            self.msg(target.return_appearance(caller))
+            return
+            
+        # If not using * prefix, use the default look behavior
+        super().func()

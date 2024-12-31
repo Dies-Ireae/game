@@ -558,6 +558,30 @@ class CmdStats(default_cmds.MuxCommand):
         self.caller.msg(f"|gApplied specific pools and renown for {shifter_type} to {character.name}.|n")
         character.msg(f"|gYour specific pools and renown for {shifter_type} have been applied.|n")
 
+    def set_stat(self, target, category, stat_type, stat_name, value, temp=False):
+        """Set a stat value."""
+        # Get the stat definition
+        stat = Stat.objects.filter(name=stat_name).first()
+        if not stat:
+            self.caller.msg(f"Stat '{stat_name}' not found.")
+            return False
+
+        # Handle stats with perm/temp values
+        if hasattr(stat, 'values') and isinstance(stat.values, dict) and 'perm' in stat.values:
+            valid_values = stat.values['temp'] if temp else stat.values['perm']
+            if value not in valid_values:
+                self.caller.msg(f"Value '{value}' is not valid for stat '{stat_name}'. Valid values are: {valid_values}")
+                return False
+        # Handle stats with simple value lists
+        elif hasattr(stat, 'values') and isinstance(stat.values, list):
+            if value not in stat.values:
+                self.caller.msg(f"Value '{value}' is not valid for stat '{stat_name}'. Valid values are: {stat.values}")
+                return False
+
+        # Set the stat value
+        target.set_stat(category, stat_type, stat_name, value, temp=temp)
+        return True
+
 from evennia.commands.default.muxcommand import MuxCommand
 from world.wod20th.models import Stat
 from evennia.utils import search
