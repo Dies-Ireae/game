@@ -60,6 +60,7 @@ CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.c
 """
 INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
+BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"
 LOCK_FUNC_MODULES = (
     "evennia.locks.lockfuncs",
     "world.wod20th.locks",

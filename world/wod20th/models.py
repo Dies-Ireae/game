@@ -38,6 +38,7 @@ STAT_TYPES = [
     ('lineage', 'Lineage'),
     ('discipline', 'Discipline'),
     ('gift', 'Gift'),
+    ('rite', 'Rite'),
     ('sphere', 'Sphere'),
     ('rote', 'Rote'),
     ('art', 'Art'),
@@ -173,17 +174,30 @@ class Note(models.Model):
         return self.character_note_id
 
 def calculate_willpower(character):
-    courage = character.get_stat('virtues', 'moral', 'Courage', temp=False)
-    if courage is not None:
-        return courage
-    
-    virtues = character.db.stats.get('virtues', {}).get('moral', {})
-    if not virtues:
-        # If there are no virtues defined, return a default value
+    """Calculate Willpower based on virtues."""
+    try:
+        # Get the character's virtues
+        virtues = character.db.stats.get('virtues', {}).get('moral', {})
+        
+        # Get Courage value (common to all paths)
+        courage = virtues.get('Courage', {}).get('perm', 0)
+        
+        # Get the other relevant virtue based on path
+        enlightenment = character.get_stat('identity', 'personal', 'Enlightenment')
+        
+        if enlightenment and enlightenment != 'Humanity':
+            # For most non-Humanity paths
+            conviction = virtues.get('Conviction', {}).get('perm', 0)
+            willpower = courage + conviction
+        else:
+            # For Humanity and paths using Conscience
+            conscience = virtues.get('Conscience', {}).get('perm', 0)
+            willpower = courage + conscience
+            
+        return willpower if willpower > 0 else 1
+        
+    except (AttributeError, KeyError):
         return 1
-    
-    highest_virtue = max(virtues.values(), key=lambda x: x.get('perm', 0))
-    return highest_virtue.get('perm', 1)
 
 def calculate_road(character):
     enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)

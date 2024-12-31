@@ -101,7 +101,13 @@ class CmdSheet(MuxCommand):
             splat_specific_stats = ['Clan', 'Date of Embrace', 'Generation', 'Sire', 'Enlightenment']
         elif splat.lower() == 'shifter':
             shifter_type = character.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '')
-            splat_specific_stats = ['Type', 'Rank', 'Tribe', 'Breed', 'Auspice'] + SHIFTER_IDENTITY_STATS.get(shifter_type, [])
+            # Start with Type and Rank for all shifters
+            splat_specific_stats = ['Type', 'Rank']
+            
+            # Add type-specific stats from the SHIFTER_IDENTITY_STATS dictionary
+            if shifter_type:
+                type_specific_stats = SHIFTER_IDENTITY_STATS.get(shifter_type, [])
+                splat_specific_stats.extend(type_specific_stats)
         elif splat.lower() == 'mage':
             mage_faction = character.db.stats.get('identity', {}).get('lineage', {}).get('Mage Faction', {}).get('perm', '')
             splat_specific_stats = ['Essence', 'Mage Faction']
@@ -120,8 +126,21 @@ class CmdSheet(MuxCommand):
         else:
             splat_specific_stats = []
 
-        all_stats = common_stats + splat_specific_stats + ['Splat']
-        
+        all_stats = []
+        # Add common stats first
+        for stat in common_stats:
+            if stat not in all_stats:
+                all_stats.append(stat)
+
+        # Add splat-specific stats
+        for stat in splat_specific_stats:
+            if stat not in all_stats:
+                all_stats.append(stat)
+
+        # Add Splat at the end if not already included
+        if 'Splat' not in all_stats:
+            all_stats.append('Splat')
+
         def format_stat_with_dots(stat, value, width=38):
             # Special case for 'Traditions Subfaction'
             display_stat = 'Subfaction' if stat == 'Traditions Subfaction' else stat
@@ -190,12 +209,18 @@ class CmdSheet(MuxCommand):
         appearance_value = character.get_stat('attributes', 'social', 'Appearance', temp=False)
         appearance_temp = character.get_stat('attributes', 'social', 'Appearance', temp=True)
         
+        # Check if character is a vampire with a clan that should have 0 Appearance
+        zero_appearance_clans = ['nosferatu', 'samedi']
+        clan = character.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '').lower()
+        is_zero_appearance_clan = clan in zero_appearance_clans
+        
         # Check if character is in a form that should have 0 Appearance
         current_form = character.db.current_form
         zero_appearance_forms = ['crinos', 'anthros', 'arthren', 'sokto', 'chatro']
+        is_zero_appearance_form = current_form and current_form.lower() in zero_appearance_forms
         
-        if current_form and current_form.lower() in zero_appearance_forms:
-            string += format_stat("Appearance", appearance_value, default=1, tempvalue=0, allow_zero=True) + " "
+        if is_zero_appearance_clan or is_zero_appearance_form:
+            string += format_stat("Appearance", 0, default=0, tempvalue=0, allow_zero=True) + " "
         else:
             string += format_stat("Appearance", appearance_value, default=1, tempvalue=appearance_temp) + " "
         
@@ -208,9 +233,10 @@ class CmdSheet(MuxCommand):
 
 
         def get_abilities_for_splat(character, stat_type):
-            """Helper function to get both basic and splat-specific abilities"""
+            """Helper function to get abilities for a specific splat and stat type"""
             splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
-            
+            shifter_type = character.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '')
+
             # Define base abilities for each category
             BASE_ABILITIES = {
                 'talent': ['Alertness', 'Athletics', 'Awareness', 'Brawl', 'Empathy', 
@@ -228,14 +254,33 @@ class CmdSheet(MuxCommand):
                 name__in=BASE_ABILITIES[stat_type]
             ))
             
-            # Then get splat-specific abilities
-            if splat:
-                splat_abilities = list(Stat.objects.filter(
-                    category='abilities',
-                    stat_type=stat_type,
-                    splat__iexact=splat
-                ).exclude(name__in=BASE_ABILITIES[stat_type]))
-                abilities.extend(splat_abilities)
+            # Add splat-specific abilities
+            if splat == 'Shifter':
+                # Add Primal-Urge for all shifters
+                if stat_type == 'talent':
+                    primal_urge = Stat.objects.filter(name='Primal-Urge').first()
+                    if primal_urge:
+                        abilities.append(primal_urge)
+                    
+                    # Add Flight only for specific shifter types and only once
+                    if shifter_type in ['Corax', 'Camazotz', 'Mokole'] and not any(a.name == 'Flight' for a in abilities):
+                        flight = Stat.objects.filter(name='Flight').first()
+                        if flight:
+                            abilities.append(flight)
+                
+                # Add Rituals for all shifters in knowledge category
+                elif stat_type == 'knowledge':
+                    rituals = Stat.objects.filter(name='Rituals').first()
+                    if rituals:
+                        abilities.append(rituals)
+
+            elif splat == 'Vampire' and stat_type == 'talent':
+                # Add Flight for Gargoyles
+                clan = character.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+                if clan == 'Gargoyle':
+                    flight = Stat.objects.filter(name='Flight').first()
+                    if flight:
+                        abilities.append(flight)
             
             # Sort abilities: base abilities first in predefined order, then others alphabetically
             base_order = {name: i for i, name in enumerate(BASE_ABILITIES[stat_type])}
@@ -284,6 +329,15 @@ class CmdSheet(MuxCommand):
 
         for talent, skill, knowledge in zip(formatted_talents, formatted_skills, formatted_knowledges):
             string += f"{talent}{skill}{knowledge}\n"
+
+        # Add splat-specific abilities
+        abilities = character.db.stats.get('abilities', {})
+        if 'ability' in abilities:
+            for ability_name, values in abilities['ability'].items():
+                if values.get('perm') is not None and character.can_have_ability(ability_name):
+                    # Add to appropriate section based on the ability's category
+                    if ability_name == "Flight":  # Add under Talents
+                        string += format_stat(ability_name, values['perm'], width=25) + "\n"
 
         string += header("Secondary Abilities", width=78, color="|y")
         string += " " + divider("Talents", width=25, fillchar=" ") + " "
@@ -467,93 +521,83 @@ class CmdSheet(MuxCommand):
 
         # Display Pools & Virtues in the same three-column format
         string += header("Pools & Virtues", width=78, color="|y")
+
+        # Initialize lists with headers based on splat
         pools_list = []
         virtues_list = []
-        extra_list = []  # For any additional stats that need to be shown
+        extra_list = []
 
-        # Get all the necessary data
+        # Add appropriate headers based on splat
+        if splat.lower() == 'shifter':
+            pools_list.append(divider("Pools", width=25, fillchar=" "))
+            virtues_list.append(divider("     Renown", width=25, fillchar=" "))
+        else:
+            pools_list.append(divider("Pools", width=25, fillchar=" "))
+            virtues_list.append(divider("Virtues", width=25, fillchar=" "))
+        extra_list.append(" " * 25)  # Empty header for third column
+
+        # Get pools data
         pools = character.db.stats.get('pools', {})
         dual_pools = pools.get('dual', {})
-        moral_pools = pools.get('moral', {})
-        virtues = character.db.stats.get('virtues', {}).get('moral', {})
-        enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
 
-        # Common pools for all splats
-        willpower = calculate_willpower(character)
-        pools_list.append(format_stat("Willpower", willpower, width=25, 
-                         tempvalue=dual_pools.get('Willpower', {}).get('temp')))
+        # Format Willpower specifically
+        willpower_data = dual_pools.get('Willpower', {})
+        if willpower_data:
+            perm = willpower_data.get('perm', 1)
+            temp = willpower_data.get('temp', perm)
+            willpower_str = f"{perm}({temp})" if temp != perm else str(perm)
+            # Reduce dots by 3 if showing temp value to maintain alignment
+            dot_count = 14 if temp == perm else 11
+            pools_list.append(f"Willpower{'.' * dot_count}{willpower_str}".ljust(25))
 
-        # Splat-specific pools and virtues
-        if character_splat.lower() == 'vampire':
-            # Blood Pool (show temp value)
-            blood = dual_pools.get('Blood', {})
-            if blood:
-                pools_list.append(format_stat("Blood", blood.get('perm', 0), 
-                                width=25, tempvalue=blood.get('temp')))
+        # Handle other pools based on splat
+        if splat.lower() == 'shifter':
+            # Add Rage
+            rage_data = dual_pools.get('Rage', {})
+            if rage_data:
+                rage_perm = rage_data.get('perm', 0)
+                rage_temp = rage_data.get('temp', rage_perm)
+                rage_str = f"{rage_perm}({rage_temp})" if rage_temp != rage_perm else str(rage_perm)
+                dot_count = 19 if rage_temp == rage_perm else 16
+                pools_list.append(f"Rage{'.' * dot_count}{rage_str}".ljust(25))
             
-            # Road (no temp value)
-            road = moral_pools.get('Road', {})
-            if road:
-                road_name = f"Road of {enlightenment}" if enlightenment else "Road"
-                pools_list.append(format_stat(road_name, road.get('perm', 0), width=25))
+            # Add Gnosis
+            gnosis_data = dual_pools.get('Gnosis', {})
+            if gnosis_data:
+                gnosis_perm = gnosis_data.get('perm', 0)
+                gnosis_temp = gnosis_data.get('temp', gnosis_perm)
+                gnosis_str = f"{gnosis_perm}({gnosis_temp})" if gnosis_temp != gnosis_perm else str(gnosis_perm)
+                dot_count = 17 if gnosis_temp == gnosis_perm else 14
+                pools_list.append(f"Gnosis{'.' * dot_count}{gnosis_str}".ljust(25))
 
-            # Virtues based on path (no temp values)
-            if enlightenment:
-                relevant_virtues = PATH_VIRTUES.get(enlightenment, ['Conscience', 'Self-Control', 'Courage'])
-                for virtue_name in relevant_virtues:
-                    virtue = virtues.get(virtue_name, {})
-                    if virtue:
-                        virtues_list.append(format_stat(virtue_name, virtue.get('perm', 0),
-                                         width=25))
-
-        elif character_splat.lower() == 'mage':
-            # Mage-specific pools
-            for pool in ['Arete', 'Quintessence', 'Paradox']:
-                value = dual_pools.get(pool, {})
-                if value:
-                    pools_list.append(format_stat(pool, value.get('perm', 0),
-                                    width=25, tempvalue=value.get('temp')))
-
-        elif character_splat.lower() == 'shifter':
-            # Shifter-specific pools (show temp values)
-            for pool in ['Rage', 'Gnosis']:
-                value = dual_pools.get(pool, {})
-                if value:
-                    pools_list.append(format_stat(pool, value.get('perm', 0),
-                                    width=25, tempvalue=value.get('temp')))
-
-            # Add Renown to virtues_list for Shifters (no temp values)
-            shifter_type = character.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '')
-            
-            # Default renown types if type-specific ones aren't found
-            default_renown = ['Glory', 'Honor', 'Wisdom']
-            
-            # Get renown types for this shifter type, fall back to defaults if not found
-            renown_types = SHIFTER_RENOWN.get(shifter_type, default_renown)
-            
-            # Always show renown types
-            for renown_type in renown_types:
-                renown_value = character.db.stats.get('advantages', {}).get('renown', {}).get(renown_type, {})
-                perm_value = renown_value.get('perm', 0) if renown_value else 0
-                virtues_list.append(format_stat(renown_type, perm_value, width=25))
-
-        elif character_splat.lower() == 'changeling':
-            # Changeling-specific pools
-            for pool in ['Glamour', 'Banality']:
-                value = dual_pools.get(pool, {})
-                if value:
-                    pools_list.append(format_stat(pool, value.get('perm', 0),
-                                    width=25, tempvalue=value.get('temp')))
+        # Add virtues based on splat and type
+        if splat.lower() == 'shifter':
+            shifter_type = character.get_stat('identity', 'lineage', 'Type')
+            if shifter_type in SHIFTER_RENOWN:
+                # Always show all renown types for the shifter type
+                for renown in SHIFTER_RENOWN[shifter_type]:
+                    # Get the renown value, defaulting to 0 if not found
+                    renown_value = character.get_stat('virtues', 'moral', renown, temp=False) or 0
+                    # Format with consistent dots - adjust dot count based on longest possible renown name
+                    dots = "." * (19 - len(renown))  # Adjusted to ensure alignment
+                    virtues_list.append(f"     {renown}{dots}{renown_value}".ljust(25))
+            else:
+                # If shifter type not found in SHIFTER_RENOWN, show default renown
+                default_renown = ['Glory', 'Honor', 'Wisdom']
+                for renown in default_renown:
+                    renown_value = character.get_stat('virtues', 'moral', renown, temp=False) or 0
+                    dots = "." * (19 - len(renown))
+                    virtues_list.append(f"     {renown}{dots}{renown_value}".ljust(25))
 
         # Ensure all columns have the same number of rows
         max_len = max(len(pools_list), len(virtues_list), len(extra_list))
-        pools_list.extend([""] * (max_len - len(pools_list)))
-        virtues_list.extend([""] * (max_len - len(virtues_list)))
-        extra_list.extend([""] * (max_len - len(extra_list)))
+        pools_list.extend(["".ljust(25)] * (max_len - len(pools_list)))
+        virtues_list.extend(["".ljust(25)] * (max_len - len(virtues_list)))
+        extra_list.extend(["".ljust(25)] * (max_len - len(extra_list)))
 
         # Display the pools and virtues in columns
         for pool, virtue, extra in zip(pools_list, virtues_list, extra_list):
-            string += f"{pool.strip().ljust(25)} {virtue.strip().ljust(25)} {extra.strip().ljust(25)}\n"
+            string += f"{pool}{virtue}{extra}\n"
 
         string += "\n"
 
@@ -565,3 +609,15 @@ class CmdSheet(MuxCommand):
 
         # Send the complete sheet to the caller
         self.caller.msg(string)
+
+def format_pool_value(character, pool_name):
+    """Format a pool value with both permanent and temporary values."""
+    perm = character.get_stat('pools', 'dual', pool_name, temp=False)
+    temp = character.get_stat('pools', 'dual', pool_name, temp=True)
+    
+    if perm is None:
+        perm = 0
+    if temp is None:
+        temp = perm
+        
+    return f"{perm}({temp})" if temp != perm else str(perm)
