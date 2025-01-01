@@ -1,67 +1,25 @@
-from evennia import DefaultCharacter
-print("DefaultCharacter:", DefaultCharacter)
+"""
+Characters
+
+Characters are (by default) Objects that are puppeted by Players.
+They are what you "see" in game. The Character class in this module
+is setup to be the "default" character type for your game. It is from
+here you can define how all characters will look and behave by default.
+"""
+from evennia.objects.objects import DefaultCharacter
+from evennia.utils.utils import lazy_property
 from evennia.utils.ansi import ANSIString
-from world.wod20th.models import Stat
-from evennia.utils import lazy_property
-from world.wod20th.models import Note
+from world.wod20th.models import Stat, Note
 from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
+from datetime import datetime
 
-
-# class Character(DefaultCharacter):
-#     """
-#     The Character typeclass, based on DefaultCharacter.
-#     """
-
-#     def at_object_creation(self):
-#         """
-#         Called when the character is first created.
-#         """
-#         super().at_object_creation()
-#         self.tags.add("in_material", category="state")
-#         self.db.unfindable = False
-#         self.db.fae_desc = ""
-#         self.db.languages = ["English"]  # Default language
-#         self.db.speaking_language = None
-#         self.db.approved = False
-#         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
-#         self.db.stats = {}
-
-#     @lazy_property
-#     def notes(self):
-#         return Note.objects.filter(character=self)
-
-#     def add_note(self, name, text, category="General"):
-#         return Note.objects.create(
-#             character=self,
-#             name=name,
-#             text=text,
-#             category=category
-#         )
-
-#     def get_note(self, identifier):
-#         try:
-#             return self.notes.get(id=int(identifier))
-#         except ValueError:
-#             return self.notes.filter(name__iexact=identifier).first()
-
-#     def get_all_notes(self):
-#         return self.notes.all()
-
-#     def update_note(self, identifier, text, category=None):
-#         note = self.get_note(identifier)
-#         if note:
-#             note.text = text
-#             if category:
-#                 note.category = category
-#             note.save()
-#             return True
-#         return False
-
-class Character( DefaultCharacter):
+class Character(DefaultCharacter):
     """
-    The Character typeclass.
+    The Character defaults to implementing some of its hook methods with the
+    following standard functionality:
+    ...
     """
 
     def at_object_creation(self):
@@ -70,51 +28,79 @@ class Character( DefaultCharacter):
         """
         super().at_object_creation()
         self.tags.add("in_material", category="state")
-        self.db.unfindable = False  # Add this line
+        self.db.unfindable = False
         self.db.fae_desc = ""
         self.db.languages = ["English"]  # Default language
         self.db.speaking_language = None
-        self.db.approved = False
+        self.db.approved = False  # Ensure all new characters start unapproved
         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
+        
+        # Initialize health tracking
+        self.db.agg = 0
+        self.db.lethal = 0
+        self.db.bashing = 0
+        self.db.injury_level = "Healthy"
 
     @lazy_property
     def notes(self):
         return Note.objects.filter(character=self)
 
-    def add_note(self, name, text, category="General"):
-        return Note.objects.create(
-            character=self,
+    def add_note(self, name, text, category="General", is_public=False):
+        """Add a new note."""
+        notes = self.attributes.get('notes', default={})
+        note_id = str(len(notes) + 1)
+        
+        note = Note(
             name=name,
             text=text,
-            category=category
+            category=category,
+            is_public=is_public,
+            note_id=note_id
         )
+        
+        notes[note_id] = note.to_dict()
+        self.attributes.add('notes', notes)
+        return note
 
-    def get_note(self, identifier):
-        try:
-            return self.notes.get(id=int(identifier))
-        except ValueError:
-            return self.notes.filter(name__iexact=identifier).first()
+    def get_note(self, note_id):
+        """Get a specific note by ID."""
+        notes = self.attributes.get('notes', default={})
+        note_data = notes.get(str(note_id))
+        return Note.from_dict(note_data) if note_data else None
 
     def get_all_notes(self):
-        return self.notes.all()
+        """Get all notes for this character."""
+        notes = self.attributes.get('notes', default={})
+        return [Note.from_dict(note_data) for note_data in notes.values()]
 
-    def update_note(self, identifier, text, category=None):
-        note = self.get_note(identifier)
-        if note:
-            note.text = text
-            if category:
-                note.category = category
-            note.save()
+    def update_note(self, note_id, text=None, category=None, **kwargs):
+        """Update an existing note."""
+        notes = self.attributes.get('notes', default={})
+        if str(note_id) in notes:
+            note_data = notes[str(note_id)]
+            if text is not None:
+                note_data['text'] = text
+            if category is not None:
+                note_data['category'] = category
+            note_data.update(kwargs)
+            note_data['updated_at'] = datetime.now().isoformat()
+            notes[str(note_id)] = note_data
+            self.attributes.add('notes', notes)
             return True
         return False
 
-    def change_note_status(self, identifier, is_public):
-        note = self.get_note(identifier)
-        if note:
-            note.is_public = is_public
-            note.save()
-            return True
-        return False
+    def change_note_status(self, note_name, is_public):
+        """Change the visibility status of a note."""
+        try:
+            note = self.get_note(note_name)
+            if note:
+                note.is_public = is_public
+                note.save()
+                return True
+            return False
+        except Exception as e:
+            logger.log_err(f"Error in change_note_status: {e}")
+            return False
 
     def get_display_name(self, looker, **kwargs):
         """
@@ -271,7 +257,6 @@ class Character( DefaultCharacter):
             return success
         return False
 
-
     def return_from_umbra(self):
         """Return from the Umbra to the material world."""
         if not self.db.in_umbra:
@@ -283,7 +268,6 @@ class Character( DefaultCharacter):
         self.tags.remove("in_umbra", category="state")
         self.tags.add("in_material", category="state")
         self.location.msg_contents(f"{self.name} shimmers into view as they return from the Umbra.", exclude=[self])
-
         return True
 
     def return_appearance(self, looker, **kwargs):
@@ -428,13 +412,29 @@ class Character( DefaultCharacter):
         Retrieve the value of a stat, considering instances if applicable.
         """
         if not hasattr(self.db, "stats") or not self.db.stats:
-            self.db.stats = {}
+            return None
 
         category_stats = self.db.stats.get(category, {})
         type_stats = category_stats.get(stat_type, {})
 
-        # Check for the stat in the current category and type
+        # Handle background instances
+        if category == "backgrounds":
+            instance_match = re.match(r"(\w+)\(([\w\s]+)\)", stat_name)
+            if instance_match:
+                base_stat = instance_match.group(1)
+                instance = instance_match.group(2)
+                
+                if base_stat in type_stats:
+                    instances = type_stats[base_stat].get('instances', {})
+                    if instance in instances:
+                        return instances[instance]['temp' if temp else 'perm']
+                return None
+
+        # Handle non-instanced stats
         if stat_name in type_stats:
+            if isinstance(type_stats[stat_name], dict) and 'instances' in type_stats[stat_name]:
+                # Return base value for background without instance
+                return type_stats[stat_name]['base']['temp' if temp else 'perm']
             return type_stats[stat_name]['temp' if temp else 'perm']
 
         # If not found and the category is 'pools', check in 'dual' as well
@@ -453,6 +453,7 @@ class Character( DefaultCharacter):
     def set_stat(self, category, stat_type, stat_name, value, temp=False):
         """
         Set the value of a stat, considering instances if applicable.
+        Also handles special cases like Appearance for certain splats/forms.
         """
         if not hasattr(self.db, "stats") or not self.db.stats:
             self.db.stats = {}
@@ -462,11 +463,27 @@ class Character( DefaultCharacter):
             self.db.stats[category][stat_type] = {}
         if stat_name not in self.db.stats[category][stat_type]:
             self.db.stats[category][stat_type][stat_name] = {'perm': 0, 'temp': 0}
+
+        # Special handling for Appearance stat
+        if stat_name == 'Appearance':
+            splat = self.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            clan = self.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+            form = self.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+
+            # Force Appearance to 0 for specific cases
+            if (splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']) or \
+               (splat == 'Shifter' and form == 'Crinos'):
+                value = 0
+                self.db.stats[category][stat_type][stat_name]['perm'] = 0
+                self.db.stats[category][stat_type][stat_name]['temp'] = 0
+                return
+
+        # Normal stat setting
         if temp:
             self.db.stats[category][stat_type][stat_name]['temp'] = value
         else:
             self.db.stats[category][stat_type][stat_name]['perm'] = value
-            
+
     def check_stat_value(self, category, stat_type, stat_name, value, temp=False):
         """
         Check if a value is valid for a stat, considering instances if applicable.
@@ -487,15 +504,27 @@ class Character( DefaultCharacter):
             return message.replace(self.name, str(gradient_name))
         return message
  
-    def delete_note(self, name):
-        if self.character_sheet:
-            return self.character_sheet.delete_note(name)
+    def delete_note(self, note_id):
+        """Delete a note."""
+        notes = self.attributes.get('notes', default={})
+        if str(note_id) in notes:
+            del notes[str(note_id)]
+            self.attributes.add('notes', notes)
+            return True
         return False
 
     def get_notes_by_category(self, category):
-        if self.character_sheet:
-            return self.character_sheet.get_notes_by_category(category)
-        return []
+        """Get all notes in a specific category."""
+        return [note for note in self.get_all_notes() 
+                if note.category.lower() == category.lower()]
+
+    def get_public_notes(self):
+        """Get all public notes."""
+        return [note for note in self.get_all_notes() if note.is_public]
+
+    def get_approved_notes(self):
+        """Get all approved notes."""
+        return [note for note in self.get_all_notes() if note.is_approved]
 
     def approve_note(self, name):
         if self.character_sheet:
@@ -526,3 +555,107 @@ class Character( DefaultCharacter):
             return False
         splat = self.db.stats['other']['splat'].get('Splat', {}).get('perm', '')
         return splat in ['Changeling', 'Kinain']
+
+    def search_notes(self, search_term):
+        """Search notes by name or content."""
+        search_term = search_term.lower()
+        return [
+            note for note in self.get_all_notes()
+            if search_term in note.name.lower() or search_term in note.text.lower()
+        ]
+
+    def can_have_ability(self, ability_name):
+        """Check if character can have a specific ability based on splat."""
+        from world.wod20th.models import Stat
+        
+        stat = Stat.objects.filter(name=ability_name).first()
+        if not stat or not stat.splat:
+            return True
+            
+        # Get character's splat info
+        splat_type = self.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+        clan = self.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+        shifter_type = self.db.stats.get('identity', {}).get('lineage', {}).get('Type', {}).get('perm', '')
+
+        # Check allowed splats
+        allowed_splats = stat.splat
+        if isinstance(allowed_splats, list):
+            for allowed in allowed_splats:
+                if ':' in allowed:
+                    splat_name, subtype = allowed.split(':')
+                    if splat_type == splat_name:
+                        if splat_name == 'Vampire' and clan == subtype:
+                            return True
+                        elif splat_name == 'Shifter' and shifter_type == subtype:
+                            return True
+                else:
+                    if splat_type == allowed:
+                        return True
+                        
+        return False
+
+    def shift_form(self, new_form):
+        """Handle form changes for shifters, including Appearance adjustments."""
+        old_form = self.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+        
+        # Set the new form
+        self.set_stat('other', 'form', 'Form', new_form, temp=True)
+        
+        # Handle Appearance changes
+        if new_form == 'Crinos':
+            self.set_stat('attributes', 'social', 'Appearance', 0, temp=True)
+        elif old_form == 'Crinos' and new_form != 'Crinos':
+            # Restore original Appearance when leaving Crinos
+            perm_appearance = self.db.stats.get('attributes', {}).get('social', {}).get('Appearance', {}).get('perm', 1)
+            self.set_stat('attributes', 'social', 'Appearance', perm_appearance, temp=True)
+
+class Note:
+    def __init__(self, name, text, category="General", is_public=False, is_approved=False, 
+                 approved_by=None, approved_at=None, created_at=None, updated_at=None, note_id=None):
+        self.name = name
+        self.text = text
+        self.category = category
+        self.is_public = is_public
+        self.is_approved = is_approved
+        self.approved_by = approved_by
+        self.approved_at = approved_at
+        self.created_at = created_at if isinstance(created_at, datetime) else datetime.now()
+        self.updated_at = updated_at if isinstance(updated_at, datetime) else datetime.now()
+        self.note_id = note_id
+
+    @property
+    def id(self):
+        """For backwards compatibility"""
+        return self.note_id
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'text': self.text,
+            'category': self.category,
+            'is_public': self.is_public,
+            'is_approved': self.is_approved,
+            'approved_by': self.approved_by,
+            'approved_at': self.approved_at.isoformat() if self.approved_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'note_id': self.note_id
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        # Handle SaverDict by creating a new dict with its items
+        note_data = {k: v for k, v in data.items()}
+        
+        # Convert datetime strings back to datetime objects
+        for field in ['created_at', 'updated_at', 'approved_at']:
+            if note_data.get(field):
+                try:
+                    if isinstance(note_data[field], str):
+                        note_data[field] = datetime.fromisoformat(note_data[field])
+                except (ValueError, TypeError):
+                    note_data[field] = None
+            else:
+                note_data[field] = None
+                
+        return cls(**note_data)

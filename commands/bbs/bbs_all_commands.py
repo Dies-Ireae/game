@@ -62,11 +62,6 @@ class CmdReadBBS(default_cmds.MuxCommand):
     help_category = "BBS"
 
     def func(self):
-        controller = BBSController.objects.get(db_key="BBSController")
-        if not controller:
-            self.caller.msg("BBSController not found.")
-            return
-
         controller = get_or_create_bbs_controller()
 
         if not self.args:

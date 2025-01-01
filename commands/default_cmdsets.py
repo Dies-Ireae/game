@@ -37,7 +37,7 @@ from commands.admin import CmdApprove, CmdUnapprove
 from commands.CmdPump import CmdPump
 from commands.CmdSpendGain import CmdSpendGain
 from commands.where import CmdWhere
-from commands.chargen import CmdCharGen
+from commands.chargen import CmdCharGen, CmdSubmit
 from commands.CmdSelfStat import CmdSelfStat
 from commands.CmdShift import CmdShift
 from commands.CmdStaff import CmdStaff
@@ -50,6 +50,8 @@ from commands.CmdFaeDesc import CmdFaeDesc
 from commands.CmdLook import CmdLook
 from commands.CmdEvents import CmdEvents
 from commands.jobs.jobs_cmdset import JobSystemCmdSet
+from commands.CmdUnpuppet import CmdUnpuppet
+from commands.CmdPage import CmdPage
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -103,7 +105,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdStaff())
         self.add(CmdUnfindable())
         self.add(JobSystemCmdSet)
-
+        self.add(CmdUnpuppet())
+        self.add(CmdSubmit())
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
     """
@@ -136,6 +139,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdJoin())
         self.add(CmdApprove())
         self.add(CmdUnapprove())
+        self.add(CmdPage())
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """

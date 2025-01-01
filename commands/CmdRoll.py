@@ -117,6 +117,16 @@ class CmdRoll(default_cmds.MuxCommand):
                     detailed_description.append(f"{sign} |h|x{full_name} (0)|n")
                     warnings.append(f"|rWarning: Stat '{full_name}' not found or has no value. Treating as 0.|n")
 
+        # Apply health penalties
+        health_penalty = self.get_health_penalty(self.caller)
+        if health_penalty > 0:
+            original_pool = dice_pool
+            dice_pool = max(0, dice_pool - health_penalty)
+            description.append(f"-|r{health_penalty}|n |w(Health Penalty)|n")
+            detailed_description.append(f"-|r{health_penalty}|n |w(Health Penalty)|n")
+            if dice_pool == 0 and original_pool > 0:
+                warnings.append("|rWarning: Health penalties have reduced your dice pool to 0.|n")
+
         # Roll the dice using our utility function
         rolls, successes, ones = roll_dice(dice_pool, difficulty)
         
@@ -145,8 +155,16 @@ class CmdRoll(default_cmds.MuxCommand):
                     obj.msg(public_output)
 
         # After processing the roll, log it
-        log_description = f"{private_description} vs {difficulty}"
-        self.caller.location.log_roll(self.caller.key, log_description, result)
+        try:
+            log_description = f"{private_description} vs {difficulty}"
+            # Initialize roll_log if it doesn't exist
+            if not hasattr(self.caller.location.db, 'roll_log') or self.caller.location.db.roll_log is None:
+                self.caller.location.db.roll_log = []
+            self.caller.location.log_roll(self.caller.key, log_description, result)
+        except Exception as e:
+            # Log the error but don't let it interrupt the roll command
+            self.caller.msg("|rWarning: Could not log roll.|n")
+            print(f"Roll logging error: {e}")
 
     def get_stat_value_and_name(self, stat_name):
         """
@@ -255,6 +273,9 @@ class CmdRoll(default_cmds.MuxCommand):
         Display the roll log for the current room.
         """
         room = self.caller.location
+        # Initialize roll_log if it doesn't exist
+        if not hasattr(room.db, 'roll_log') or room.db.roll_log is None:
+            room.db.roll_log = []
         roll_log = room.get_roll_log()
 
         if not roll_log:
@@ -273,3 +294,28 @@ class CmdRoll(default_cmds.MuxCommand):
             log_entries.append(f"{timestamp_str} - {entry['roller']}: {entry['description']} => {entry['result']}")
 
         self.caller.msg(header + "\n" + "\n".join(log_entries))
+
+    def get_stat_value(self, character, stat_name):
+        temp_value = character.get_stat(category='abilities', stat_type='knowledge', name=stat_name, temp=True)
+        if not temp_value:
+            # Fall back to permanent value if temp is 0 or None
+            temp_value = character.get_stat(category='abilities', stat_type='knowledge', name=stat_name, temp=False)
+        return temp_value or 0
+
+    def get_health_penalty(self, character):
+        """
+        Calculate dice penalty based on character's health levels.
+        Returns the number of dice to subtract from the pool.
+        """
+        # Get injury level directly
+        injury_level = character.db.injury_level
+
+        # Calculate penalty based on injury level
+        if injury_level == 'Hurt' or injury_level == 'Injured':
+            return 1
+        elif injury_level == 'Wounded' or injury_level == 'Mauled':
+            return 2
+        elif injury_level == 'Crippled':
+            return 5
+        
+        return 0

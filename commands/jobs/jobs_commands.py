@@ -15,17 +15,18 @@ from django.utils import timezone
 from django.db.models import Max, F
 import json
 import copy
+from evennia.help.models import HelpEntry
 
 class CmdJobs(MuxCommand):
     """
     View and manage jobs
 
     Usage:
-      +jobs
-      +jobs <#>
+      +jobs                      - List all jobs
+      +jobs <#>                  - View details of a specific job
       +jobs/create <category>/<title>=<text> [= <template>] <args>
-      +jobs/comment <#>=<text>
-      +jobs/close <#>
+      +jobs/comment <#>=<text>   - Add a comment to a job
+      +jobs/close <#>           - Close a job
       +jobs/addplayer <#>=<player>
       +jobs/removeplayer <#>=<player>
       +jobs/assign <#>=<staff>
@@ -44,32 +45,35 @@ class CmdJobs(MuxCommand):
       +jobs/complete <#>=<reason>
       +jobs/cancel <#>=<reason>
 
-    Switches:
-      create - Create a new job
-      comment - Add a comment to a job
-      close - Close a job
-      addplayer - Add another player to a job
-      removeplayer - Remove a player from a job
-      assign - Assign a job to a staff member (staff-only)
-      claim - Claim a job (staff-only)
-      unclaim - Unclaim a job (staff-only)
-      approve - Approve and close a job (staff-only)
-      reject - Reject and close a job (staff-only)
-      attach - Attach an object to a job
-      remove - Remove an attached object from a job
-      list - List jobs (with optional queue filter)
-      reassign - Reassign a job to a new staff member
-      queue/view - View jobs in a specific queue
-      list_with_object - List jobs with a specific object attached
-      archive - View all archived jobs or a specific archived job
-      complete - Complete and archive a job (staff-only)
-      cancel - Cancel and archive a job (staff-only)
+    Categories:
+      REQ    - General requests
+      BUG    - Bug reports
+      PLOT   - Plot-related requests
+      BUILD  - Building/room requests
+      MISC   - Miscellaneous requests
+
+    Examples:
+      +jobs
+      +jobs 5
+      +jobs/create REQ/New Character=Please review my character sheet
+      +jobs/comment 5=Added background story
+      +jobs/approve 5
     """
 
     key = "+jobs"
     aliases = ["+requests", "+job", "+myjobs"]
     locks = "cmd:all()"
-    help_category = "Jobs"
+    help_category = "Admin"
+    
+    # Add these properties to help with help system registration
+    auto_help = True
+    help_entry_tags = ["jobs", "requests", "admin"]
+    
+    def get_help(self, caller, cmdset):
+        """
+        Returns the help string for this command.
+        """
+        return self.__doc__
 
     def func(self):
         if not self.args and not self.switches:
@@ -197,82 +201,116 @@ class CmdJobs(MuxCommand):
             self.caller.msg(f"Job #{job_id} not found or is archived. Use +jobs/archive {job_id} to view archived jobs.")
 
     def create_job(self):
+        """Handle job creation with proper category handling."""
         if not self.args:
-            self.caller.msg("Usage: +jobs/create <title>=<description> [= <template>] <args>")
+            self.caller.msg("Usage: +jobs/create <category>/<title>=<text> [= <template>] <args>")
             return
-        
-        title_desc, _, remainder = self.args.partition("=")
-        title = title_desc.strip()
-        description, _, template_args = remainder.partition("=")
-        description = description.strip()
-        template_name, _, args_str = template_args.partition("<args>")
-        template_name = template_name.strip()
-        args_str = args_str.strip()
+
+        if "=" not in self.args:
+            self.caller.msg("You must provide both a title and description.")
+            return
+
+        # Split the input into title/description and template parts
+        title_desc, _, template_part = self.args.partition("=")
+        title_desc = title_desc.strip()
+        template_part = template_part.strip()
+
+        # Handle category/title format
+        if "/" in title_desc:
+            category, title = title_desc.split("/", 1)
+            category = category.strip().upper()
+            title = title.strip()
+        else:
+            category = "REQ"  # Default category
+            title = title_desc.strip()
+
+        # Split description and template if provided
+        if "=" in template_part:
+            description, template_args = template_part.split("=", 1)
+            description = description.strip()
+            template_name = template_args.strip()
+        else:
+            description = template_part
+            template_name = ""
+
+        # Validate category
+        valid_categories = ["REQ", "BUG", "PLOT", "BUILD", "MISC"]
+        if category not in valid_categories:
+            self.caller.msg(f"Invalid category. Valid categories are: {', '.join(valid_categories)}")
+            return
 
         if not title or not description:
-            self.caller.msg("Title and description must be provided.")
+            self.caller.msg("Both title and description are required.")
             return
 
-        template = None
-        template_args = {}
-        close_commands = []
+        try:
+            # Get or create the queue for this category
+            queue, created = Queue.objects.get_or_create(
+                name=category,
+                defaults={'automatic_assignee': None}
+            )
 
-        # Determine the queue to assign the job to
-        queue = None
-        if template_name:
-            try:
-                template = JobTemplate.objects.get(name__iexact=template_name)
-                queue = template.queue
-                close_commands = template.close_commands
-                
-                # Parse the args for the template
+            # Handle template if provided
+            template_data = {}
+            if template_name:
                 try:
-                    args_dict = dict(arg.split('=') for arg in args_str.split(','))
-                    for arg_key, _ in template.args.items():
-                        if arg_key not in args_dict:
-                            self.caller.msg(f"Missing argument '{arg_key}' for template.")
-                            return
-                    template_args = args_dict
-                except ValueError:
-                    self.caller.msg("Invalid args format. Use <arg1=value1, arg2=value2, ...>")
-                    return
+                    template = JobTemplate.objects.get(name__iexact=template_name)
+                    queue = template.queue
+                    template_data = {'template': template.name}
+                except JobTemplate.DoesNotExist:
+                    self.caller.msg(f"Template '{template_name}' not found. Creating job without template.")
+
+            # Create the job
+            job = Job.objects.create(
+                title=title,
+                description=description,
+                requester=self.caller.account,
+                queue=queue,
+                status='open',
+                template_args=template_data
+            )
+
+            # Notify the creator
+            self.caller.msg(f"|gJob '{title}' created with ID {job.id} in category {category}.|n")
+            
+            # Post to the jobs channel for staff notification
+            self.post_to_jobs_channel(self.caller.name, job.id, f"created in {category}")
+
+            # Send mail notification to staff
+            staff_message = (
+                f"New job created:\n"
+                f"ID: {job.id}\n"
+                f"Category: {category}\n"
+                f"Title: {title}\n"
+                f"Description: {description}\n"
+                f"Created by: {self.caller.name}"
+            )
+            
+            # Find staff members to notify
+            from evennia.accounts.models import AccountDB
+            staff = AccountDB.objects.filter(is_staff=True).exclude(id=self.caller.account.id)
+            if staff:
+                staff_names = ",".join(staff_member.username for staff_member in staff)
+                self.caller.execute_cmd(f"@mail {staff_names}=New Job #{job.id}/{staff_message}")
+
+            # Handle automatic assignment if configured
+            if queue.automatic_assignee:
+                job.assignee = queue.automatic_assignee
+                job.status = 'claimed'
+                job.save()
+                self.caller.msg(f"|yJob automatically assigned to {queue.automatic_assignee}.|n")
                 
-            except JobTemplate.DoesNotExist:
-                self.caller.msg(f"No template found with the name '{template_name}'.")
-                return
-        else:
-            queue = Queue.objects.first()
+                # Notify the assignee
+                if queue.automatic_assignee != self.caller.account:
+                    self.caller.execute_cmd(
+                        f"@mail {queue.automatic_assignee.username}"
+                        f"=Job #{job.id} Auto-assigned"
+                        f"/You have been automatically assigned to Job #{job.id}: {title}"
+                    )
 
-        if not queue:
-            queue, created = Queue.objects.get_or_create(name="Default", automatic_assignee=None)
-            if created:
-                self.caller.msg("No queue specified or found. Created and assigned to 'Default'.")
-
-        # Ensure the requester is an AccountDB instance
-        account = self.caller.account if hasattr(self.caller, 'account') else self.caller
-
-        # Create the job
-        job = Job.objects.create(
-            title=title,
-            description=description,
-            requester=account,
-            queue=queue,
-            status='open',
-            template_args=template_args
-        )
-
-        self.caller.msg(f"Job '{job.title}' created with ID {job.id}.")
-
-        # Assign automatic assignee if set
-        if queue.automatic_assignee:
-            job.assignee = queue.automatic_assignee
-            job.status = 'claimed'
-            job.save()
-            self.caller.msg(f"Job '{job.title}' automatically assigned to {queue.automatic_assignee}.")
-            if hasattr(queue.automatic_assignee, 'sessions') and queue.automatic_assignee.sessions.exists():
-                queue.automatic_assignee.msg(f"You have been assigned to the job '{job.title}'.")
-
-        self.post_to_jobs_channel(self.caller.name, job.id, "created")
+        except Exception as e:
+            self.caller.msg(f"|rError creating job: {str(e)}|n")
+            return
 
     def add_comment(self):
         if not self.args or "=" not in self.args:
@@ -497,29 +535,68 @@ class CmdJobs(MuxCommand):
             self.caller.msg("Invalid job ID.")
 
     def approve_job(self):
-        if not self.args:
-            self.caller.msg("Usage: +jobs/approve <#>")
+        """Approve and close a job."""
+        if not self.caller.check_permstring("Admin"):
+            self.caller.msg("You don't have permission to approve jobs.")
             return
 
         try:
             job_id = int(self.args)
             job = Job.objects.get(id=job_id)
             
-            if not self.caller.check_permstring("Admin"):
-                self.caller.msg("You don't have permission to approve this job.")
+            if job.status in ['closed', 'rejected', 'completed', 'cancelled']:
+                self.caller.msg(f"Job #{job_id} is already {job.status}.")
                 return
 
-            if job.status not in ["open", "claimed"]:
-                self.caller.msg("This job cannot be approved.")
-                return
-
-            job.approved = True
-            job.close()  # Automatically closes and executes close commands
-            self.caller.msg(f"Job '{job.title}' has been approved and closed.")
-            self.post_to_jobs_channel(self.caller.name, job.id, "approved and closed")
+            # Add approval comment
+            new_comment = {
+                "author": self.caller.account.username,
+                "text": "Job approved.",
+                "created_at": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
             
-        except (ValueError, Job.DoesNotExist):
+            if not job.comments:
+                job.comments = []
+            job.comments.append(new_comment)
+
+            # Update job status
+            job.status = 'completed'
+            job.closed_at = timezone.now()
+            job.assignee = self.caller.account
+            job.save()
+
+            # Create archived version
+            comments_text = "\n\n".join([f"{comment['author']} [{comment['created_at']}]: {comment['text']}" 
+                                       for comment in job.comments])
+            archived_job = ArchivedJob.objects.create(
+                original_id=job.id,
+                title=job.title,
+                description=job.description,
+                requester=job.requester,
+                assignee=job.assignee,
+                queue=job.queue,
+                created_at=job.created_at,
+                closed_at=job.closed_at,
+                status='approved',
+                comments=comments_text
+            )
+
+            job.archive_id = archived_job.archive_id
+            job.save()
+
+            self.caller.msg(f"Job #{job_id} has been approved and archived.")
+            
+            # Send notifications
+            notification_message = f"Job #{job_id} has been approved by {self.caller.name}."
+            self.send_mail_notification(job, notification_message)
+            self.post_to_jobs_channel(self.caller.name, job.id, "approved")
+
+        except ValueError:
             self.caller.msg("Invalid job ID.")
+        except Job.DoesNotExist:
+            self.caller.msg(f"Job #{self.args} not found.")
+        except Exception as e:
+            self.caller.msg(f"Error approving job: {str(e)}")
 
     def reject_job(self):
         if not self.args:
@@ -760,8 +837,14 @@ class CmdJobs(MuxCommand):
                 break
 
         if not channel:
-            # If no channel was found, create a new 'Jobs' channel
-            channel = create.create_channel("Jobs", typeclass="evennia.comms.comms.Channel")
+            # Create channel without auto_subscribe
+            channel = create.create_channel(
+                "Jobs",
+                typeclass="typeclasses.channels.Channel",
+                locks="control:perm(Admin);listen:all();send:all()"
+            )
+            # Subscribe the creator after channel is created
+            channel.connect(self.caller)
             self.caller.msg("Created a new 'Jobs' channel for job notifications.")
 
         message = f"{player_name} {action} Job #{job_id}"
@@ -839,6 +922,33 @@ class CmdJobs(MuxCommand):
 
         except Job.DoesNotExist:
             self.caller.msg(f"Job #{job_id} not found.")
+
+def create_jobs_help_entry():
+    """Create or update the jobs help entry."""
+    try:
+        help_entry, created = HelpEntry.objects.get_or_create(
+            db_key="jobs",
+            defaults={
+                "db_help_category": "Admin",
+                "db_entrytext": CmdJobs.__doc__
+            }
+        )
+        
+        if not created:
+            help_entry.db_entrytext = CmdJobs.__doc__
+            help_entry.db_help_category = "Admin"
+            help_entry.save()
+
+        # Set tags properly using the set() method
+        help_entry.db_tags.set(["jobs", "requests", "admin"], category="help")
+        
+        return help_entry
+    except Exception as e:
+        print(f"Error creating help entry: {str(e)}")
+        return None
+
+# Call this when the module is loaded
+create_jobs_help_entry()
 
 class JobSystemCmdSet(CmdSet):
     def at_cmdset_creation(self):

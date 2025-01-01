@@ -95,13 +95,24 @@ class CmdPlusIc(MuxCommand):
     def func(self):
         caller = self.caller
 
-        # Check if the character is approved
-        if not caller.tags.has("approved", category="approval"):
+        # Check if the character is approved - check both tag and attribute
+        is_approved = (caller.tags.has("approved", category="approval") or 
+                      caller.db.approved)
+        has_unapproved = caller.tags.has("unapproved", category="approval")
+
+        # If they have approved=True but still have the unapproved tag, fix it
+        if caller.db.approved and has_unapproved:
+            caller.tags.remove("unapproved", category="approval")
+            caller.tags.add("approved", category="approval")
+            is_approved = True
+
+        if not is_approved or has_unapproved:
             caller.msg("You must be approved to enter IC areas.")
             return
 
         # Get the stored pre_ooc_location, or use the default room #30
         target_location = caller.db.pre_ooc_location or search_object("#52")[0]
+
         if not target_location:
             caller.msg("Error: Unable to find a valid IC location.")
             return

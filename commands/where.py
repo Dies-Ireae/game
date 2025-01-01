@@ -1,7 +1,7 @@
 from evennia import default_cmds
 from evennia.server.sessionhandler import SESSIONS
 from evennia.utils.ansi import ANSIString
-from world.wod20th.utils.formatting import header
+from world.wod20th.utils.formatting import header, footer
 import time
 
 class CmdWhere(default_cmds.MuxCommand):
@@ -48,30 +48,42 @@ class CmdWhere(default_cmds.MuxCommand):
 
     def func(self):
         """
-        Implement the command.
+        Get all connected accounts/players.
         """
-        sessions = SESSIONS.get_sessions()
-        players = []
-        unfindable = []
+        caller = self.caller
+        session_list = SESSIONS.get_sessions()
+        session_list = sorted(session_list, key=lambda o: o.account.key if o.account else "")
+        hide_sessions = False
 
-        for session in sessions:
-            account = session.account
-            if not account:
-                continue
-            character = session.puppet
-            if character:
-                idle_time = self.format_idle_time(self.get_idle_time(character))
-                if character.location and not character.db.unfindable and not character.location.db.unfindable:
-                    location = character.location.get_display_name(self.caller)
-                    location = location[:40]  # Shortened to accommodate Umbra status
-                    umbra_status = " [Umbra]" if character.db.in_umbra else ""
-                    players.append({
-                        'name': character.get_display_name(self.caller),
-                        'idle': idle_time,
-                        'location': f"{location}{umbra_status}",
-                        'is_builder': account.check_permstring("Builder"),
-                    })
+        string = header("Characters", width=78)
+
+        if session_list:
+            table = []
+            for session in session_list:
+                if not session.logged_in:
+                    continue
+                puppet = session.get_puppet()
+                if not puppet:
+                    continue
+
+                if puppet.db.unfindable and not caller.check_permstring("builders"):
+                    continue
+
+                # Get the short description, or a default message if none exists
+                short_desc = puppet.db.short_desc or "Type '+shortdesc <desc>' to set a short description."
+
+                # Get idle time
+                idle = session.cmd_last_visible
+                if idle:
+                    idle_time = time.time() - idle
+                    if idle_time >= 3600:
+                        idle_fmt = "%.1fh" % (idle_time / 3600)
+                    elif idle_time >= 60:
+                        idle_fmt = "%.1fm" % (idle_time / 60)
+                    else:
+                        idle_fmt = "%ss" % idle_time
                 else:
+
                     unfindable.append({
                         'name': character.get_display_name(self.caller),
                         'idle': idle_time,
@@ -124,3 +136,23 @@ class CmdWhere(default_cmds.MuxCommand):
         output += "|r=|n" * 78 + "\n"
 
         self.caller.msg(output)
+        
+                    idle_fmt = ""
+
+                # Format each line with adjusted column widths
+                # Name column reduced to 15 characters, idle time 4 characters
+                name_part = puppet.name[:15].ljust(15)
+                idle_part = idle_fmt.rjust(4)
+                # Remaining space (minus spacing) goes to description
+                desc_width = 78 - 15 - 4 - 3  # Total - name - idle - spacing
+                short_desc = short_desc[:desc_width]
+
+                table.append(f" {name_part} {idle_part} {short_desc}")
+
+            string += "\n".join(table)
+        else:
+            string += " No characters found."
+
+        string += footer(width=78)
+        caller.msg(string)
+
