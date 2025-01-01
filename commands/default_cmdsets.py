@@ -20,6 +20,7 @@ from commands.CmdShortDesc import CmdShortDesc
 from commands.CmdPose import CmdPose
 from commands.CmdSetStats import CmdStats, CmdSpecialty
 from commands.CmdSheet import CmdSheet
+from commands.CmdInfo import CmdInfo
 from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
 from commands.CmdLanguage import CmdLanguage
@@ -81,6 +82,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
 
         self.add(CmdSpecialty())
         self.add(CmdSheet())
+        self.add(CmdInfo())
         self.add(CmdHurt())
         self.add(CmdHeal())
         self.add(CmdEvents())
