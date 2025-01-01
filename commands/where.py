@@ -83,6 +83,60 @@ class CmdWhere(default_cmds.MuxCommand):
                     else:
                         idle_fmt = "%ss" % idle_time
                 else:
+
+                    unfindable.append({
+                        'name': character.get_display_name(self.caller),
+                        'idle': idle_time,
+                        'is_builder': account.check_permstring("Builder"),
+                    })
+            else:
+                unfindable.append({
+                    'name': account.get_display_name(self.caller),
+                    'idle': "N/A",
+                    'is_builder': account.check_permstring("Builder"),
+                })
+
+        players.sort(key=lambda x: x['location'].lower())
+        unfindable.sort(key=lambda x: x['name'].lower())
+
+        output = ""
+        output += header("+where", width=78, bcolor="|r", fillchar="|r-|n")
+        output += ANSIString(" |wPLAYER|n").ljust(30) + ANSIString("|wIDLE|n").rjust(5) + "    " + ANSIString("|wLOCATION|n\n")
+        output += "|r-|n" * 78 + "\n"
+
+        for p in players:
+            name = p['name'].ljust(28)
+            idle = p['idle'].rjust(5) + "   "
+            location = p['location']
+            output += f" {name} {idle} {location}\n"
+
+        output += "|r-|n" * 78 + "\n"
+
+        if unfindable:
+            output += " Unfindable Characters:\n"
+            line = ""
+            count = 0
+            for p in unfindable:
+                name = p['name']
+                idle = p['idle']
+                entry = f"{name} {idle}".ljust(18)
+                line += entry
+                count += 1
+                if count % 4 == 0:
+                    output += line.rstrip() + "\n"
+                    line = ""
+            if line:
+                output += line.rstrip() + "\n"
+
+        total_players = len(players) + len(unfindable)
+        if len(unfindable) > 0:
+            output += "|r-|n" * 78 + "\n"
+
+        output += f"                          There are |y{total_players}|n players online.\n"
+        output += "|r=|n" * 78 + "\n"
+
+        self.caller.msg(output)
+        
                     idle_fmt = ""
 
                 # Format each line with adjusted column widths
@@ -101,3 +155,4 @@ class CmdWhere(default_cmds.MuxCommand):
 
         string += footer(width=78)
         caller.msg(string)
+
