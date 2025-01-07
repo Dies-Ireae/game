@@ -203,19 +203,20 @@ class CmdJobs(MuxCommand):
     def create_job(self):
         """Handle job creation with proper category handling."""
         if not self.args:
-            self.caller.msg("Usage: +jobs/create <category>/<title>=<text> [= <template>] <args>")
+            self.caller.msg("Usage: +jobs/create <category>/<title>=<text>")
             return
 
-        if "=" not in self.args:
+        # Split on first = only
+        parts = self.args.split('=', 1)
+        if len(parts) < 2:
             self.caller.msg("You must provide both a title and description.")
             return
 
-        # Split the input into title/description and template parts
-        title_desc, _, template_part = self.args.partition("=")
+        title_desc, description = parts
         title_desc = title_desc.strip()
-        template_part = template_part.strip()
+        description = description.strip()
 
-        # Handle category/title format
+        # Handle category/title format - split on first / only
         if "/" in title_desc:
             category, title = title_desc.split("/", 1)
             category = category.strip().upper()
@@ -224,17 +225,8 @@ class CmdJobs(MuxCommand):
             category = "REQ"  # Default category
             title = title_desc.strip()
 
-        # Split description and template if provided
-        if "=" in template_part:
-            description, template_args = template_part.split("=", 1)
-            description = description.strip()
-            template_name = template_args.strip()
-        else:
-            description = template_part
-            template_name = ""
-
         # Validate category
-        valid_categories = ["REQ", "BUG", "PLOT", "BUILD", "MISC"]
+        valid_categories = ["REQ", "BUG", "PLOT", "BUILD", "MISC", "XP", "PRP", "SPLAT"]
         if category not in valid_categories:
             self.caller.msg(f"Invalid category. Valid categories are: {', '.join(valid_categories)}")
             return
@@ -250,24 +242,13 @@ class CmdJobs(MuxCommand):
                 defaults={'automatic_assignee': None}
             )
 
-            # Handle template if provided
-            template_data = {}
-            if template_name:
-                try:
-                    template = JobTemplate.objects.get(name__iexact=template_name)
-                    queue = template.queue
-                    template_data = {'template': template.name}
-                except JobTemplate.DoesNotExist:
-                    self.caller.msg(f"Template '{template_name}' not found. Creating job without template.")
-
             # Create the job
             job = Job.objects.create(
                 title=title,
                 description=description,
                 requester=self.caller.account,
                 queue=queue,
-                status='open',
-                template_args=template_data
+                status='open'
             )
 
             # Notify the creator
@@ -275,23 +256,6 @@ class CmdJobs(MuxCommand):
             
             # Post to the jobs channel for staff notification
             self.post_to_jobs_channel(self.caller.name, job.id, f"created in {category}")
-
-            # Send mail notification to staff
-            staff_message = (
-                f"New job created:\n"
-                f"ID: {job.id}\n"
-                f"Category: {category}\n"
-                f"Title: {title}\n"
-                f"Description: {description}\n"
-                f"Created by: {self.caller.name}"
-            )
-            
-            # Find staff members to notify
-            from evennia.accounts.models import AccountDB
-            staff = AccountDB.objects.filter(is_staff=True).exclude(id=self.caller.account.id)
-            if staff:
-                staff_names = ",".join(staff_member.username for staff_member in staff)
-                self.caller.execute_cmd(f"@mail {staff_names}=New Job #{job.id}/{staff_message}")
 
             # Handle automatic assignment if configured
             if queue.automatic_assignee:
@@ -313,14 +277,17 @@ class CmdJobs(MuxCommand):
             return
 
     def add_comment(self):
+        """Add a comment to a job."""
         if not self.args or "=" not in self.args:
-            self.caller.msg("Usage: +jobs/comment <#>=<text>")
+            self.caller.msg("Usage: +jobs/comment <#>=<comment>")
             return
 
-        job_id, comment_text = self.args.split("=", 1)
+        # Split on first = only
+        job_id, comment = self.args.split("=", 1)
         
         try:
-            job_id = int(job_id)
+            job_id = int(job_id.strip())
+            comment = comment.strip()  
             job = Job.objects.get(id=job_id)
 
             if not (job.requester == self.caller.account or 
@@ -331,7 +298,7 @@ class CmdJobs(MuxCommand):
 
             new_comment = {
                 "author": self.caller.account.username,
-                "text": comment_text.strip(),
+                "text": comment,
                 "created_at": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
             }
             
@@ -342,7 +309,7 @@ class CmdJobs(MuxCommand):
 
             self.caller.msg(f"Comment added to job #{job_id}.")
             self.post_to_jobs_channel(self.caller.name, job.id, "commented on")
-            self.send_mail_notification(job, f"{self.caller.name} commented on Job #{job.id}: {comment_text}")
+            self.send_mail_notification(job, f"{self.caller.name} commented on Job #{job.id}: {comment}")
 
         except (ValueError, Job.DoesNotExist):
             self.caller.msg("Invalid job ID.")
@@ -535,37 +502,48 @@ class CmdJobs(MuxCommand):
             self.caller.msg("Invalid job ID.")
 
     def approve_job(self):
-        """Approve and close a job."""
+        """Handle job approval with optional comment."""
         if not self.caller.check_permstring("Admin"):
             self.caller.msg("You don't have permission to approve jobs.")
             return
 
         try:
-            job_id = int(self.args)
+            # Split on first = only
+            if "=" in self.args:
+                job_id, comment = self.args.split("=", 1)
+                job_id = int(job_id.strip())
+                comment = comment.strip()
+            else:
+                job_id = int(self.args.strip())
+                comment = ""
+
             job = Job.objects.get(id=job_id)
             
             if job.status in ['closed', 'rejected', 'completed', 'cancelled']:
                 self.caller.msg(f"Job #{job_id} is already {job.status}.")
                 return
 
-            # Add approval comment
-            new_comment = {
-                "author": self.caller.account.username,
-                "text": "Job approved.",
-                "created_at": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-            }
-            
-            if not job.comments:
-                job.comments = []
-            job.comments.append(new_comment)
-
-            # Update job status
             job.status = 'completed'
             job.closed_at = timezone.now()
-            job.assignee = self.caller.account
-            job.save()
 
-            # Create archived version
+            # Add the approval comment if provided
+            if comment:
+                job.comments.append({
+                    'author': self.caller.name,
+                    'text': f"Approved: {comment}",
+                    'created_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                })
+
+            # Send mail notification before archiving
+            notification_message = f"Your job '#{job_id}: {job.title}' has been approved."
+            if comment:
+                notification_message += f"\n\nComment: {comment}"
+            
+            if job.requester and job.requester != self.caller.account:
+                mail_cmd = f"@mail {job.requester.username}=Job #{job_id} Approved/{notification_message}"
+                self.caller.execute_cmd(mail_cmd)
+
+            # Archive the job
             comments_text = "\n\n".join([f"{comment['author']} [{comment['created_at']}]: {comment['text']}" 
                                        for comment in job.comments])
             archived_job = ArchivedJob.objects.create(
@@ -577,7 +555,7 @@ class CmdJobs(MuxCommand):
                 queue=job.queue,
                 created_at=job.created_at,
                 closed_at=job.closed_at,
-                status='approved',
+                status=job.status,
                 comments=comments_text
             )
 
@@ -585,43 +563,78 @@ class CmdJobs(MuxCommand):
             job.save()
 
             self.caller.msg(f"Job #{job_id} has been approved and archived.")
-            
-            # Send notifications
-            notification_message = f"Job #{job_id} has been approved by {self.caller.name}."
-            self.send_mail_notification(job, notification_message)
             self.post_to_jobs_channel(self.caller.name, job.id, "approved")
 
         except ValueError:
-            self.caller.msg("Invalid job ID.")
+            self.caller.msg("Usage: +job/approve <#>[=<comment>]")
         except Job.DoesNotExist:
-            self.caller.msg(f"Job #{self.args} not found.")
-        except Exception as e:
-            self.caller.msg(f"Error approving job: {str(e)}")
+            self.caller.msg(f"Job #{job_id} not found.")
 
     def reject_job(self):
-        if not self.args:
-            self.caller.msg("Usage: +jobs/reject <#>")
+        """Handle job rejection with optional comment."""
+        if not self.caller.check_permstring("Admin"):
+            self.caller.msg("You don't have permission to reject jobs.")
             return
 
         try:
-            job_id = int(self.args)
+            # Split into job_id and comment if there's an = sign
+            if "=" in self.args:
+                job_id, comment = self.args.split("=", 1)
+                job_id = int(job_id.strip())
+                comment = comment.strip()
+            else:
+                job_id = int(self.args.strip())
+                comment = ""
+
             job = Job.objects.get(id=job_id)
             
-            if not self.caller.check_permstring("Admin"):
-                self.caller.msg("You don't have permission to reject this job.")
-                return
-
             if job.status not in ["open", "claimed"]:
                 self.caller.msg("This job cannot be rejected.")
                 return
 
-            job.approved = False
-            job.close()  # This sets the status to "rejected" without executing close commands
-            self.caller.msg(f"Job '{job.title}' has been rejected.")
-            self.post_to_jobs_channel(self.caller.name, job.id, "rejected")
+            job.status = 'rejected'
+            job.closed_at = timezone.now()
+
+            # Add the rejection comment if provided
+            if comment:
+                job.comments.append({
+                    'author': self.caller.name,
+                    'text': f"Rejected: {comment}",
+                    'created_at': timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                })
+
+            # Archive the job
+            comments_text = "\n\n".join([f"{comment['author']} [{comment['created_at']}]: {comment['text']}" for comment in job.comments])
+            archived_job = ArchivedJob.objects.create(
+                original_id=job.id,
+                title=job.title,
+                description=job.description,
+                requester=job.requester,
+                assignee=job.assignee,
+                queue=job.queue,
+                created_at=job.created_at,
+                closed_at=job.closed_at,
+                status=job.status,
+                comments=comments_text
+            )
+
+            job.archive_id = archived_job.archive_id
+            job.save()
+
+            self.caller.msg(f"Job #{job_id} has been rejected and archived.")
             
-        except (ValueError, Job.DoesNotExist):
-            self.caller.msg("Invalid job ID.")
+            # Send mail notifications
+            notification_message = f"Job #{job_id} has been rejected."
+            if comment:
+                notification_message += f"\n\nReason: {comment}"
+            self.send_mail_notification(job, notification_message)
+            
+            self.post_to_jobs_channel(self.caller.name, job.id, "rejected")
+
+        except ValueError:
+            self.caller.msg("Usage: +job/reject <#>[=<reason>]")
+        except Job.DoesNotExist:
+            self.caller.msg(f"Job #{job_id} not found.")
 
     def attach_object(self):
         if not self.args or "=" not in self.args:
@@ -767,6 +780,11 @@ class CmdJobs(MuxCommand):
             self.caller.msg(f"No jobs found with the object '{object_name}' attached.")
 
     def view_archived_job(self):
+        """View archived jobs - restricted to staff only."""
+        if not self.caller.check_permstring("Admin"):
+            self.caller.msg("You don't have permission to view archived jobs.")
+            return
+
         if not self.args:
             # List all archived jobs
             archived_jobs = ArchivedJob.objects.all().order_by('-closed_at')
@@ -802,6 +820,11 @@ class CmdJobs(MuxCommand):
             try:
                 job_id = int(self.args)
                 archived_job = ArchivedJob.objects.get(original_id=job_id)
+                
+                # Additional permission check for viewing specific jobs
+                if not self.caller.check_permstring("Admin") and archived_job.requester != self.caller.account:
+                    self.caller.msg("You don't have permission to view this archived job.")
+                    return
                 
                 output = header(f"Archived Job {archived_job.original_id}", width=78, fillchar="|r-|n") + "\n"
                 output += f"|cTitle:|n {archived_job.title}\n"
@@ -851,19 +874,24 @@ class CmdJobs(MuxCommand):
         channel.msg(f"[Job System] {message}")
 
     def send_mail_notification(self, job, message):
-        """Send a mail notification to relevant players."""
-        recipients = set([job.requester] + list(job.participants.all()))
-        recipients.discard(self.caller.account)  # Remove the sender from recipients
-
-        if recipients:
-            subject = f"Job #{job.id} Update"
-            mail_body = f"Job #{job.id}: {job.title}\n\n{message}"
-            recipient_names = ','.join(recipient.username for recipient in recipients)
-            
-            self.caller.execute_cmd(f"@mail {recipient_names}={subject}/{mail_body}")
-            self.caller.msg("Notification sent to relevant players.")
-        else:
-            self.caller.msg("No other players to notify.")
+        """Send a mail notification to the job requester."""
+        if job.requester and job.requester != self.caller.account:  # Don't send mail if you're acting on your own job
+            try:
+                subject = f"Job #{job.id} Update"
+                mail_body = f"Job #{job.id}: {job.title}\n\n{message}"
+                
+                # Use the mail command's proper format
+                mail_cmd = f"@mail {job.requester.username}={subject}/{mail_body}"
+                self.caller.execute_cmd(mail_cmd)
+                
+                # Only show success message if we actually sent the mail
+                if job.requester.username:
+                    self.caller.msg(f"Notification sent to {job.requester.username}.")
+                else:
+                    self.caller.msg("Could not send notification - invalid recipient username.")
+                    
+            except Exception as e:
+                self.caller.msg(f"Failed to send notification: {str(e)}")
 
     def complete_job(self):
         self._change_job_status("completed")

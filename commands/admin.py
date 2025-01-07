@@ -1,6 +1,8 @@
 from commands.communication import AdminCommand
 from evennia.utils import logger
 from evennia.commands.default.general import CmdLook
+from evennia.utils.search import search_object
+from typeclasses.characters import Character
 
 
 class CmdApprove(AdminCommand):
@@ -20,12 +22,21 @@ class CmdApprove(AdminCommand):
 
     def func(self):
         if not self.args:
-            self.caller.msg("Usage: approve <character_name>")
+            self.caller.msg("Usage: +approve <character>")
             return
-
-        # Use global search for admin commands
-        target = self.caller.search(self.args, global_search=True)
+            
+        # First try direct name match
+        target = None
+        chars = self.caller.search(self.args, global_search=True, typeclass='typeclasses.characters.Character', quiet=True)
+        if chars:
+            target = chars[0] if isinstance(chars, list) else chars
+            
+        # If no direct match, try alias
         if not target:
+            target = Character.get_by_alias(self.args.lower())
+
+        if not target:
+            self.caller.msg(f"Could not find character '{self.args}'.")
             return
 
         # Check both tag and attribute for approval status

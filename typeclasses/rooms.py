@@ -1,11 +1,12 @@
 from evennia import DefaultRoom
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import make_iter, justify
 from evennia.utils.ansi import ANSIString
-from evennia.utils.search import search_channel
+from evennia.utils import ansi
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
 from datetime import datetime
 import random
+from evennia.utils.search import search_channel
 
 class RoomParent(DefaultRoom):
 
@@ -265,49 +266,47 @@ class RoomParent(DefaultRoom):
         elif modifier > 0:
             self.msg_contents("The Gauntlet seems to thicken in this area...")
 
-    def peek_umbra(self, character):
-        """
-        Allows a character to peek into the Umbra.
-        """
-        difficulty = self.get_gauntlet_difficulty() + 2
-        success = self.roll_gnosis(character, difficulty)
+    def peek_umbra(self, looker):
+        """Allow a character to peek into the Umbra version of the room."""
+        # Use the same return_appearance method but with peek_umbra flag
+        appearance = self.return_appearance(looker, peek_umbra=True)
         
-        if success:
-            if self.db.umbra_desc:
-                # Format the Umbra description
-                umbra_header = header("Umbra Vision", width=78, fillchar=ANSIString("|r-|n"))
-                formatted_desc = self.format_description(self.db.umbra_desc)
-                umbra_footer = footer(width=78, fillchar=ANSIString("|r-|n"))
-                
-                return f"You successfully pierce the Gauntlet and glimpse into the Umbra:\n\n{umbra_header}\n{formatted_desc}\n{umbra_footer}"
-            else:
-                return "You successfully pierce the Gauntlet, but there's nothing unusual to see in the Umbra here."
-        else:
-            return "You fail to pierce the Gauntlet and see into the Umbra."
+        # Extract just the description part (between header and first divider)
+        lines = appearance.split('\n')
+        desc_lines = []
+        for line in lines[2:]:  # Skip header lines
+            if line.startswith('---'):  # Stop at first divider
+                break
+            desc_lines.append(line)
+        
+        header = "-" * 30 + "<  Umbra Vision >" + "-" * 31
+        footer = "-" * 78
+        
+        return f"\n{header}\n\n{''.join(desc_lines)}\n{footer}"
 
     def format_description(self, desc):
-        """
-        Format the description with proper paragraph handling and indentation.
-        """
-        paragraphs = desc.split('%r', '%R')
-        formatted_paragraphs = []
-        for i, p in enumerate(paragraphs):
-            if not p.strip():
-                if i > 0 and not paragraphs[i-1].strip():
-                    formatted_paragraphs.append('')  # Add blank line for double %r
-                continue
-            
-            lines = p.split('%t')
-            formatted_lines = []
-            for j, line in enumerate(lines):
-                if j == 0 and line.strip():
-                    formatted_lines.append(wrap_ansi(line.strip(), width=76))
-                elif line.strip():
-                    formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
-            
-            formatted_paragraphs.append('\n'.join(formatted_lines))
+        """Format room description with paragraph breaks and tabs."""
+        if not desc:
+            return ""
         
-        return '\n\n'.join(formatted_paragraphs)
+        # Convert to string and process ANSI
+        desc = str(desc)
+        
+        # Process tabs first
+        lines = []
+        for line in desc.split('\n'):
+            if line.startswith('%t') or line.startswith('%T'):
+                line = '    ' + line[2:]  # Replace tab with 4 spaces and remove the %t/%T
+            lines.append(line)
+        
+        # Rejoin lines and handle other formatting
+        desc = '\n'.join(lines)
+        desc = desc.replace('%R', '\n')
+        desc = desc.replace('%r', '\n')
+        
+        # Split into paragraphs and rejoin with proper spacing
+        paragraphs = [p.strip() for p in desc.split('\n') if p.strip()]
+        return '\n\n'.join(paragraphs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
         """
