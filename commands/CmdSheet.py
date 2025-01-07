@@ -442,10 +442,11 @@ class CmdSheet(MuxCommand):
         for power, advantage, status_line in zip(powers, advantages, status):
             string += f"{power.strip().ljust(25)} {advantage.strip().ljust(25)} {status_line.strip().ljust(25)}\n"
 
-        if not character.db.approved:
-            string += footer()
-            string += header("Unapproved Character", width=78, color="|y")
-        string += footer()
+        # Check approval status
+        if character.db.approved:
+            string += header("Approved Character", width=78, fillchar="-")
+        else:
+            string += header("Unapproved Character", width=78, fillchar="-")
 
         self.caller.msg(string)
 
