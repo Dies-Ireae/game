@@ -14,9 +14,7 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 from datetime import datetime
-from evennia.comms.models import ChannelDB
-from commands.CmdLanguage import AVAILABLE_LANGUAGES
-from evennia.commands.cmdset import CmdSet
+
 
 class Character(DefaultCharacter):
     """
@@ -42,6 +40,7 @@ class Character(DefaultCharacter):
         self.tags.add("in_material", category="state")
         self.db.unfindable = False
         self.db.fae_desc = ""
+
         self.db.approved = False  # Ensure all new characters start unapproved
         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
         
@@ -51,6 +50,7 @@ class Character(DefaultCharacter):
         self.db.bashing = 0
         self.db.injury_level = "Healthy"
 
+
         # Auto-subscribe to Public channel
         try:
             public_channel = ChannelDB.objects.get(db_key__iexact="public")
@@ -58,6 +58,7 @@ class Character(DefaultCharacter):
                 public_channel.connect(self)
         except ChannelDB.DoesNotExist:
             pass
+
 
     @lazy_property
     def notes(self):

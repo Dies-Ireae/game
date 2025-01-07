@@ -147,17 +147,17 @@ class CmdPlusOoc(MuxCommand):
         # Store the current location as an attribute
         caller.db.pre_ooc_location = current_location
 
-        # Find Limbo (object #2)
-        limbo = search_object("#2")[0]
+        # Find Limbo (object #1729)
+        ooc_nexus = search_object("#1729")[0]
 
-        if not limbo:
-            caller.msg("Error: Limbo not found.")
+        if not ooc_nexus:
+            caller.msg("Error: ooc_nexus not found.")
             return
 
         # Move the caller to Limbo
-        caller.move_to(limbo, quiet=True)
-        caller.msg(f"You move to the OOC area ({limbo.name}).")
-        limbo.msg_contents(f"{caller.name} has entered the OOC area.", exclude=caller)
+        caller.move_to(ooc_nexus, quiet=True)
+        caller.msg(f"You move to the OOC area.")
+        ooc_nexus.msg_contents(f"{caller.name} has entered the OOC area.", exclude=caller)
 
 class CmdMeet(MuxCommand):
     """

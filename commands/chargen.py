@@ -1295,3 +1295,4 @@ class CmdSubmit(MuxCommand):
 
         except Exception as e:
             caller.msg("|rError submitting character: {0}|n".format(e))
+

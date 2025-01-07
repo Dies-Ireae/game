@@ -25,7 +25,7 @@ from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
 from commands.CmdLanguage import CmdLanguage
 import evennia.contrib.game_systems.mail as mail
-from  commands.CmdRoll import CmdRoll
+from commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
 from commands.CmdEmit import CmdEmit, CmdPemit, CmdRemit
 from commands.CmdNotes import CmdNotes
@@ -55,6 +55,7 @@ from commands.CmdUnpuppet import CmdUnpuppet
 from commands.CmdPage import CmdPage
 from commands.CmdFinger import CmdFinger
 from commands.CmdAlias import CmdAlias
+from commands.CmdInfo import CmdInfo
 from commands.CmdLFRP import CmdLFRP
 from commands.comms import CmdChannel
 
@@ -84,8 +85,6 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(BBSCmdSet)
         self.add(OssCmdSet)
         self.add(CmdFaeDesc())
-        self.add(CmdRemit())
-        self.add(CmdPemit())
 
         self.add(CmdSheet())
         self.add(CmdInfo())
@@ -99,6 +98,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdWeather())
         self.add(CmdChangelingInteraction())
         self.add(CmdAdminLook())
+        self.add(CmdInfo())
 
         self.add(CmdUmbraInteraction())
         self.add(CmdMeet())
@@ -117,6 +117,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdSubmit())
         self.add(CmdFinger())
         self.add(CmdAlias())
+
         self.add(CmdLFRP())
         self.add(CmdChannel())
 
@@ -153,7 +154,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdUnapprove())
         self.add(CmdPage())
         self.add(CmdFinger())
-        
+        self.add(CmdSpecialty())
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """

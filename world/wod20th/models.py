@@ -37,6 +37,7 @@ STAT_TYPES = [
     ('background', 'Background'),
     ('lineage', 'Lineage'),
     ('discipline', 'Discipline'),
+    ('combodiscipline', 'Combo Discipline'),
     ('gift', 'Gift'),
     ('rite', 'Rite'),
     ('sphere', 'Sphere'),
@@ -364,18 +365,18 @@ class Action(models.Model):
             self.save()
 
 SHIFTER_IDENTITY_STATS = {
-    "Garou": ["Tribe", "Breed", "Auspice"],
-    "Gurahl": ["Tribe", "Breed", "Auspice"],
-    "Rokea": ["Tribe", "Breed", "Auspice"],
-    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal"],
-    "Ajaba": ["Aspect", "Breed"],
-    "Bastet": ["Tribe", "Breed"],
-    "Corax": ["Breed"],
-    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed"],
-    "Mokole": ["Varnas", "Stream", "Breed"],
-    "Nagah": ["Crown", "Breed", "Auspice"],
-    "Nuwisha": ["Breed"],
-    "Ratkin": ["Aspect", "Plague", "Breed"]
+    "Garou": ["Tribe", "Breed", "Auspice", "Rank"],
+    "Gurahl": ["Tribe", "Breed", "Auspice", "Rank"],
+    "Rokea": ["Tribe", "Breed", "Auspice", "Rank"],
+    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal", "Rank"],
+    "Ajaba": ["Aspect", "Breed", "Rank"],
+    "Bastet": ["Tribe", "Breed", "Rank"],
+    "Corax": ["Breed", "Rank"],
+    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed", "Rank"],
+    "Mokole": ["Varnas", "Stream", "Breed", "Rank"],
+    "Nagah": ["Crown", "Breed", "Auspice", "Rank"],
+    "Nuwisha": ["Breed", "Rank"],
+    "Ratkin": ["Aspect", "Plague", "Breed", "Rank"]
 }
 SHIFTER_RENOWN: Dict[str, Union[List[str], Dict[str, Dict[str, List[int]]]]] = {
     "Ajaba": ["Cunning", "Ferocity", "Obligation"],

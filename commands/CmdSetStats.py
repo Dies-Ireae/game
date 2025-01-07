@@ -167,7 +167,8 @@ class CmdStats(default_cmds.MuxCommand):
             self.caller.msg(f"|rThe stat '{full_stat_name}' does not support instances.|n")
             return
 
-        # Handle stat removal (empty value)
+        # Handle stat removal (empty value) - Move this before validation
+
         if not self.value_change:
             if stat.category in character.db.stats and stat.stat_type in character.db.stats[stat.category]:
                 if full_stat_name in character.db.stats[stat.category][stat.stat_type]:
@@ -179,6 +180,7 @@ class CmdStats(default_cmds.MuxCommand):
                     if (stat.category == 'merits' and 
                         (stat.name == 'Language' or stat.name == 'Natural Linguist')):
                         character.handle_language_merit_change()
+
                     return
                 else:
                     self.caller.msg(f"|rStat '{full_stat_name}' not found on {character.name}.|n")
@@ -377,7 +379,6 @@ class CmdStats(default_cmds.MuxCommand):
                 self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
                 character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
                 return
-
         # After merit changes, check if we need to update languages
         if (stat.category == 'merits' and 
             (stat.name == 'Language' or stat.name == 'Natural Linguist')):

@@ -266,6 +266,27 @@ class RoomParent(DefaultRoom):
         elif modifier > 0:
             self.msg_contents("The Gauntlet seems to thicken in this area...")
 
+    def modify_gauntlet(self, modifier, duration=0):
+        """
+        Temporarily modifies the Gauntlet difficulty of the room.
+        
+        Args:
+            modifier (int): The amount to modify the Gauntlet by (negative numbers lower it)
+            duration (int): How long in seconds the modification should last (0 for permanent)
+        """
+        self.db.temp_gauntlet_modifier = modifier
+        
+        if duration > 0:
+            self.db.temp_gauntlet_expiry = datetime.now().timestamp() + duration
+        else:
+            self.db.temp_gauntlet_expiry = None
+        
+        # Announce the change if it's significant
+        if modifier < 0:
+            self.msg_contents("The Gauntlet seems to thin in this area...")
+        elif modifier > 0:
+            self.msg_contents("The Gauntlet seems to thicken in this area...")
+
     def peek_umbra(self, looker):
         """Allow a character to peek into the Umbra version of the room."""
         # Use the same return_appearance method but with peek_umbra flag
@@ -285,19 +306,27 @@ class RoomParent(DefaultRoom):
         return f"\n{header}\n\n{''.join(desc_lines)}\n{footer}"
 
     def format_description(self, desc):
-        """Format room description with paragraph breaks and tabs."""
-        if not desc:
-            return ""
-        
-        # Convert to string and process ANSI
-        desc = str(desc)
-        
-        # Process tabs first
-        lines = []
-        for line in desc.split('\n'):
-            if line.startswith('%t') or line.startswith('%T'):
-                line = '    ' + line[2:]  # Replace tab with 4 spaces and remove the %t/%T
-            lines.append(line)
+        """
+        Format the description with proper paragraph handling and indentation.
+        """
+        paragraphs = desc.split('%r', '%R')
+        formatted_paragraphs = []
+        for i, p in enumerate(paragraphs):
+            if not p.strip():
+                if i > 0 and not paragraphs[i-1].strip():
+                    formatted_paragraphs.append('')  # Add blank line for double %r
+                continue
+            
+            lines = p.split('%t')
+            formatted_lines = []
+            for j, line in enumerate(lines):
+                if j == 0 and line.strip():
+                    formatted_lines.append(wrap_ansi(line.strip(), width=76))
+                elif line.strip():
+                    formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
+            
+            formatted_paragraphs.append('\n'.join(formatted_lines))
+
         
         # Rejoin lines and handle other formatting
         desc = '\n'.join(lines)

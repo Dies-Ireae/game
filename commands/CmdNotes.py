@@ -608,19 +608,14 @@ class CmdNotes(MuxCommand):
 
         output += divider("", width=width, fillchar="-", color="|r") + "\n"
         
-        # Note content - improved formatting with %r handling
-        text = note.text.replace('%r', '\n')  # Replace %r with actual newlines
-        text = text.replace('|/', '\n')  # Handle explicit line breaks
-        
-        # Split into paragraphs and process
-        paragraphs = text.split('\n')  # Split on all newlines now
-        
-        for paragraph in paragraphs:
-            if paragraph.strip():  # Only process non-empty paragraphs
-                # Wrap each paragraph individually
-                wrapped = wrap_ansi(paragraph.strip(), width=width-2)
-                output += wrapped + "\n"  # Single newline between paragraphs
-        
-        output = output.rstrip() + "\n"  # Remove trailing whitespace but ensure final newline
+        # Note content
+        content_lines = note.text.replace('|/', '\n').split('\n')
+        wrapped_lines = []
+        for line in content_lines:
+            if line.strip():
+                wrapped_lines.append(wrap_ansi(line.strip(), width=width-2))
+        output += '\n'.join(wrapped_lines) + "\n"
+
         output += footer(width=width, fillchar="|r=|n")
         self.caller.msg(output)
+

@@ -70,10 +70,10 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         """
         super().parse()
         
-        if self.cmdstring == ":":
-            # Add a space after colon if not present
-            self.args = " " + self.args.lstrip()
-        elif self.cmdstring == ";":
+       # if self.cmdstring == ":":
+            #Add a space after colon if not present
+           # self.args = " " + self.args.lstrip()
+        if self.cmdstring == ";":
             # Remove space after semicolon if present
             self.args = self.args.lstrip()
 

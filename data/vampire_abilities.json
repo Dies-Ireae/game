@@ -427,10 +427,8 @@
         "name": "Flight",
         "category": "Talents",
         "stat_type": "ability",
-        "values": {
-            "perm": [0, 1, 2, 3, 4, 5],
-            "temp": [0, 1, 2, 3, 4, 5]
-        },
+        "values": [0, 1, 2, 3, 4, 5]
+
         "description": "The ability to fly and maneuver in the air",
         "splat": ["Vampire:Gargoyle", "Shifter:Corax", "Shifter:Camazotz", "Shifter:Mokole"]
     }
