@@ -1,6 +1,7 @@
 from evennia import default_cmds
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, calculate_willpower, calculate_road
 from evennia.utils import search
+import re
 
 class CmdSelfStat(default_cmds.MuxCommand):
     """
@@ -61,120 +62,115 @@ class CmdSelfStat(default_cmds.MuxCommand):
             self.stat_name = self.value_change = self.instance = self.category = None
 
     def func(self):
-        """Implement the command"""
-        character = self.caller
+        """Execute the command."""
+        # Check if character is approved
+        if self.caller.db.approved:
+            self.caller.msg("|rError: Approved characters cannot use chargen commands. Please contact staff for any needed changes.|n")
+            return
 
         if not self.stat_name:
             self.caller.msg("|rUsage: +selfstat <stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
 
-        # Fetch the stat definition from the database
-        try:
-            matching_stats = Stat.objects.filter(name__iexact=self.stat_name.strip())
-            
-            if not matching_stats.exists():
-                matching_stats = Stat.objects.filter(name__icontains=self.stat_name.strip())
-        except Exception as e:
-            self.caller.msg(f"|rError fetching stats: {e}|n")
+        # Get the stat definition
+        stat = Stat.objects.filter(name__iexact=self.stat_name).first()
+        if not stat:
+            # If exact match fails, try a case-insensitive contains search
+            matching_stats = Stat.objects.filter(name__icontains=self.stat_name)
+            if matching_stats.count() > 1:
+                stat_names = [s.name for s in matching_stats]
+                self.caller.msg(f"Multiple stats match '{self.stat_name}': {', '.join(stat_names)}. Please be more specific.")
+                return
+            stat = matching_stats.first()
+            if not stat:
+                self.caller.msg(f"Stat '{self.stat_name}' not found.")
+                return
+
+        # Check if the character can have this ability
+        if stat.stat_type == 'ability' and not self.caller.can_have_ability(stat.name):
+            self.caller.msg(f"Your character cannot have the {stat.name} ability.")
             return
 
-        if not matching_stats.exists():
-            self.caller.msg(f"|rNo stats matching '{self.stat_name}' found in the database.|n")
-            return
-
-        if len(matching_stats) > 1:
-            self.caller.msg(f"|rMultiple stats matching '{self.stat_name}' found: {[stat.name for stat in matching_stats]}. Please be more specific.|n")
-            return
-
-        stat = matching_stats.first()
-        full_stat_name = stat.name
-
-        # Check if the stat is instanced and handle accordingly
+        # Use the canonical name from the database
+        self.stat_name = stat.name
+        
+        # Handle instances for background stats
         if stat.instanced:
             if not self.instance:
-                self.caller.msg(f"|rThe stat '{full_stat_name}' requires an instance. Use the format: {full_stat_name}(instance)|n")
+                self.caller.msg(f"The stat '{self.stat_name}' requires an instance. Use the format: {self.stat_name}(instance)")
                 return
-            full_stat_name = f"{full_stat_name}({self.instance})"
-        elif self.instance:
-            self.caller.msg(f"|rThe stat '{full_stat_name}' does not support instances.|n")
-            return
-
-        # Check if the character passes the stat's lock_string
-        try:
-            if stat.lockstring and not character.locks.check_lockstring(character, stat.lockstring):
-                self.caller.msg(f"|rYou do not have permission to modify the stat '{full_stat_name}'.|n")
-                return
-        except AttributeError:
-            pass
-
-        # Determine if the stat should be removed
-        if self.value_change == '':
-            current_stats = character.db.stats.get(stat.category, {}).get(stat.stat_type, {})
-            if full_stat_name in current_stats:
-                del current_stats[full_stat_name]
-                character.db.stats[stat.category][stat.stat_type] = current_stats
-                self.caller.msg(f"|gRemoved stat '{full_stat_name}'.|n")
-            else:
-                self.caller.msg(f"|rStat '{full_stat_name}' not found.|n")
-            return
-
-        # Determine if the stat value should be treated as a number or a string
-        try:
-            value_change = int(self.value_change)
-            is_number = True
-        except (ValueError, TypeError):
-            value_change = self.value_change
-            is_number = False
-
-        # Check if the stat exists for the character and get the current value
-        if not hasattr(character.db, "stats"):
-            character.db.stats = {}
-
-        current_value = character.get_stat(stat.category, stat.stat_type, full_stat_name, temp=self.temp)
-        if current_value is None:
-            # Initialize the stat if it doesn't exist
-            current_value = 0 if is_number else ''
-
-        if self.value_change and (self.value_change.startswith('+') or self.value_change.startswith('-')):
-            if is_number:
-                new_value = current_value + value_change
-            else:
-                self.caller.msg(f"|rIncrement/decrement values must be integers.|n")
-                return
+            full_stat_name = f"{self.stat_name}({self.instance})"
         else:
-            new_value = value_change
-
-        # Validate the new value against the stat's valid values
-        valid_values = stat.values
-        if valid_values and new_value not in valid_values and valid_values != []:
-            self.caller.msg(f"|rValue '{new_value}' is not valid for stat '{full_stat_name}'. Valid values are: {valid_values}|n")
-            return
-
-        # Convert value to integer for virtues
-        if full_stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
-            try:
-                new_value = int(new_value)
-            except ValueError:
-                self.caller.msg(f"|rInvalid value for {full_stat_name}. Please provide an integer.|n")
+            if self.instance:
+                self.caller.msg(f"The stat '{self.stat_name}' does not support instances.")
                 return
+            full_stat_name = self.stat_name
+
+        # Handle stat removal (empty value)
+        if self.value_change == '':
+            if stat.category in self.caller.db.stats and stat.stat_type in self.caller.db.stats[stat.category]:
+                if full_stat_name in self.caller.db.stats[stat.category][stat.stat_type]:
+                    del self.caller.db.stats[stat.category][stat.stat_type][full_stat_name]
+                    self.caller.msg(f"|gRemoved stat '{full_stat_name}'.|n")
+                    return
+                else:
+                    self.caller.msg(f"|rStat '{full_stat_name}' not found.|n")
+                    return
+
+        # Special handling for Appearance stat
+        if stat.name == 'Appearance':
+            splat = self.caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            clan = self.caller.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+            
+            if splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
+                self.caller.msg("Nosferatu and Samedi vampires always have Appearance 0.")
+                return
+            
+            if splat == 'Shifter':
+                form = self.caller.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+                if form == 'Crinos':
+                    self.caller.msg("Characters in Crinos form always have Appearance 0.")
+                    return
+
+        # Handle incremental changes
+        try:
+            if self.value_change.startswith('+') or self.value_change.startswith('-'):
+                current_value = self.caller.get_stat(stat.category, stat.stat_type, full_stat_name)
+                if current_value is None:
+                    current_value = 0
+                new_value = current_value + int(self.value_change)
+            else:
+                new_value = int(self.value_change) if self.value_change.isdigit() else self.value_change
+        except (ValueError, TypeError):
+            new_value = self.value_change
 
         # Update the stat
-        character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
-        
-        # If the stat is in the 'pools' category or has a 'dual' stat_type, update the temporary value as well
-        if stat.category == 'pools' or stat.stat_type == 'dual':
-            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
-            self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
-        else:
-            self.caller.msg(f"|gUpdated {full_stat_name} to {new_value}.|n")
+        try:
+            self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+            
+            # During character generation (when character is not approved), 
+            # always set temp value equal to permanent value
+            if not self.caller.db.approved:
+                self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            # If already approved, only update temp for pools and dual stats
+            elif stat.category == 'pools' or stat.stat_type == 'dual':
+                self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            else:
+                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value}.|n")
 
-        # After setting a stat, recalculate Willpower and Road
-        if full_stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
-            new_willpower = calculate_willpower(character)
-            character.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=False)
-            character.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=True)
-            self.caller.msg(f"|gRecalculated Willpower to {new_willpower}.|n")
+            # After setting a stat, recalculate Willpower and Road
+            if full_stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
+                new_willpower = calculate_willpower(self.caller)
+                # Set both permanent and temporary values for Willpower
+                self.caller.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=False)
+                self.caller.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=True)
+                self.caller.msg(f"|gRecalculated Willpower to {new_willpower}.|n")
 
-            new_road = calculate_road(character)
-            character.set_stat('pools', 'moral', 'Road', new_road, temp=False)
-            self.caller.msg(f"|gRecalculated Road to {new_road}.|n")
+                new_road = calculate_road(self.caller)
+                self.caller.set_stat('pools', 'moral', 'Road', new_road, temp=False)
+                self.caller.msg(f"|gRecalculated Road to {new_road}.|n")
+
+        except ValueError as e:
+            self.caller.msg(str(e))

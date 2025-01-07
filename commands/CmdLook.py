@@ -1,5 +1,7 @@
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils import utils
+from evennia.utils.search import search_object
+from typeclasses.characters import Character
 
 class CmdLook(MuxCommand):
     """
@@ -26,20 +28,34 @@ class CmdLook(MuxCommand):
         location = caller.location
 
         if not args:
-            # If no arguments, look at the location
             if location:
                 caller.msg(location.return_appearance(caller))
             else:
                 caller.msg("You have no location to look at!")
             return
 
-        # Look for a particular object
-        look_at_obj = caller.search(args, location=location, use_nicks=True, quiet=True)
+        # First try direct name match
+        target = caller.search(args, global_search=True, typeclass='typeclasses.characters.Character')
+        
+        # If no direct match, try alias
+        if not target:
+            target = Character.get_by_alias(args.lower())
+
+        if target:
+            # Check if target is in the same location (unless caller is staff)
+            if not caller.check_permstring("builders"):
+                if target not in location.contents:
+                    caller.msg(f"You don't see '{args}' here.")
+                    return
+            look_at_obj = target
+        else:
+            # If no character match, try other objects
+            look_at_obj = caller.search(args, location=location, use_nicks=True, quiet=True)
 
         if not look_at_obj:
             # If the object is not found, check if it's a character in a different state
             possible_chars = [obj for obj in location.contents 
-                              if obj.has_account and obj.key.lower() == args.lower()]
+                            if obj.has_account and obj.key.lower() == args.lower()]
             
             if possible_chars and possible_chars[0].db.in_umbra != caller.db.in_umbra:
                 caller.msg(f"Could not find '{args}'.")

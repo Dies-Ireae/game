@@ -1,4 +1,4 @@
-r"""
+"""
 Evennia settings file.
 
 The available options are found in the default settings file found
@@ -27,7 +27,6 @@ put secret game- or server-specific settings in secret_settings.py.
 # Use the defaults from Evennia unless explicitly overridden
 from evennia.settings_default import *
 import os
-
 from evennia.contrib.base_systems import color_markups
 SITE_ID = 1  # This tells Django which site object to use
 DEBUG = True
@@ -42,12 +41,7 @@ DEFAULT_CMDSETS = [
     'commands.mycmdset.MyCmdset'
 ]
 
-DEFAULT_CMDSETS = [
-    'commands.mycmdset.MyCmdset'
-]
-
-
-TELNET_PORTS = [4000]  
+TELNET_PORTS = [4201]  
 WEBSERVER_PORTS = [(4200, 4005)] 
 WEBSOCKET_CLIENT_PORT = 4202
 EVENNIA_ADMIN=False
@@ -78,6 +72,7 @@ LOCK_FUNC_MODULES = [
     "evennia.locks.lockfuncs",
     "world.wod20th.locks", 
 ]
+MAX_NR_CHARACTERS = 5
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000', 'https://diesiraemu.com']
 
@@ -94,10 +89,13 @@ WEBSOCKET_CLIENT_URL = None  # Let Evennia handle this automatically
 INSTALLED_APPS += (
     "world.wod20th",
     "wiki",
+    "world.jobs",
+    "web.character",
 )
 
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
-  
+BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"
+
 # Change 8001 to your desired websocket port
 
 
@@ -119,6 +117,7 @@ except ImportError:
 
 # Add or update the command alias mapping in the settings file
 
+"""
 """
 Color markups
 

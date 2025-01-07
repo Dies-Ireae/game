@@ -95,13 +95,24 @@ class CmdPlusIc(MuxCommand):
     def func(self):
         caller = self.caller
 
-        # Check if the character is approved
-        if not caller.tags.has("approved", category="approval"):
+        # Check if the character is approved - check both tag and attribute
+        is_approved = (caller.tags.has("approved", category="approval") or 
+                      caller.db.approved)
+        has_unapproved = caller.tags.has("unapproved", category="approval")
+
+        # If they have approved=True but still have the unapproved tag, fix it
+        if caller.db.approved and has_unapproved:
+            caller.tags.remove("unapproved", category="approval")
+            caller.tags.add("approved", category="approval")
+            is_approved = True
+
+        if not is_approved or has_unapproved:
             caller.msg("You must be approved to enter IC areas.")
             return
 
         # Get the stored pre_ooc_location, or use the default room #30
         target_location = caller.db.pre_ooc_location or search_object("#52")[0]
+
         if not target_location:
             caller.msg("Error: Unable to find a valid IC location.")
             return
@@ -136,17 +147,17 @@ class CmdPlusOoc(MuxCommand):
         # Store the current location as an attribute
         caller.db.pre_ooc_location = current_location
 
-        # Find Limbo (object #2)
-        limbo = search_object("#2")[0]
+        # Find Limbo (object #1729)
+        ooc_nexus = search_object("#1729")[0]
 
-        if not limbo:
-            caller.msg("Error: Limbo not found.")
+        if not ooc_nexus:
+            caller.msg("Error: ooc_nexus not found.")
             return
 
         # Move the caller to Limbo
-        caller.move_to(limbo, quiet=True)
-        caller.msg(f"You move to the OOC area ({limbo.name}).")
-        limbo.msg_contents(f"{caller.name} has entered the OOC area.", exclude=caller)
+        caller.move_to(ooc_nexus, quiet=True)
+        caller.msg(f"You move to the OOC area.")
+        ooc_nexus.msg_contents(f"{caller.name} has entered the OOC area.", exclude=caller)
 
 class CmdMeet(MuxCommand):
     """

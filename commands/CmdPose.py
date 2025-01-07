@@ -7,6 +7,11 @@ class PoseBreakMixin:
     """
     def send_pose_break(self, exclude=None):
         caller = self.caller
+        
+        # Check if the room is an OOC Area
+        if hasattr(caller.location, 'db') and caller.location.db.roomtype == 'OOC Area':
+            return  # Don't send pose breaks in OOC Areas
+            
         pose_break = f"\n|y{'=' * 30}> |w{caller.name}|n |y<{'=' * 30}|n"
         
         # Filter receivers based on Umbra state
@@ -26,6 +31,12 @@ class PoseBreakMixin:
         """
         Custom msg_contents that adds a pose break before the message.
         """
+        # Check if the room is an OOC Area
+        if hasattr(self.caller.location, 'db') and self.caller.location.db.roomtype == 'OOC Area':
+            # Call the original msg_contents without pose break
+            super().msg_contents(message, exclude=exclude, from_obj=from_obj, **kwargs)
+            return
+            
         # Add the pose break
         self.send_pose_break(exclude=exclude)
 
@@ -59,10 +70,10 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         """
         super().parse()
         
-        if self.cmdstring == ":":
-            # Add a space after colon if not present
-            self.args = " " + self.args.lstrip()
-        elif self.cmdstring == ";":
+       # if self.cmdstring == ":":
+            #Add a space after colon if not present
+           # self.args = " " + self.args.lstrip()
+        if self.cmdstring == ";":
             # Remove space after semicolon if present
             self.args = self.args.lstrip()
 

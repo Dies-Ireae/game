@@ -184,6 +184,14 @@
         "values": [1, 2, 3, 4, 5]
     },
     {
+        "name": "Enigmas",
+        "description": "You can solve puzzles and riddles, and have a good understanding of hidden meanings and symbolism.",
+        "game_line": "Various",
+        "category": "abilities",
+        "stat_type": "knowledge",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
         "name": "Finance",
         "description": "You know the ins and outs of commerce, from evaluating an item's relative worth to understanding the vagaries of the market. This Knowledge can be invaluable when you're trying to run a business, handle investments, or keep your resources up and running.",
         "game_line": "Various",
@@ -414,5 +422,13 @@
         "category": "secondary_abilities",
         "stat_type": "secondary_knowledge",
         "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Flight",
+        "category": "Talents",
+        "stat_type": "ability",
+        "values": [0, 1, 2, 3, 4, 5]
+        "description": "The ability to fly and maneuver in the air",
+        "splat": ["Vampire:Gargoyle", "Shifter:Corax", "Shifter:Camazotz", "Shifter:Mokole"]
     }
 ]

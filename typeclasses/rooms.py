@@ -47,35 +47,56 @@ class RoomParent(DefaultRoom):
         else:
             desc = self.db.desc
 
-
         # Update all dividers to use the new color scheme
         string = header(name, width=78, bcolor=border_color, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
         
         # Process room description
         if desc:
-            paragraphs = desc.split('%r')  # First split on %r
-            paragraphs = [p for para in paragraphs for p in para.split('%R')]  # Then split on %R
+            # Process description while preserving ANSI codes
+            desc = str(desc)  # Start with raw string to preserve all codes
+            
+            # Split description into paragraphs using %R or %r while preserving ANSI
+            paragraphs = []
+            for p in desc.split('%R'):
+                paragraphs.extend(p.split('%r'))
             
             formatted_paragraphs = []
-            for i, p in enumerate(paragraphs):
-                if not p.strip():
-                    if i > 0 and not paragraphs[i-1].strip():
-                        formatted_paragraphs.append('')  # Add blank line for double %r
+            for paragraph in paragraphs:
+                if not paragraph.strip():
                     continue
                 
-                lines = p.split('%t')  # First split on %t
-                lines = [l for line in lines for l in line.split('%T')]  # Then split on %T
-
-                formatted_lines = []
-                for j, line in enumerate(lines):
-                    if j == 0 and line.strip():
-                        formatted_lines.append(wrap_ansi(line.strip(), width=76))
-                    elif line.strip():
-                        formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
+                # Split paragraph into lines by tabs
+                tab_lines = []
+                for line in paragraph.split('%t'):
+                    tab_lines.extend(line.split('%T'))
                 
-                formatted_paragraphs.append('\n'.join(formatted_lines))
+                formatted_lines = []
+                for i, line in enumerate(tab_lines):
+                    line = line.strip()
+                    if i > 0:  # Add indentation for tabbed lines
+                        # Check if line starts with a color code
+                        if line.startswith('|'):
+                            color_end = line.find(' ')
+                            if color_end > 0:
+                                # Preserve color code and add indentation after it
+                                color_code = line[:color_end]
+                                rest_of_line = line[color_end:].strip()
+                                line = f"{color_code}    {rest_of_line}"
+                            else:
+                                line = "    " + line
+                        else:
+                            line = "    " + line
+                    
+                    # Process line for word wrapping while preserving ANSI
+                    wrapped = wrap_ansi(line, width=78)
+                    if wrapped:
+                        formatted_lines.append(wrapped)
+                
+                if formatted_lines:
+                    formatted_paragraphs.append("\n".join(formatted_lines))
             
-            string += '\n'.join(formatted_paragraphs) + "\n\n"
+            # Join all paragraphs with single newlines
+            string += "\n".join(formatted_paragraphs) + "\n"
 
         # List all characters in the room
         characters = []
@@ -93,26 +114,24 @@ class RoomParent(DefaultRoom):
             for character in characters:
                 idle_time = self.idle_time_display(character.idle_time)
 
-
                 shortdesc = character.db.shortdesc
                 if shortdesc:
                     shortdesc_str = f"{shortdesc}"
                 else:
                     shortdesc_str ="|h|xType '|n+shortdesc <desc>|h|x' to set a short description.|n"
 
-                if len(ANSIString(shortdesc_str).strip()) > 43:
-                    shortdesc_str = ANSIString(shortdesc_str)[:43]
+                if len(ANSIString(shortdesc_str).strip()) > 40:
+                    shortdesc_str = ANSIString(shortdesc_str)[:40]
                     shortdesc_str = ANSIString(shortdesc_str[:-3] + "...|n")
                 else:
-                    shortdesc_str = ANSIString(shortdesc_str).ljust(43, ' ')
+                    shortdesc_str = ANSIString(shortdesc_str).ljust(40, ' ')
                 
-                string += ANSIString(f" {character.get_display_name(looker).ljust(25)} {ANSIString(idle_time).rjust(7)}|n {shortdesc_str}\n")
+                string += ANSIString(f" {character.get_display_name(looker).ljust(17)} {ANSIString(idle_time).rjust(7)}|n {shortdesc_str}\n")
 
         # List all objects in the room
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
         if objects:
             string += divider("Objects", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
-
             
             # get shordesc or dhoe s blsnk string
             for obj in objects:
@@ -146,7 +165,6 @@ class RoomParent(DefaultRoom):
             # Display Directions
             if direction_strings:
                 string += divider("Directions", width=78, fillchar=ANSIString(f"{border_color}-|n")) + "\n"
-
                 string += self.format_exit_columns(direction_strings)
 
             # Display Exits
@@ -197,25 +215,55 @@ class RoomParent(DefaultRoom):
 
         # Color code based on idle time intervals
         if idle_time < 900:  # less than 15 minutes
-            color = "|g"  # green
+            return ANSIString(f"|g{time_str}|n")  # green
         elif idle_time < 1800:  # 15-30 minutes
-            color = "|y"  # yellow
+            return ANSIString(f"|y{time_str}|n")  # yellow
         elif idle_time < 2700:  # 30-45 minutes
-            color = "|o"  # orange
+            return ANSIString(f"|r{time_str}|n")  # orange (using red instead)
         elif idle_time < 3600:
-            color = "|r"  # red
+            return ANSIString(f"|R{time_str}|n")  # bright red
         else:
-            color = "|h|x"
-        
-
-        return f"{color}{time_str}|n"
+            return ANSIString(f"|x{time_str}|n")  # grey
 
     def get_gauntlet_difficulty(self):
         """
-        Returns the Gauntlet difficulty for this room.
-        Override this method to set custom difficulties for specific rooms.
+        Returns the Gauntlet difficulty for this room, including any temporary modifiers.
         """
-        return self.db.gauntlet_difficulty or 6  # Default difficulty
+        base_difficulty = self.db.gauntlet_difficulty or 6  # Default difficulty
+        temp_modifier = self.db.temp_gauntlet_modifier or 0
+        
+        # Get the expiry time for the modifier
+        modifier_expiry = self.db.temp_gauntlet_expiry or 0
+        
+        # Check if the modifier has expired
+        if modifier_expiry and datetime.now().timestamp() > modifier_expiry:
+            # Clear expired modifier
+            self.db.temp_gauntlet_modifier = 0
+            self.db.temp_gauntlet_expiry = None
+            return base_difficulty
+        
+        return max(1, base_difficulty + temp_modifier)  # Ensure difficulty never goes below 1
+
+    def modify_gauntlet(self, modifier, duration=0):
+        """
+        Temporarily modifies the Gauntlet difficulty of the room.
+        
+        Args:
+            modifier (int): The amount to modify the Gauntlet by (negative numbers lower it)
+            duration (int): How long in seconds the modification should last (0 for permanent)
+        """
+        self.db.temp_gauntlet_modifier = modifier
+        
+        if duration > 0:
+            self.db.temp_gauntlet_expiry = datetime.now().timestamp() + duration
+        else:
+            self.db.temp_gauntlet_expiry = None
+        
+        # Announce the change if it's significant
+        if modifier < 0:
+            self.msg_contents("The Gauntlet seems to thin in this area...")
+        elif modifier > 0:
+            self.msg_contents("The Gauntlet seems to thicken in this area...")
 
     def peek_umbra(self, character):
         """
@@ -242,7 +290,6 @@ class RoomParent(DefaultRoom):
         Format the description with proper paragraph handling and indentation.
         """
         paragraphs = desc.split('%r', '%R')
-
         formatted_paragraphs = []
         for i, p in enumerate(paragraphs):
             if not p.strip():
@@ -402,6 +449,7 @@ class RoomParent(DefaultRoom):
         super().at_object_creation()
         self.db.unfindable = False  # Add this line
         self.db.fae_desc = ""
+        self.db.roll_log = []  # Initialize empty roll log
 
     def set_as_district(self):
         self.initialize()
@@ -545,39 +593,39 @@ class RoomParent(DefaultRoom):
         for sub_loc in self.get_sub_locations():
             sub_loc.display_hierarchy(depth + 1)
 
-    def log_roll(self, roller, roll_description, result):
+    def log_roll(self, roller, description, result):
         """
-        Log a roll made in this room.
-        """
-        self.initialize()  # Ensure initialization
+        Log a dice roll in this room.
         
-        # Ensure roll_log exists
-        if not hasattr(self.db, 'roll_log'):
+        Args:
+            roller (str): Name of the character making the roll
+            description (str): Description of the roll
+            result (str): Result of the roll
+        """
+        if not hasattr(self.db, 'roll_log') or self.db.roll_log is None:
             self.db.roll_log = []
-
         
-        # Use the game time if available, otherwise use the current system time
-        if hasattr(self.db, 'gametime') and self.db.gametime is not None and hasattr(self.db.gametime, 'time'):
-            timestamp = self.db.gametime.time()
-        else:
-            timestamp = datetime.now()
-
         log_entry = {
-            "roller": roller,
-            "description": roll_description,
-            "result": result,
-            "timestamp": timestamp
+            'timestamp': datetime.now(),
+            'roller': roller,
+            'description': description,
+            'result': result
         }
+        
         self.db.roll_log.append(log_entry)
+        # Keep only the last 10 rolls
         if len(self.db.roll_log) > 10:
-            self.db.roll_log.pop(0)  # Remove the oldest entry if we have more than 10
-        self.save()
+            self.db.roll_log = self.db.roll_log[-10:]
 
     def get_roll_log(self):
         """
-        Return the roll log for this room.
+        Get the roll log for this room.
+        
+        Returns:
+            list: List of roll log entries
         """
-        self.initialize()
+        if not hasattr(self.db, 'roll_log') or self.db.roll_log is None:
+            self.db.roll_log = []
         return self.db.roll_log
 
     def get_fae_description(self):
@@ -590,3 +638,4 @@ class RoomParent(DefaultRoom):
 
 class Room(RoomParent):
     pass
+

@@ -8,6 +8,7 @@ from django.conf import settings
 from evennia.accounts.models import AccountDB
 from evennia.objects.models import ObjectDB
 from evennia.utils.idmapper.models import SharedMemoryModel
+from typing import Dict, List, Union
 
 # Define predefined categories and extended stat types
 CATEGORIES = [
@@ -36,7 +37,9 @@ STAT_TYPES = [
     ('background', 'Background'),
     ('lineage', 'Lineage'),
     ('discipline', 'Discipline'),
+    ('combodiscipline', 'Combo Discipline'),
     ('gift', 'Gift'),
+    ('rite', 'Rite'),
     ('sphere', 'Sphere'),
     ('rote', 'Rote'),
     ('art', 'Art'),
@@ -120,6 +123,13 @@ class Stat(models.Model):
         # Perform the access check
         return temp_lock_handler.check(accessing_obj, access_type)
 
+    def save(self, *args, **kwargs):
+        if self.stat_type == 'renown':
+            # Ensure renown stats use the dual value structure
+            if self.name in SHIFTER_RENOWN:
+                self.values = SHIFTER_RENOWN[self.name]
+        super().save(*args, **kwargs)
+
     class Meta:
         app_label = 'wod20th'
 
@@ -135,34 +145,60 @@ class CharacterSheet(SharedMemoryModel):
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
 
-class Note(SharedMemoryModel):
-    character = models.ForeignKey("objects.ObjectDB", related_name="notes", on_delete=models.CASCADE, null=True, blank=True)
+class Note(models.Model):
+    owner = models.ForeignKey('objects.ObjectDB', related_name='notes', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     text = models.TextField()
-    category = models.CharField(max_length=100, default="General")
+    category = models.CharField(max_length=50, default='General')
     is_public = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
-    approved_by = models.ForeignKey("accounts.AccountDB", null=True, blank=True, on_delete=models.SET_NULL)
+    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     approved_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    character_note_id = models.IntegerField(default=1)
 
     class Meta:
-        unique_together = ('character', 'name')
-        app_label = 'wod20th'
+        unique_together = ('owner', 'character_note_id')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only for new notes
+            # Get the highest character_note_id for this owner
+            highest = Note.objects.filter(owner=self.owner).aggregate(
+                models.Max('character_note_id'))['character_note_id__max']
+            self.character_note_id = (highest or 0) + 1
+        super().save(*args, **kwargs)
+
+    @property
+    def id(self):
+        """Override to return character-specific ID"""
+        return self.character_note_id
 
 def calculate_willpower(character):
-    courage = character.get_stat('virtues', 'moral', 'Courage', temp=False)
-    if courage is not None:
-        return courage
-    
-    virtues = character.db.stats.get('virtues', {}).get('moral', {})
-    if not virtues:
-        # If there are no virtues defined, return a default value
+    """Calculate Willpower based on virtues."""
+    try:
+        # Get the character's virtues
+        virtues = character.db.stats.get('virtues', {}).get('moral', {})
+        
+        # Get Courage value (common to all paths)
+        courage = virtues.get('Courage', {}).get('perm', 0)
+        
+        # Get the other relevant virtue based on path
+        enlightenment = character.get_stat('identity', 'personal', 'Enlightenment')
+        
+        if enlightenment and enlightenment != 'Humanity':
+            # For most non-Humanity paths
+            conviction = virtues.get('Conviction', {}).get('perm', 0)
+            willpower = courage + conviction
+        else:
+            # For Humanity and paths using Conscience
+            conscience = virtues.get('Conscience', {}).get('perm', 0)
+            willpower = courage + conscience
+            
+        return willpower if willpower > 0 else 1
+        
+    except (AttributeError, KeyError):
         return 1
-    
-    highest_virtue = max(virtues.values(), key=lambda x: x.get('perm', 0))
-    return highest_virtue.get('perm', 1)
 
 def calculate_road(character):
     enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
@@ -329,20 +365,21 @@ class Action(models.Model):
             self.save()
 
 SHIFTER_IDENTITY_STATS = {
-    "Garou": ["Tribe", "Breed", "Auspice"],
-    "Gurahl": ["Tribe", "Breed", "Auspice"],
-    "Rokea": ["Tribe", "Breed", "Auspice"],
-    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal"],
-    "Ajaba": ["Aspect", "Breed"],
-    "Bastet": ["Tribe", "Breed"],
-    "Corax": ["Breed"],
-    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed"],
-    "Mokole": ["Varnas", "Stream", "Breed"],
-    "Nagah": ["Crown", "Breed", "Auspice"],
-    "Nuwisha": ["Breed"],
-    "Ratkin": ["Aspect", "Plague", "Breed"]
+    "Garou": ["Tribe", "Breed", "Auspice", "Rank"],
+    "Gurahl": ["Tribe", "Breed", "Auspice", "Rank"],
+    "Rokea": ["Tribe", "Breed", "Auspice", "Rank"],
+    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal", "Rank"],
+    "Ajaba": ["Aspect", "Breed", "Rank"],
+    "Bastet": ["Tribe", "Breed", "Rank"],
+    "Corax": ["Breed", "Rank"],
+    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed", "Rank"],
+    "Mokole": ["Varnas", "Stream", "Breed", "Rank"],
+    "Nagah": ["Crown", "Breed", "Auspice", "Rank"],
+    "Nuwisha": ["Breed", "Rank"],
+    "Ratkin": ["Aspect", "Plague", "Breed", "Rank"]
 }
-SHIFTER_RENOWN = {
+
+SHIFTER_RENOWN: Dict[str, Union[List[str], Dict[str, Dict[str, List[int]]]]] = {
     "Ajaba": ["Cunning", "Ferocity", "Obligation"],
     "Ananasi": ["Cunning", "Obedience", "Wisdom"],
     "Bastet": ["Cunning", "Ferocity", "Honor"],

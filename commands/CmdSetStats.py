@@ -1,25 +1,13 @@
 from evennia import default_cmds
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, calculate_willpower, calculate_road
 from evennia.utils import search
-
-# Define the allowed identity stats for each shifter type
-SHIFTER_IDENTITY_STATS = {
-    "Garou": ["Tribe", "Breed", "Auspice"],
-    "Gurahl": ["Tribe", "Breed", "Auspice"],
-    "Rokea": ["Tribe", "Breed", "Auspice"],
-    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal"],
-    "Ajaba": ["Aspect", "Breed"],
-    "Bastet": ["Tribe", "Breed"],
-    "Corax": ["Breed"],
-    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed"],
-    "Mokole": ["Varnas", "Stream", "Breed"],
-    "Nagah": ["Crown", "Breed", "Auspice"],
-    "Nuwisha": ["Breed"],
-    "Ratkin": ["Aspect", "Plague", "Breed"]
-}
+from evennia.utils.search import search_object
+from typeclasses.characters import Character
 
 class CmdStats(default_cmds.MuxCommand):
     """
+    Set character stats as staff.
+
     Usage:
       +stats <character>/<stat>[(<instance>)]/<category>=[+-]<value>
       +stats me/<stat>[(<instance>)]/<category>=[+-]<value>
@@ -29,15 +17,19 @@ class CmdStats(default_cmds.MuxCommand):
     Examples:
       +stats Bob/Strength/Physical=+2
       +stats Alice/Firearms/Skill=-1
-      +stats John/Status(Ventrue)/Social=
+      +stats John/Status(Ventrue)/Social=3
       +stats me=reset
-      +stats me/Strength=3
+      +stats me/Nature=Curmudgeon
+      +stats Bob/Demeanor=Visionary
+
+    This is the staff version of +selfstat with the same functionality
+    but can be used on any character.
     """
 
-    key = "stats"
-    aliases = ["stat"]
-    locks = "cmd:perm(Builder)"  # Only Builders and above can use this command
-    help_category = "Chargen & Character Info"
+    key = "+stats"
+    aliases = ["stats", "+setstats", "setstats"]
+    locks = "cmd:perm(Builder)"
+    help_category = "Staff"
 
     def parse(self):
         """
@@ -59,7 +51,7 @@ class CmdStats(default_cmds.MuxCommand):
                     self.character_name = first_part.strip()
                     self.stat_name = 'reset'
                     return
-                self.value_change = second_part.strip()
+                self.value_change = second_part.strip()  # Keep the raw value_change string
             else:
                 first_part = args
 
@@ -68,6 +60,9 @@ class CmdStats(default_cmds.MuxCommand):
             else:
                 self.character_name = first_part
                 stat_part = ''
+
+            # Clean up character name
+            self.character_name = self.character_name.strip()
 
             try:
                 if '(' in stat_part and ')' in stat_part:
@@ -97,7 +92,6 @@ class CmdStats(default_cmds.MuxCommand):
 
     def func(self):
         """Implement the command"""
-
         if not self.character_name:
             self.caller.msg("|rUsage: +stats <character>/<stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
@@ -105,11 +99,29 @@ class CmdStats(default_cmds.MuxCommand):
         if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
-            character = self.caller.search(self.character_name)
+            # First try exact match
+            character = None
+            # Search for both online and offline characters
+            matches = search_object(self.character_name, 
+                                 typeclass='typeclasses.characters.Character',
+                                 exact=True)
+            
+            if not matches:
+                # If no exact match, try case-insensitive
+                matches = search_object(self.character_name, 
+                                     typeclass='typeclasses.characters.Character')
+                matches = [obj for obj in matches if obj.key.lower() == self.character_name.lower()]
+            
+            if matches:
+                character = matches[0]
+            
+            # If still no match, try alias
+            if not character:
+                character = Character.get_by_alias(self.character_name.lower())
 
-        if not character:
-            self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
-            return
+            if not character:
+                self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
+                return
 
         # Handle the reset command
         if self.stat_name and self.stat_name.lower() == 'reset':
@@ -122,37 +134,30 @@ class CmdStats(default_cmds.MuxCommand):
             self.caller.msg("|rUsage: +stats <character>/<stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
 
-        # Fetch the stat definition from the database
+        # Get the stat definition from the database
         try:
-            if self.stat_name.lower() in ['nature', 'demeanor']:
-                matching_stats = Stat.objects.filter(name=self.stat_name, category='identity', stat_type='personal')
-            else:
-                matching_stats = Stat.objects.filter(name__iexact=self.stat_name.strip())
-            
-            if not matching_stats.exists():
-                matching_stats = Stat.objects.filter(name__icontains=self.stat_name.strip())
+            stat = Stat.objects.filter(name__iexact=self.stat_name).first()
+            if not stat:
+                # If exact match fails, try a case-insensitive contains search
+                matching_stats = Stat.objects.filter(name__icontains=self.stat_name)
+                if matching_stats.count() > 1:
+                    stat_names = [s.name for s in matching_stats]
+                    self.caller.msg(f"|rMultiple stats matching '{self.stat_name}' found: {', '.join(stat_names)}. Please be more specific.|n")
+                    return
+                stat = matching_stats.first()
+                if not stat:
+                    self.caller.msg(f"|rNo stats matching '{self.stat_name}' found in the database.|n")
+                    return
         except Exception as e:
             self.caller.msg(f"|rError fetching stats: {e}|n")
             return
 
-        if not matching_stats.exists():
-            self.caller.msg(f"|rNo stats matching '{self.stat_name}' found in the database.|n")
-            return
-
-        if len(matching_stats) > 1:
-            # If multiple matches and one of them is 'Seelie Legacy', use that
-            seelie_legacy = matching_stats.filter(name='Seelie Legacy').first()
-            if seelie_legacy:
-                stat = seelie_legacy
-            else:
-                self.caller.msg(f"|rMultiple stats matching '{self.stat_name}' found: {[stat.name for stat in matching_stats]}. Please be more specific.|n")
-                return
-        else:
-            stat = matching_stats.first()
+        # Use the canonical name from the database
+        self.stat_name = stat.name
 
         full_stat_name = stat.name
 
-        # Check if the stat is instanced and handle accordingly
+        # Handle instances for background stats
         if stat.instanced:
             if not self.instance:
                 self.caller.msg(f"|rThe stat '{full_stat_name}' requires an instance. Use the format: {full_stat_name}(instance)|n")
@@ -161,6 +166,18 @@ class CmdStats(default_cmds.MuxCommand):
         elif self.instance:
             self.caller.msg(f"|rThe stat '{full_stat_name}' does not support instances.|n")
             return
+
+        # Handle stat removal (empty value) - Move this before validation
+        if not self.value_change:
+            if stat.category in character.db.stats and stat.stat_type in character.db.stats[stat.category]:
+                if full_stat_name in character.db.stats[stat.category][stat.stat_type]:
+                    del character.db.stats[stat.category][stat.stat_type][full_stat_name]
+                    self.caller.msg(f"|gRemoved stat '{full_stat_name}' from {character.name}.|n")
+                    character.msg(f"|y{self.caller.name}|n |rremoved your stat|n '|y{full_stat_name}|n'.")
+                    return
+                else:
+                    self.caller.msg(f"|rStat '{full_stat_name}' not found on {character.name}.|n")
+                    return
 
         # Check if the character passes the stat's lock_string
         try:
@@ -192,18 +209,6 @@ class CmdStats(default_cmds.MuxCommand):
                 self.caller.msg(f"|rThe pool '{full_stat_name}' is not valid for {splat}.|n")
                 return
 
-        # Determine if the stat should be removed
-        if self.value_change == '':
-            current_stats = character.db.stats.get(stat.category, {}).get(stat.stat_type, {})
-            if full_stat_name in current_stats:
-                del current_stats[full_stat_name]
-                character.db.stats[stat.category][stat.stat_type] = current_stats
-                self.caller.msg(f"|gRemoved stat '{full_stat_name}' from {character.name}.|n")
-                character.msg(f"|y{self.caller.name}|n |rremoved your stat|n '|y{full_stat_name}|n'.")
-            else:
-                self.caller.msg(f"|rStat '{full_stat_name}' not found on {character.name}.|n")
-            return
-
         # Determine if the stat value should be treated as a number or a string
         try:
             value_change = int(self.value_change)
@@ -231,9 +236,27 @@ class CmdStats(default_cmds.MuxCommand):
             new_value = value_change
 
         # Validate the new value against the stat's valid values
-        valid_values = stat.values
-        if valid_values and new_value not in valid_values and valid_values != []:
-            self.caller.msg(f"|rValue '{new_value}' is not valid for stat '{full_stat_name}'. Valid values are: {valid_values}|n")
+        if stat.stat_type == 'dual':
+            if isinstance(stat.values, dict):
+                # For dual stats, validate against the 'perm' values list
+                if 'perm' in stat.values and new_value not in stat.values['perm']:
+                    try:
+                        new_value = int(new_value)  # Convert to int for comparison
+                        if new_value not in stat.values['perm']:
+                            self.caller.msg(f"|rValue '{new_value}' is not valid for permanent {full_stat_name}. Valid values are: {stat.values['perm']}|n")
+                            return
+                    except ValueError:
+                        self.caller.msg(f"|rValue '{new_value}' is not valid for permanent {full_stat_name}. Valid values are: {stat.values['perm']}|n")
+                        return
+                
+                # Set both permanent and temporary values
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+                self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                return
+        elif hasattr(stat, 'values') and stat.values and new_value not in stat.values:
+            self.caller.msg(f"|rValue '{new_value}' is not valid for stat '{full_stat_name}'. Valid values are: {stat.values}|n")
             return
 
         # Convert value to integer for virtues
@@ -244,17 +267,47 @@ class CmdStats(default_cmds.MuxCommand):
                 self.caller.msg(f"|rInvalid value for {full_stat_name}. Please provide an integer.|n")
                 return
 
+        # During character generation (when character is not approved), 
+        # or for specific stat types, always set temp value equal to permanent value
+        if not character.db.approved or stat.stat_type in ['knowledge', 'attribute', 'ability', 'talent', 'skill']:
+            # Set both permanent and temporary values
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+            self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            return
+        elif stat.stat_type == 'dual':
+            # For dual stats, we need to set both permanent and temporary values
+            if isinstance(stat.values, dict):
+                # Validate against permanent value range
+                if 'perm' in stat.values and new_value not in stat.values['perm']:
+                    self.caller.msg(f"|rValue '{new_value}' is not valid for permanent {full_stat_name}. Valid values are: {stat.values['perm']}|n")
+                    return
+                
+                # Set both permanent and temporary values
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+                self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                return
+
         # Update the stat
         character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
         
-        # If the stat is in the 'pools' category or has a 'dual' stat_type, update the temporary value as well
-        if stat.category == 'pools' or stat.stat_type == 'dual':
+        # During character generation (when character is not approved), 
+        # always set temp value equal to permanent value
+        if not character.db.approved:
             character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
             self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
-            character.msg(f"|y{self.caller.name}|n |gupdated your|n '|y{full_stat_name}|n' |gto|n '|y{new_value}|n' |g(both permanent and temporary).|n")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
+        # If already approved, only update temp for pools and dual stats
+        elif stat.category == 'pools' or stat.stat_type == 'dual':
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+            self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
         else:
             self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value}.|n")
-            character.msg(f"|y{self.caller.name}|n |gupdated your|n '|y{full_stat_name}|n' |gto|n '|y{new_value}|n'.")
+            character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value}.|n")
 
         # If the stat is 'Type' for a Shifter, apply the correct pools and renown
         if full_stat_name == 'Type' and character.get_stat('other', 'splat', 'Splat').lower() == 'shifter':
@@ -288,6 +341,37 @@ class CmdStats(default_cmds.MuxCommand):
             new_road = calculate_road(character)
             character.set_stat('pools', 'moral', 'Road', new_road, temp=False)
             self.caller.msg(f"|gRecalculated Road to {new_road}.|n")
+
+        # When setting a stat value:
+        if stat.stat_type == 'knowledge':
+            # Set both permanent and temporary values
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+            # Also set the temporary value if it's not already set
+            if not character.get_stat(stat.category, stat.stat_type, full_stat_name, temp=True):
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+
+        # Check if this is a dual-type stat (pools, renown, etc)
+        dual_stat_types = ['dual', 'renown', 'pool']  # Add any other dual-type categories
+        
+        if stat.stat_type in dual_stat_types:
+            if isinstance(stat.values, dict):
+                # For dual stats, validate against the 'perm' values list
+                if 'perm' in stat.values and new_value not in stat.values['perm']:
+                    try:
+                        new_value = int(new_value)  # Convert to int for comparison
+                        if new_value not in stat.values['perm']:
+                            self.caller.msg(f"|rValue '{new_value}' is not valid for permanent {full_stat_name}. Valid values are: {stat.values['perm']}|n")
+                            return
+                    except ValueError:
+                        self.caller.msg(f"|rValue '{new_value}' is not valid for permanent {full_stat_name}. Valid values are: {stat.values['perm']}|n")
+                        return
+                
+                # Set both permanent and temporary values
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+                self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                return
 
     def update_virtues_for_enlightenment(self, character):
         """Update virtues based on enlightenment path"""
@@ -483,6 +567,30 @@ class CmdStats(default_cmds.MuxCommand):
         self.caller.msg(f"|gApplied specific pools and renown for {shifter_type} to {character.name}.|n")
         character.msg(f"|gYour specific pools and renown for {shifter_type} have been applied.|n")
 
+    def set_stat(self, target, category, stat_type, stat_name, value, temp=False):
+        """Set a stat value."""
+        # Get the stat definition
+        stat = Stat.objects.filter(name=stat_name).first()
+        if not stat:
+            self.caller.msg(f"Stat '{stat_name}' not found.")
+            return False
+
+        # Handle stats with perm/temp values
+        if hasattr(stat, 'values') and isinstance(stat.values, dict) and 'perm' in stat.values:
+            valid_values = stat.values['temp'] if temp else stat.values['perm']
+            if value not in valid_values:
+                self.caller.msg(f"Value '{value}' is not valid for stat '{stat_name}'. Valid values are: {valid_values}")
+                return False
+        # Handle stats with simple value lists
+        elif hasattr(stat, 'values') and isinstance(stat.values, list):
+            if value not in stat.values:
+                self.caller.msg(f"Value '{value}' is not valid for stat '{stat_name}'. Valid values are: {stat.values}")
+                return False
+
+        # Set the stat value
+        target.set_stat(category, stat_type, stat_name, value, temp=temp)
+        return True
+
 from evennia.commands.default.muxcommand import MuxCommand
 from world.wod20th.models import Stat
 from evennia.utils import search
@@ -537,11 +645,29 @@ class CmdSpecialty(MuxCommand):
         if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
-            character = self.caller.search(self.character_name)
+            # First try exact match
+            character = None
+            # Search for both online and offline characters
+            matches = search_object(self.character_name, 
+                                 typeclass='typeclasses.characters.Character',
+                                 exact=True)
+            
+            if not matches:
+                # If no exact match, try case-insensitive
+                matches = search_object(self.character_name, 
+                                     typeclass='typeclasses.characters.Character')
+                matches = [obj for obj in matches if obj.key.lower() == self.character_name.lower()]
+            
+            if matches:
+                character = matches[0]
+            
+            # If still no match, try alias
+            if not character:
+                character = Character.get_by_alias(self.character_name.lower())
 
-        if not character:
-            self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
-            return
+            if not character:
+                self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
+                return
 
         # Fetch the stat definition from the database
         try:

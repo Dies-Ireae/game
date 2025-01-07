@@ -9,6 +9,10 @@ from world.wod20th.utils.formatting import header, footer, divider, format_stat
 from collections import defaultdict
 from django.utils import timezone
 from evennia import logger
+from evennia import search_object
+from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime
+from typeclasses.characters import Note
 
 class CmdNotes(MuxCommand):
     """
@@ -21,15 +25,20 @@ class CmdNotes(MuxCommand):
       +note/decompile <note(s)>   - get the raw text that created the note
       +note <target>/*            - see all visible notes on someone else
       +note <target>/<note>       - see a note on someone else
-      +note/<category> <target>/* - see all notes on someone else in a category
+      +note <target>/<category> - see all notes on someone else in a category
       +note/create <name>=<text>  - make a note called <name>
-      +note/create/<category> <name>=<text> - make a note in a specific category
+      +note/create <category>/<name>=<text> - make a note in a specific category
       +note/edit <note>=<new text> - change the text on a note, removes approval
       +note/move <note>=<category> - move a note to a new category, keeps approval
       +note/status <note>=PRIVATE|PUBLIC - make a note in-/visible to others
+      +note/private <note>        - shortcut to make a note private
+      +note/public <note>         - shortcut to make a note public
       +note/prove <note>=<target(s)> - show any note to a list of targets
       +note/approve[/<category>] <target>/<note> - approve a note (staff only)
       +note/unapprove[/<category>] <target>/<note> - unapprove a note (staff only)
+
+      Sample categories: General, Story, Merit, Flaw, Rote, Magick, NPC, Background
+      Combo Discipline, Ritual (use for Sabbat or Shifter)
     """
 
     key = "+note"
@@ -37,128 +46,390 @@ class CmdNotes(MuxCommand):
     locks = "cmd:all()"
     help_category = "Character"
 
+    def search_for_character(self, search_string):
+        # First, try to find by exact name match
+        results = search_object(search_string, typeclass="typeclasses.characters.Character")
+        if results:
+            return results[0]
+        
+        # If not found, try to find by dbref
+        if search_string.startswith("#") and search_string[1:].isdigit():
+            results = search_object(search_string, typeclass="typeclasses.characters.Character")
+            if results:
+                return results[0]
+        
+        # If still not found, return None
+        return None
+
     def func(self):
-        logger.log_info(f"CmdNotes func called with args: {self.args}, switches: {self.switches}")
         if not self.args and not self.switches:
-            # Display all notes
             self.list_notes()
-        elif self.switches:
-            # Handle different switches
+            return
+
+        if self.switches:
             switch = self.switches[0].lower()
             if switch == "create":
                 self.create_note()
             elif switch == "edit":
                 self.edit_note()
+            elif switch == "status":
+                self.change_note_status()
+            elif switch == "decompile":
+                self.decompile_note()
             elif switch == "move":
                 self.move_note()
-            elif switch == "status":
+            elif switch == "private":
+                self.args = f"{self.args}=PRIVATE"
+                self.change_note_status()
+            elif switch == "public":
+                self.args = f"{self.args}=PUBLIC"
                 self.change_note_status()
             elif switch == "prove":
                 self.prove_note()
             elif switch == "approve":
-                self.approve_unapprove_note(True)
+                self.approve_note()
             elif switch == "unapprove":
-                self.approve_unapprove_note(False)
-            elif switch == "decompile":
-                self.decompile_note()
+                self.unapprove_note()
             else:
                 self.caller.msg(f"Unknown switch: {switch}")
         else:
             # View a specific note
             self.view_note()
 
+    def parse_date(self, date_value):
+        """Helper method to parse dates from various formats."""
+        if isinstance(date_value, datetime):
+            return date_value
+        elif isinstance(date_value, str):
+            try:
+                return datetime.fromisoformat(date_value)
+            except (ValueError, TypeError):
+                return None
+        return None
+
     def list_notes(self):
-        notes = self.caller.get_all_notes()
-        if not notes:
+        """List all notes for the character."""
+        notes_dict = self.caller.attributes.get('notes', {})
+        if not notes_dict:
             self.caller.msg("You don't have any notes.")
             return
 
         width = 78
         notes_by_category = defaultdict(list)
-        for note in notes:
-            notes_by_category[note.category].append(note)
-
-        output = header(f"Notes for {self.caller.name}", width=width, fillchar="|r=|n")
-
-        for category, category_notes in notes_by_category.items():
-            output += f"|r{'-' * width}|n\n"
-            output += divider(category, width=width, color="|c")
-            for note in category_notes:
-                # Truncate the note text to the first 60 characters
-                truncated_text = note.text[:60] + "..." if len(note.text) > 60 else note.text
-                wrapped_text = wrap_ansi(truncated_text, width=width-4)  # -4 for left padding
-                
-                note_header = f"|y* |w#{note.id} |n{note.name}"
-                output += note_header + "\n"
-                output += "    " + wrapped_text.replace("\n", "\n    ") + "\n\n"
-
-        output += footer(width=width, fillchar="|r=|n")
         
-        self.caller.msg(output)
+        try:
+            # Process each note from the dictionary
+            for note_id, note_data in notes_dict.items():
+                if not note_data:
+                    continue
+                
+                # Ensure note_data is a dictionary
+                if hasattr(note_data, 'get'):
+                    note_data = dict(note_data)
+                else:
+                    continue
+                    
+                # Create Note object with all fields
+                note = Note(
+                    name=note_data.get('name', 'Unnamed Note'),
+                    text=note_data.get('text', ''),
+                    category=note_data.get('category', 'General'),
+                    is_public=note_data.get('is_public', False),
+                    is_approved=note_data.get('is_approved', False),
+                    approved_by=note_data.get('approved_by'),
+                    approved_at=self.parse_date(note_data.get('approved_at')),
+                    created_at=self.parse_date(note_data.get('created_at')),
+                    updated_at=self.parse_date(note_data.get('updated_at')),
+                    note_id=note_id
+                )
+                
+                notes_by_category[note.category].append(note)
+
+            if not notes_by_category:
+                self.caller.msg("You don't have any valid notes.")
+                return
+
+            output = header(f"Notes for {self.caller.name}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
+
+            # Sort categories alphabetically
+            for category in sorted(notes_by_category.keys()):
+                category_notes = notes_by_category[category]
+                # Sort notes by ID within each category
+                category_notes.sort(key=lambda x: int(x.note_id))
+                
+                # Category header in white
+                output += f"\n|w{category}|n ({len(category_notes)})\n"
+                
+                for note in category_notes:
+                    # Note header with ID
+                    output += f"* #{note.note_id} {note.name}"
+                    
+                    # Add status if private/pending
+                    if not note.is_public:
+                        output += " (PRIVATE"
+                        if not note.is_approved:
+                            output += ", PENDING"
+                        output += ")"
+                    output += "\n"
+                    
+                    # Note text indented and truncated
+                    text_preview = note.text[:60] + "..." if len(note.text) > 60 else note.text
+                    text_lines = text_preview.split('\n')
+                    for line in text_lines:
+                        output += "    " + line + "\n"
+
+            output += footer(width=width, fillchar="|r=|n")
+            self.caller.msg(output)
+            
+        except Exception as e:
+            self.caller.msg(f"Error listing notes: {e}")
+            logger.log_err(f"Error in list_notes: {e}")
 
     def create_note(self):
+        """Create a new note."""
         if not self.args or "=" not in self.args:
-            self.caller.msg("Usage: +note/create [<category>/]<name>=<text>")
-            return
-
-        if "/" in self.lhs:
-            category, name = self.lhs.split("/", 1)
-            category = category.strip()
-        else:
-            category = "General"
-            name = self.lhs.strip()
-
-        text = self.rhs.strip()
-
-        self.caller.add_note(name, text, category)
-        self.caller.msg(f"Note '{name}' created in category '{category}'.")
-
-    def edit_note(self):
-        if not self.args or "=" not in self.args:
-            self.caller.msg("Usage: +note/edit <note>=<new text>")
+            self.caller.msg("Usage: +note/create <name>=<text>")
             return
 
         name, text = self.args.split("=", 1)
         name = name.strip()
         text = text.strip()
 
-        if self.caller.update_note(name, text):
-            self.caller.msg(f"Note '{name}' updated.")
+        # Handle category in name
+        if "/" in name:
+            category, name = name.split("/", 1)
+            category = category.strip().title()
         else:
-            self.caller.msg(f"Note '{name}' not found.")
+            category = "General"
+
+        try:
+            note = self.caller.add_note(name, text, category=category)
+            self.caller.msg(f"Created note #{note.note_id}: {note.name}")
+        except Exception as e:
+            self.caller.msg(f"Error creating note: {e}")
+
+    def edit_note(self):
+        if not self.args or "=" not in self.args:
+            self.caller.msg("Usage: +note/edit <note>=<new text>")
+            return
+
+        note_id, text = self.args.split("=", 1)
+        note_id = note_id.strip()
+        text = text.strip()
+
+        if self.caller.update_note(note_id, text=text):
+            self.caller.msg(f"Note '{note_id}' updated.")
+        else:
+            self.caller.msg(f"Note '{note_id}' not found.")
 
     def view_note(self):
+        """View a specific note."""
+        if not self.args:
+            self.list_notes()
+            return
+
         if "/" in self.args:
-            target_name, note_identifier = self.args.split("/", 1)
-            target = self.caller.search(target_name)
+            target_name, note_id = self.args.split("/", 1)
+            target = self.search_for_character(target_name)
             if not target:
+                return
+            
+            # Handle wildcard to show all notes
+            if note_id == "*":
+                self.list_character_notes(target)
                 return
         else:
             target = self.caller
-            note_identifier = self.args
+            note_id = self.args
 
-        note = target.get_note(note_identifier)
-        if not note:
-            self.caller.msg(f"Note not found: {note_identifier}")
+        # Get notes dictionary
+        notes_dict = target.attributes.get('notes', {})
+        note_data = notes_dict.get(str(note_id))
+        
+        if not note_data:
+            self.caller.msg("No note with that ID exists.")
             return
 
+        # Create Note object
+        if hasattr(note_data, 'get'):
+            note_data = dict(note_data)
+            note = Note(
+                name=note_data.get('name', 'Unnamed Note'),
+                text=note_data.get('text', ''),
+                category=note_data.get('category', 'General'),
+                is_public=note_data.get('is_public', False),
+                is_approved=note_data.get('is_approved', False),
+                approved_by=note_data.get('approved_by'),
+                approved_at=self.parse_date(note_data.get('approved_at')),
+                created_at=self.parse_date(note_data.get('created_at')),
+                updated_at=self.parse_date(note_data.get('updated_at')),
+                note_id=note_id
+            )
+        else:
+            self.caller.msg("Invalid note data format.")
+            return
+
+        # Check permissions
         if target != self.caller and not (note.is_public or self.caller.check_permstring("Builders")):
             self.caller.msg("You don't have permission to view this note.")
             return
 
         self.display_note(note)
 
+    def list_character_notes(self, target):
+        """List all viewable notes for a character."""
+        notes_dict = target.attributes.get('notes', {})
+        if not notes_dict:
+            self.caller.msg(f"{target.name} has no notes.")
+            return
+
+        width = 78
+        notes_by_category = defaultdict(list)
+        is_staff = self.caller.check_permstring("Builders")
+        
+        try:
+            # Process each note from the dictionary
+            for note_id, note_data in notes_dict.items():
+                if not note_data:
+                    continue
+                
+                # Ensure note_data is a dictionary
+                if hasattr(note_data, 'get'):
+                    note_data = dict(note_data)
+                else:
+                    continue
+                    
+                # Create Note object with all fields
+                note = Note(
+                    name=note_data.get('name', 'Unnamed Note'),
+                    text=note_data.get('text', ''),
+                    category=note_data.get('category', 'General'),
+                    is_public=note_data.get('is_public', False),
+                    is_approved=note_data.get('is_approved', False),
+                    approved_by=note_data.get('approved_by'),
+                    approved_at=self.parse_date(note_data.get('approved_at')),
+                    created_at=self.parse_date(note_data.get('created_at')),
+                    updated_at=self.parse_date(note_data.get('updated_at')),
+                    note_id=note_id
+                )
+                
+                # Only show notes if they're public or viewer is staff/self
+                if note.is_public or is_staff or target == self.caller:
+                    notes_by_category[note.category].append(note)
+
+            if not notes_by_category:
+                self.caller.msg(f"No viewable notes found for {target.name}.")
+                return
+
+            output = header(f"Notes for {target.name}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
+
+            # Sort categories alphabetically
+            for category in sorted(notes_by_category.keys()):
+                category_notes = notes_by_category[category]
+                # Sort notes by ID within each category
+                category_notes.sort(key=lambda x: int(x.note_id))
+                
+                # Category header in white
+                output += f"\n|w{category}|n ({len(category_notes)})\n"
+                
+                for note in category_notes:
+                    # Note header with ID
+                    output += f"* #{note.note_id} {note.name}"
+                    
+                    # Add status if private/pending
+                    if not note.is_public:
+                        output += " (PRIVATE"
+                        if not note.is_approved:
+                            output += ", PENDING"
+                        output += ")"
+                    output += "\n"
+                    
+                    # Note text indented and truncated
+                    text_preview = note.text[:60] + "..." if len(note.text) > 60 else note.text
+                    text_lines = text_preview.split('\n')
+                    for line in text_lines:
+                        output += "    " + line + "\n"
+
+            output += footer(width=width, fillchar="|r=|n")
+            self.caller.msg(output)
+            
+        except Exception as e:
+            self.caller.msg(f"Error listing notes: {e}")
+            logger.log_err(f"Error in list_character_notes: {e}")
+
+    def list_notes_by_category(self, category):
+        """List all notes in a specific category."""
+        notes = self.caller.get_all_notes()
+        if not notes:
+            self.caller.msg("You don't have any notes.")
+            return
+
+        category_notes = [note for note in notes if note.category.lower() == category.lower()]
+        if not category_notes:
+            self.caller.msg(f"No notes found in category '{category}'.")
+            return
+
+        width = 78
+        output = header(f"Notes in category '{category}'", width=width, fillchar="|r=|n")
+        
+        for note in category_notes:
+            truncated_text = note.text[:60] + "..." if len(note.text) > 60 else note.text
+            wrapped_text = wrap_ansi(truncated_text, width=width-4)
+            
+            note_header = f"|y* |w#{note.note_id} |n{note.name}"
+            output += note_header + "\n"
+            output += "    " + wrapped_text.replace("\n", "\n    ") + "\n\n"
+
+        output += footer(width=width, fillchar="|r=|n")
+        self.caller.msg(output)
+
+    def list_room_characters(self):
+        """List all characters in the current room."""
+        if not self.caller.location:
+            self.caller.msg("You are not in any location.")
+            return
+        
+        characters = [obj for obj in self.caller.location.contents 
+                     if obj.has_account and obj != self.caller]
+        
+        if not characters:
+            self.caller.msg("No other characters found in this location.")
+            return
+
+        self.caller.msg("Characters in this location:")
+        for char in characters:
+            self.caller.msg(f"- {char.name}")
+
     def decompile_note(self):
+        """Get the raw text of a note."""
         if not self.args:
-            self.caller.msg("Usage: +note/decompile <note name>")
+            self.caller.msg("Usage: +note/decompile <note>")
             return
 
-        note = self.caller.get_note(self.args)
+        if "/" in self.args:
+            target_name, note_id = self.args.split("/", 1)
+            target = self.search_for_character(target_name)
+            if not target:
+                return
+        else:
+            target = self.caller
+            note_id = self.args
+
+        note = target.get_note(note_id)
         if not note:
-            self.caller.msg(f"Note not found: {self.args}")
+            self.caller.msg("No note with that ID exists.")
             return
 
-        self.caller.msg(f"Raw text for note '{note.name}':\n{note.text}")
+        # Check permissions
+        if target != self.caller and not self.caller.check_permstring("Builders"):
+            self.caller.msg("You don't have permission to decompile this note.")
+            return
+
+        # Format the decompiled output
+        output = f"+note/create {note.category}/{note.name}={note.text}"
+        if note.is_public:
+            output += "\n+note/public #{note.note_id}"
+        self.caller.msg(output)
 
     def move_note(self):
         if not self.args or "=" not in self.args:
@@ -179,25 +450,46 @@ class CmdNotes(MuxCommand):
 
     def change_note_status(self):
         if not self.args or "=" not in self.args:
-            self.caller.msg("Usage: +note/status <note name>=PRIVATE|PUBLIC")
-            return
+            # Check if it's a direct public/private command without =
+            if "/" in self.args:
+                target_name, note_id = self.args.split("/", 1)
+                target = self.search_for_character(target_name)
+                if not target:
+                    return
+            else:
+                target = self.caller
+                note_id = self.args
 
-        note_name, status = self.args.split("=", 1)
-        note_name = note_name.strip()
-        status = status.strip().upper()
+            # Set status based on the switch used
+            status = "PUBLIC" if self.switches[0] == "public" else "PRIVATE"
+        else:
+            # Handle the traditional status=value format
+            note_spec, status = self.args.split("=", 1)
+            if "/" in note_spec:
+                target_name, note_id = note_spec.split("/", 1)
+                target = self.search_for_character(target_name)
+                if not target:
+                    return
+            else:
+                target = self.caller
+                note_id = note_spec.strip()
+            status = status.strip().upper()
 
         if status not in ["PRIVATE", "PUBLIC"]:
             self.caller.msg("Status must be either PRIVATE or PUBLIC.")
             return
 
-        note = self.caller.get_note(note_name)
-        if not note:
-            self.caller.msg(f"Note not found: {note_name}")
+        # Check permissions if trying to modify another character's notes
+        if target != self.caller and not self.caller.check_permstring("Builders"):
+            self.caller.msg("You don't have permission to modify notes on other characters.")
             return
 
-        is_public = status == "PUBLIC"
-        self.caller.change_note_status(note_name, is_public)
-        self.caller.msg(f"Note '{note_name}' is now {status}.")
+        if target.update_note(note_id, is_public=(status == "PUBLIC")):
+            self.caller.msg(f"Note #{note_id} on {target.name} is now {status}.")
+            if target != self.caller:
+                target.msg(f"Your note #{note_id} has been made {status} by {self.caller.name}.")
+        else:
+            self.caller.msg(f"Note #{note_id} not found on {target.name}.")
 
     def prove_note(self):
         if not self.args or "=" not in self.args:
@@ -214,89 +506,115 @@ class CmdNotes(MuxCommand):
             return
 
         for target_name in targets:
-            target = self.caller.search(target_name)
+            target = self.search_for_character(target_name)
             if target:
                 self.display_note(note, target)
                 self.caller.msg(f"Note '{note_name}' shown to {target.name}.")
             else:
-                self.caller.msg(f"Target not found: {target_name}")
+                self.caller.msg(f"Could not find character '{target_name}'.")
 
-    def approve_unapprove_note(self, approve):
+    def approve_note(self):
+        """Approve a note (staff only)."""
         if not self.caller.check_permstring("Builders"):
-            self.caller.msg("You don't have permission to approve or unapprove notes.")
+            self.caller.msg("You don't have permission to approve notes.")
             return
 
-        args = self.args.split("/")
-        if len(args) < 2:
-            self.caller.msg("Usage: +note/[un]approve[/category] <character>/<note>")
+        if not self.args:
+            self.caller.msg("Usage: +note/approve <target>/<note>")
             return
 
-        if len(args) == 3:
-            category, target_name, note_identifier = args
-        else:
-            category = None
-            target_name, note_identifier = args
+        if "/" not in self.args:
+            self.caller.msg("You must specify both target and note ID.")
+            return
 
-        target = self.caller.search(target_name)
+        target_name, note_id = self.args.split("/", 1)
+        target = self.search_for_character(target_name)
         if not target:
             return
 
-        note = self.get_note(target, note_identifier, category)
+        note = target.get_note(note_id)
         if not note:
-            self.caller.msg(f"Note not found: {note_identifier}")
+            self.caller.msg("No note with that ID exists.")
             return
 
-        if approve:
-            note.is_approved = True
-            note.approved_by = self.caller.account
-            note.approved_at = timezone.now()
-            action = "approved"
-        else:
-            note.is_approved = False
-            note.approved_by = None
-            note.approved_at = None
-            action = "unapproved"
+        # Update note approval status
+        target.update_note(note_id, 
+            is_approved=True, 
+            approved_by=self.caller.name,
+            approved_at=datetime.now()
+        )
+        self.caller.msg(f"Note #{note_id} has been approved.")
+        target.msg(f"Your note #{note_id} has been approved by {self.caller.name}.")
 
-        note.save()
+    def unapprove_note(self):
+        """Unapprove a note (staff only)."""
+        if not self.caller.check_permstring("Builders"):
+            self.caller.msg("You don't have permission to unapprove notes.")
+            return
 
-        self.caller.msg(f"Note '{note.name}' has been {action}.")
-        if target != self.caller:
-            target.msg(f"Your note '{note.name}' has been {action} by {self.caller.name}.")
+        if not self.args:
+            self.caller.msg("Usage: +note/unapprove <target>/<note>")
+            return
 
-        self.display_note(note)
+        if "/" not in self.args:
+            self.caller.msg("You must specify both target and note ID.")
+            return
 
-    def get_note(self, target, identifier, category=None):
-        note = target.get_note(identifier)
-        if category and note and note.category.lower() != category.lower():
-            return None
-        return note
+        target_name, note_id = self.args.split("/", 1)
+        target = self.search_for_character(target_name)
+        if not target:
+            return
 
-    def display_note(self, note, target=None):
-        viewer = target or self.caller
+        note = target.get_note(note_id)
+        if not note:
+            self.caller.msg("No note with that ID exists.")
+            return
+
+        # Update note approval status
+        target.update_note(note_id, 
+            is_approved=False, 
+            approved_by=None,
+            approved_at=None
+        )
+        self.caller.msg(f"Note #{note_id} has been unapproved.")
+        target.msg(f"Your note #{note_id} has been unapproved by {self.caller.name}.")
+
+    def display_note(self, note):
+        """Display a note with formatting."""
         width = 78
+        output = header(f"Note #{note.note_id}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
 
-        # Header
-        output = header(f"Note #{note.id}", width=width, color="|c", fillchar="|r=|n")
+        if note.category:
+            output += f"|c{note.category}|n"
+            output += f" |w#{note.note_id}|n\n"
 
-        # Note details
         output += format_stat("Note Title:", note.name, width=width) + "\n"
-        output += format_stat("Visibility:", "Private" if not note.is_public else "Public", width=width) + "\n"
+        output += format_stat("Visibility:", "Public" if note.is_public else "Private", width=width) + "\n"
         
+        # Show approval status and details
         if note.is_approved:
-            approved_by = note.approved_by.username if note.approved_by else "Unknown"
-            approved_date = note.approved_at.strftime('%a %b %d %H:%M:%S %Y') if note.approved_at else "Unknown"
-            output += format_stat("Approved:", f"{approved_by} - {approved_date}", width=width) + "\n"
+            output += format_stat("Approved:", "Yes", width=width) + "\n"
+            if note.approved_by:
+                output += format_stat("Approved By:", note.approved_by, width=width) + "\n"
+            if note.approved_at:
+                output += format_stat("Approved At:", note.approved_at.strftime("%Y-%m-%d %H:%M:%S"), width=width) + "\n"
         else:
             output += format_stat("Approved:", "No", width=width) + "\n"
 
-        # Divider
+        # Show creation and update times for staff
+        if self.caller.check_permstring("Builders"):
+            output += format_stat("Created:", note.created_at.strftime("%Y-%m-%d %H:%M:%S"), width=width) + "\n"
+            output += format_stat("Updated:", note.updated_at.strftime("%Y-%m-%d %H:%M:%S"), width=width) + "\n"
+
         output += divider("", width=width, fillchar="-", color="|r") + "\n"
-
+        
         # Note content
-        wrapped_content = wrap_ansi(note.text, width=width-2)
-        output += wrapped_content + "\n"
+        content_lines = note.text.replace('|/', '\n').split('\n')
+        wrapped_lines = []
+        for line in content_lines:
+            if line.strip():
+                wrapped_lines.append(wrap_ansi(line.strip(), width=width-2))
+        output += '\n'.join(wrapped_lines) + "\n"
 
-        # Footer
         output += footer(width=width, fillchar="|r=|n")
-
-        viewer.msg(output)
+        self.caller.msg(output)

@@ -4,6 +4,9 @@ from evennia import Command
 from evennia.utils.evmenu import EvMenu
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, SHIFTER_RENOWN, CLAN, MAGE_FACTION, MAGE_SPHERES, TRADITION, TRADITION_SUBFACTION, CONVENTION, METHODOLOGIES, NEPHANDI_FACTION, SEEMING, KITH, SEELIE_LEGACIES, UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road
 from typeclasses.characters import Character
+from evennia.commands.default.muxcommand import MuxCommand
+from world.jobs.models import Job, Queue
+from django.utils import timezone
 
 class CmdCharGen(Command):
     """
@@ -1165,3 +1168,130 @@ def _finish_chargen(caller):
     _apply_chargen_data(caller)
     caller.msg("Character creation complete! Your character has been created and is ready to play.")
     return None
+
+class CmdSubmit(MuxCommand):
+    """
+    Submit your character for approval.
+
+    Usage:
+      +submit
+
+    This command will automatically create a job requesting character approval.
+    It will include your character's name, splat information, and basic stats.
+    Staff will review your character and either approve or request changes.
+    """
+
+    key = "+submit"
+    locks = "cmd:all()"
+    help_category = "Chargen"
+
+    def func(self):
+        caller = self.caller
+        
+        # Check if character is approved using only the persistent attribute
+        if caller.db.approved:
+            caller.msg("Your character is already approved.")
+            return
+
+        # Make sure approved attribute exists and is False if it doesn't exist
+        if not hasattr(caller.db, 'approved'):
+            caller.db.approved = False
+
+        # Check if there's already an open approval job for this character
+        existing_jobs = Job.objects.filter(
+            title__icontains=caller.name,
+            status__in=['open', 'claimed'],
+            queue__name='CHARGEN'
+        )
+        if existing_jobs.exists():
+            caller.msg("You already have a pending approval request. Please wait for staff to review it.")
+            return
+
+        # Gather character information
+        char_info = []
+        char_info.append(f"Character Name: {caller.name}")
+        
+        # Get splat information from stats
+        if hasattr(caller.db, 'stats') and caller.db.stats:
+            splat_info = caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm')
+            if splat_info:
+                char_info.append(f"Splat: {splat_info}")
+
+            # Add attributes
+            char_info.append("\nAttributes:")
+            for category in ['physical', 'social', 'mental']:
+                attributes = caller.db.stats.get(category, {})
+                if attributes:
+                    char_info.append(f"\n{category.title()}:")
+                    for attr_name, attr_data in attributes.items():
+                        perm_value = attr_data.get('perm', 0)
+                        char_info.append(f"  {attr_name.replace('_', ' ').title()}: {perm_value}")
+
+            # Add abilities
+            abilities = caller.db.stats.get('abilities', {})
+            if abilities:
+                char_info.append("\nAbilities:")
+                for ability_name, ability_data in abilities.items():
+                    perm_value = ability_data.get('perm', 0)
+                    if perm_value > 0:  # Only show abilities with points in them
+                        char_info.append(f"  {ability_name.replace('_', ' ').title()}: {perm_value}")
+
+            # Add supernatural powers based on splat
+            powers = caller.db.stats.get('powers', {})
+            if powers:
+                char_info.append("\nPowers:")
+                for power_name, power_data in powers.items():
+                    perm_value = power_data.get('perm', 0)
+                    if perm_value > 0:  # Only show powers with points in them
+                        char_info.append(f"  {power_name.replace('_', ' ').title()}: {perm_value}")
+
+        else:
+            char_info.append("\nWarning: No character statistics found. Please complete character generation first.")
+
+        # Format the description
+        description = "\n".join(char_info)
+        description += "\n\nPlease review this character for approval."
+
+        try:
+            # Get or create the CHARGEN queue
+            queue, _ = Queue.objects.get_or_create(
+                name='CHARGEN',
+                defaults={'automatic_assignee': None}
+            )
+
+            # Create the job
+            job = Job.objects.create(
+                title=f"Character Approval: {caller.name}",
+                description=description,
+                requester=caller.account,
+                queue=queue,
+                status='open'
+            )
+
+            # Add a comment with any additional notes
+            initial_comment = {
+                "author": caller.account.username,
+                "text": "Character submitted for approval.",
+                "created_at": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
+            if not job.comments:
+                job.comments = []
+            job.comments.append(initial_comment)
+            job.save()
+
+            caller.msg("|gCharacter submitted for approval. Job ID: #{0}|n".format(job.id))
+            caller.msg("Staff will review your character and contact you if any changes are needed.")
+            
+            # Notify staff through the jobs channel
+            from commands.jobs.jobs_commands import CmdJobs
+            cmd_jobs = CmdJobs()
+            cmd_jobs.caller = caller
+            cmd_jobs.post_to_jobs_channel(
+                caller.name,
+                job.id,
+                "submitted character for approval"
+            )
+
+        except Exception as e:
+            caller.msg("|rError submitting character: {0}|n".format(e))

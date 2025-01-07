@@ -35,6 +35,8 @@ urlpatterns = [
     # add any extra urls here:
     # path("mypath/", include("path.to.my.urls.file")),
     path('wiki/', include('wiki.urls', namespace='wiki')),
+    # character sheets
+    path("characters/", include("web.character.urls")),
 ]
 
 # 'urlpatterns' must be named such for Django to find it.
