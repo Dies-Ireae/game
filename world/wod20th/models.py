@@ -378,7 +378,6 @@ SHIFTER_IDENTITY_STATS = {
     "Nuwisha": ["Breed", "Rank"],
     "Ratkin": ["Aspect", "Plague", "Breed", "Rank"]
 }
-
 SHIFTER_RENOWN: Dict[str, Union[List[str], Dict[str, Dict[str, List[int]]]]] = {
     "Ajaba": ["Cunning", "Ferocity", "Obligation"],
     "Ananasi": ["Cunning", "Obedience", "Wisdom"],

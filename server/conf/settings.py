@@ -30,6 +30,7 @@ import os
 from evennia.contrib.base_systems import color_markups
 SITE_ID = 1  # This tells Django which site object to use
 DEBUG = True
+
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
 # Evennia base server config
@@ -45,14 +46,8 @@ TELNET_PORTS = [4201]
 WEBSERVER_PORTS = [(4200, 4005)] 
 WEBSOCKET_CLIENT_PORT = 4202
 EVENNIA_ADMIN=False
-
-CSRF_TRUSTED_ORIGINS = ['https:/diesiraemu.com', 'http://diesiraemu.com']
-
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-
-
 """
+
 SERVERNAME = "beta.diesiraemu.com"
 TELNET_INTERFACES = ['0.0.0.0']
 WEBSERVER_INTERFACES = ['0.0.0.0']
@@ -61,7 +56,6 @@ if ENVIRONMENT == 'development':
   WEB_SOCKET_CLIENT_URL = "ws://localhost4005/websocket"
 else:
   WEBSOCKET_CLIENT_URL = "wss://beta.diesiraemu.com/websocket"
-
 
 ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
@@ -90,22 +84,11 @@ INSTALLED_APPS += (
     "world.wod20th",
     "wiki",
     "world.jobs",
-    "web.character",
 )
 
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
 BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"
 
-# Change 8001 to your desired websocket port
-
-
-"""
-INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
-BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
-LOCK_FUNC_MODULES = [
-    "evennia.locks.lockfuncs",
-    "world.wod20th.locks", 
-]
   # Change 8001 to your desired websocket port
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
@@ -117,7 +100,7 @@ except ImportError:
 
 # Add or update the command alias mapping in the settings file
 
-"""
+
 """
 Color markups
 
@@ -273,42 +256,7 @@ MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = [
     (r"%ch%cX", r"%c[222"),  # dark grey background
 ]
 
+AT_SERVER_STARTSTOP_MODULE = "world.wod20th.scripts"
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(GAME_DIR, 'evennia.db3'),
-    }
-}
-
-# Maximum number of accounts that can be created
-MAX_ACCOUNTS = 10000  # Adjust this number as needed
-
-# Maximum number of characters per account
-MAX_CHARACTERS_PER_ACCOUNT = 5  # Adjust this number as needed
-
-import warnings
-
-warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.models.base')
-
-# Static files configuration (keep this in one place)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(GAME_DIR, 'static')
-STATICFILES_DIRS = [
-    os.path.join(GAME_DIR, "web", "static"),
-    os.path.join(GAME_DIR, "wiki", "static"),
-]
-
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(GAME_DIR, 'media')
-
-ENVIRONMENT = "production"
-# Update the WEBSOCKET_CLIENT_URL configuration
-if ENVIRONMENT == 'production':
-    WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
-elif ENVIRONMENT == 'development':
-    WEBSOCKET_CLIENT_URL = "ws://localhost:4202/websocket"
-
+from world.wod20th.locks import LOCK_FUNCS
 

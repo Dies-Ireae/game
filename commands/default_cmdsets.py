@@ -20,13 +20,14 @@ from commands.CmdShortDesc import CmdShortDesc
 from commands.CmdPose import CmdPose
 from commands.CmdSetStats import CmdStats, CmdSpecialty
 from commands.CmdSheet import CmdSheet
+from commands.CmdInfo import CmdInfo
 from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
 from commands.CmdLanguage import CmdLanguage
 import evennia.contrib.game_systems.mail as mail
 from commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
-from commands.CmdEmit import CmdEmit
+from commands.CmdEmit import CmdEmit, CmdPemit, CmdRemit
 from commands.CmdNotes import CmdNotes
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.building import CmdSetRoomResources, CmdSetRoomType, CmdSetUmbraDesc, CmdSetGauntlet, CmdUmbraInfo
@@ -79,14 +80,14 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdShortDesc())
         self.add(CmdPose())
         self.add(CmdStats())
+        self.add(CmdSpecialty())
         self.add(CmdEmit())
         self.add(BBSCmdSet)
         self.add(OssCmdSet)
         self.add(CmdFaeDesc())
-        self.add(CmdChannel())
 
-        self.add(CmdSpecialty())
         self.add(CmdSheet())
+        self.add(CmdInfo())
         self.add(CmdHurt())
         self.add(CmdHeal())
         self.add(CmdEvents())
@@ -98,7 +99,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdChangelingInteraction())
         self.add(CmdAdminLook())
         self.add(CmdInfo())
-        self.add(CmdLFRP())
+
         self.add(CmdUmbraInteraction())
         self.add(CmdMeet())
         self.add(CmdPlusIc())
@@ -116,6 +117,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdSubmit())
         self.add(CmdFinger())
         self.add(CmdAlias())
+
+        self.add(CmdLFRP())
+        self.add(CmdChannel())
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
     """
@@ -151,6 +155,7 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdPage())
         self.add(CmdFinger())
         self.add(CmdSpecialty())
+
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """
     Command set available to the Session before being logged in.  This

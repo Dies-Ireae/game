@@ -618,3 +618,4 @@ class CmdNotes(MuxCommand):
 
         output += footer(width=width, fillchar="|r=|n")
         self.caller.msg(output)
+

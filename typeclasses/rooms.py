@@ -1,11 +1,12 @@
 from evennia import DefaultRoom
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import make_iter, justify
 from evennia.utils.ansi import ANSIString
-from evennia.utils.search import search_channel
+from evennia.utils import ansi
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
 from datetime import datetime
 import random
+from evennia.utils.search import search_channel
 
 class RoomParent(DefaultRoom):
 
@@ -120,13 +121,13 @@ class RoomParent(DefaultRoom):
                 else:
                     shortdesc_str ="|h|xType '|n+shortdesc <desc>|h|x' to set a short description.|n"
 
-                if len(ANSIString(shortdesc_str).strip()) > 40:
-                    shortdesc_str = ANSIString(shortdesc_str)[:40]
+                if len(ANSIString(shortdesc_str).strip()) > 60:
+                    shortdesc_str = ANSIString(shortdesc_str)[:60]
                     shortdesc_str = ANSIString(shortdesc_str[:-3] + "...|n")
                 else:
-                    shortdesc_str = ANSIString(shortdesc_str).ljust(40, ' ')
+                    shortdesc_str = ANSIString(shortdesc_str).ljust(60, ' ')
                 
-                string += ANSIString(f" {character.get_display_name(looker).ljust(17)} {ANSIString(idle_time).rjust(7)}|n {shortdesc_str}\n")
+                string += ANSIString(f" {character.get_display_name(looker).ljust(12)} {ANSIString(idle_time).rjust(7)}|n {shortdesc_str}\n")
 
         # List all objects in the room
         objects = [obj for obj in self.contents if not obj.has_account and not obj.destination]
@@ -265,25 +266,44 @@ class RoomParent(DefaultRoom):
         elif modifier > 0:
             self.msg_contents("The Gauntlet seems to thicken in this area...")
 
-    def peek_umbra(self, character):
+    def modify_gauntlet(self, modifier, duration=0):
         """
-        Allows a character to peek into the Umbra.
-        """
-        difficulty = self.get_gauntlet_difficulty() + 2
-        success = self.roll_gnosis(character, difficulty)
+        Temporarily modifies the Gauntlet difficulty of the room.
         
-        if success:
-            if self.db.umbra_desc:
-                # Format the Umbra description
-                umbra_header = header("Umbra Vision", width=78, fillchar=ANSIString("|r-|n"))
-                formatted_desc = self.format_description(self.db.umbra_desc)
-                umbra_footer = footer(width=78, fillchar=ANSIString("|r-|n"))
-                
-                return f"You successfully pierce the Gauntlet and glimpse into the Umbra:\n\n{umbra_header}\n{formatted_desc}\n{umbra_footer}"
-            else:
-                return "You successfully pierce the Gauntlet, but there's nothing unusual to see in the Umbra here."
+        Args:
+            modifier (int): The amount to modify the Gauntlet by (negative numbers lower it)
+            duration (int): How long in seconds the modification should last (0 for permanent)
+        """
+        self.db.temp_gauntlet_modifier = modifier
+        
+        if duration > 0:
+            self.db.temp_gauntlet_expiry = datetime.now().timestamp() + duration
         else:
-            return "You fail to pierce the Gauntlet and see into the Umbra."
+            self.db.temp_gauntlet_expiry = None
+        
+        # Announce the change if it's significant
+        if modifier < 0:
+            self.msg_contents("The Gauntlet seems to thin in this area...")
+        elif modifier > 0:
+            self.msg_contents("The Gauntlet seems to thicken in this area...")
+
+    def peek_umbra(self, looker):
+        """Allow a character to peek into the Umbra version of the room."""
+        # Use the same return_appearance method but with peek_umbra flag
+        appearance = self.return_appearance(looker, peek_umbra=True)
+        
+        # Extract just the description part (between header and first divider)
+        lines = appearance.split('\n')
+        desc_lines = []
+        for line in lines[2:]:  # Skip header lines
+            if line.startswith('---'):  # Stop at first divider
+                break
+            desc_lines.append(line)
+        
+        header = "-" * 30 + "<  Umbra Vision >" + "-" * 31
+        footer = "-" * 78
+        
+        return f"\n{header}\n\n{''.join(desc_lines)}\n{footer}"
 
     def format_description(self, desc):
         """
@@ -306,8 +326,16 @@ class RoomParent(DefaultRoom):
                     formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
             
             formatted_paragraphs.append('\n'.join(formatted_lines))
+
         
-        return '\n\n'.join(formatted_paragraphs)
+        # Rejoin lines and handle other formatting
+        desc = '\n'.join(lines)
+        desc = desc.replace('%R', '\n')
+        desc = desc.replace('%r', '\n')
+        
+        # Split into paragraphs and rejoin with proper spacing
+        paragraphs = [p.strip() for p in desc.split('\n') if p.strip()]
+        return '\n\n'.join(paragraphs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
         """

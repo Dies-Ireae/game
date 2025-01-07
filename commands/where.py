@@ -4,6 +4,7 @@ from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.formatting import header, footer, divider
 from evennia.utils.evtable import EvTable
 from collections import defaultdict
+
 import time
 
 class CmdWhere(default_cmds.MuxCommand):
@@ -160,3 +161,4 @@ class CmdWhere(default_cmds.MuxCommand):
 
         string += footer(width=78)
         caller.msg(string)
+

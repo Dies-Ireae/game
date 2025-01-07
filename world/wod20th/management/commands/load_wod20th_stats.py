@@ -110,3 +110,29 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f'{action} stat: {name}'))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error creating/updating stat {name}: {str(e)}'))
+
+    def handle_ability(self, ability_data):
+        """Handle loading an ability stat"""
+        stat, created = Stat.objects.get_or_create(
+            name=ability_data['name'],
+            defaults={
+                'description': ability_data.get('description', ''),
+                'game_line': ability_data.get('game_line', 'Various'),
+                'category': ability_data.get('category', 'abilities'),
+                'stat_type': ability_data.get('stat_type', 'ability'),
+                'values': ability_data.get('values', {}),
+                'splat_specific': ability_data.get('splat_specific', False),
+                'allowed_splats': ability_data.get('allowed_splats', {})
+            }
+        )
+        
+        if not created:
+            # Update existing stat with new data
+            stat.description = ability_data.get('description', '')
+            stat.game_line = ability_data.get('game_line', 'Various')
+            stat.category = ability_data.get('category', 'abilities')
+            stat.stat_type = ability_data.get('stat_type', 'ability')
+            stat.values = ability_data.get('values', {})
+            stat.splat_specific = ability_data.get('splat_specific', False)
+            stat.allowed_splats = ability_data.get('allowed_splats', {})
+            stat.save()

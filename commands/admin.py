@@ -188,3 +188,4 @@ class CmdAdminLook(CmdLook, AdminCommand):
             
         # If not using * prefix, use the default look behavior
         super().func()
+

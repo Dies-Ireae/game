@@ -120,7 +120,8 @@ class CmdSetUmbraDesc(Command):
             caller.msg("Usage: @umbradesc <description>")
             return
 
-        location.db.umbra_desc = self.args.strip()
+        # Preserve exact formatting by not stripping
+        location.db.umbra_desc = self.args
         caller.msg(f"Umbra description set for {location.get_display_name(caller)}.")
 
 class CmdSetGauntlet(Command):

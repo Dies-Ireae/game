@@ -26,6 +26,7 @@ class Channel(ChannelDB, metaclass=TypeclassBase):
         """Get the list of accounts/objects muting this channel."""
         return self.db.muted or []
 
+
     def at_channel_creation(self):
         """Called when the channel is created."""
         self.db.muted = []
@@ -33,6 +34,7 @@ class Channel(ChannelDB, metaclass=TypeclassBase):
         # Ensure channel has a valid name
         if not self.key or not self.key.strip():
             raise ValueError("Channel must have a valid name")
+
     
     def mute(self, subscriber):
         """Add an account/object to the mute list."""
@@ -72,7 +74,7 @@ class Channel(ChannelDB, metaclass=TypeclassBase):
                 formatted_msg = f"[{self.key}] |w{sender.name}|n: {message}"
         else:
             formatted_msg = f"[{self.key}] {message}"
-            
+
         # Send to all connected accounts except sender and muted accounts
         for account in self.subscriptions.all():
             if account not in self.mutelist and (not senders or account not in senders):
