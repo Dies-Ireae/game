@@ -1,25 +1,13 @@
 from evennia import default_cmds
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, calculate_willpower, calculate_road
 from evennia.utils import search
-
-# Define the allowed identity stats for each shifter type
-SHIFTER_IDENTITY_STATS = {
-    "Garou": ["Tribe", "Breed", "Auspice"],
-    "Gurahl": ["Tribe", "Breed", "Auspice"],
-    "Rokea": ["Tribe", "Breed", "Auspice"],
-    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal"],
-    "Ajaba": ["Aspect", "Breed"],
-    "Bastet": ["Tribe", "Breed"],
-    "Corax": ["Breed"],
-    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed"],
-    "Mokole": ["Varnas", "Stream", "Breed"],
-    "Nagah": ["Crown", "Breed", "Auspice"],
-    "Nuwisha": ["Breed"],
-    "Ratkin": ["Aspect", "Plague", "Breed"]
-}
+from evennia.utils.search import search_object
+from typeclasses.characters import Character
 
 class CmdStats(default_cmds.MuxCommand):
     """
+    Set character stats as staff.
+
     Usage:
       +stats <character>/<stat>[(<instance>)]/<category>=[+-]<value>
       +stats me/<stat>[(<instance>)]/<category>=[+-]<value>
@@ -29,15 +17,19 @@ class CmdStats(default_cmds.MuxCommand):
     Examples:
       +stats Bob/Strength/Physical=+2
       +stats Alice/Firearms/Skill=-1
-      +stats John/Status(Ventrue)/Social=
+      +stats John/Status(Ventrue)/Social=3
       +stats me=reset
-      +stats me/Strength=3
+      +stats me/Nature=Curmudgeon
+      +stats Bob/Demeanor=Visionary
+
+    This is the staff version of +selfstat with the same functionality
+    but can be used on any character.
     """
 
-    key = "stats"
-    aliases = ["stat"]
-    locks = "cmd:perm(Builder)"  # Only Builders and above can use this command
-    help_category = "Chargen & Character Info"
+    key = "+stats"
+    aliases = ["stats", "+setstats", "setstats"]
+    locks = "cmd:perm(Builder)"
+    help_category = "Staff"
 
     def parse(self):
         """
@@ -100,7 +92,6 @@ class CmdStats(default_cmds.MuxCommand):
 
     def func(self):
         """Implement the command"""
-
         if not self.character_name:
             self.caller.msg("|rUsage: +stats <character>/<stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
@@ -108,11 +99,29 @@ class CmdStats(default_cmds.MuxCommand):
         if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
-            character = self.caller.search(self.character_name)
+            # First try exact match
+            character = None
+            # Search for both online and offline characters
+            matches = search_object(self.character_name, 
+                                 typeclass='typeclasses.characters.Character',
+                                 exact=True)
+            
+            if not matches:
+                # If no exact match, try case-insensitive
+                matches = search_object(self.character_name, 
+                                     typeclass='typeclasses.characters.Character')
+                matches = [obj for obj in matches if obj.key.lower() == self.character_name.lower()]
+            
+            if matches:
+                character = matches[0]
+            
+            # If still no match, try alias
+            if not character:
+                character = Character.get_by_alias(self.character_name.lower())
 
-        if not character:
-            self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
-            return
+            if not character:
+                self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
+                return
 
         # Handle the reset command
         if self.stat_name and self.stat_name.lower() == 'reset':
@@ -158,13 +167,18 @@ class CmdStats(default_cmds.MuxCommand):
             self.caller.msg(f"|rThe stat '{full_stat_name}' does not support instances.|n")
             return
 
-        # Handle stat removal (empty value) - Move this before validation
+        # Handle stat removal (empty value)
         if not self.value_change:
             if stat.category in character.db.stats and stat.stat_type in character.db.stats[stat.category]:
                 if full_stat_name in character.db.stats[stat.category][stat.stat_type]:
                     del character.db.stats[stat.category][stat.stat_type][full_stat_name]
                     self.caller.msg(f"|gRemoved stat '{full_stat_name}' from {character.name}.|n")
                     character.msg(f"|y{self.caller.name}|n |rremoved your stat|n '|y{full_stat_name}|n'.")
+                    
+                    # Check if we need to update languages after merit removal
+                    if (stat.category == 'merits' and 
+                        (stat.name == 'Language' or stat.name == 'Natural Linguist')):
+                        character.handle_language_merit_change()
                     return
                 else:
                     self.caller.msg(f"|rStat '{full_stat_name}' not found on {character.name}.|n")
@@ -363,6 +377,11 @@ class CmdStats(default_cmds.MuxCommand):
                 self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
                 character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
                 return
+
+        # After merit changes, check if we need to update languages
+        if (stat.category == 'merits' and 
+            (stat.name == 'Language' or stat.name == 'Natural Linguist')):
+            character.handle_language_merit_change()
 
     def update_virtues_for_enlightenment(self, character):
         """Update virtues based on enlightenment path"""
@@ -636,11 +655,29 @@ class CmdSpecialty(MuxCommand):
         if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
-            character = self.caller.search(self.character_name)
+            # First try exact match
+            character = None
+            # Search for both online and offline characters
+            matches = search_object(self.character_name, 
+                                 typeclass='typeclasses.characters.Character',
+                                 exact=True)
+            
+            if not matches:
+                # If no exact match, try case-insensitive
+                matches = search_object(self.character_name, 
+                                     typeclass='typeclasses.characters.Character')
+                matches = [obj for obj in matches if obj.key.lower() == self.character_name.lower()]
+            
+            if matches:
+                character = matches[0]
+            
+            # If still no match, try alias
+            if not character:
+                character = Character.get_by_alias(self.character_name.lower())
 
-        if not character:
-            self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
-            return
+            if not character:
+                self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
+                return
 
         # Fetch the stat definition from the database
         try:

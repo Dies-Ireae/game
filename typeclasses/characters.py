@@ -14,6 +14,9 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 from datetime import datetime
+from evennia.comms.models import ChannelDB
+from commands.CmdLanguage import AVAILABLE_LANGUAGES
+from evennia.commands.cmdset import CmdSet
 
 class Character(DefaultCharacter):
     """
@@ -24,14 +27,21 @@ class Character(DefaultCharacter):
 
     def at_object_creation(self):
         """
-        Called when the character is first created.
+        Called only at initial creation.
         """
         super().at_object_creation()
+
+        # Initialize basic attributes
+        self.db.desc = ""
+        self.db.stats = {}
+        
+        # Initialize languages with English as default
+        self.db.languages = ["English"]
+        self.db.speaking_language = "English"
+        
         self.tags.add("in_material", category="state")
         self.db.unfindable = False
         self.db.fae_desc = ""
-        self.db.languages = ["English"]  # Default language
-        self.db.speaking_language = None
         self.db.approved = False  # Ensure all new characters start unapproved
         self.db.in_umbra = False  # Use a persistent attribute instead of a tag
         
@@ -40,6 +50,14 @@ class Character(DefaultCharacter):
         self.db.lethal = 0
         self.db.bashing = 0
         self.db.injury_level = "Healthy"
+
+        # Auto-subscribe to Public channel
+        try:
+            public_channel = ChannelDB.objects.get(db_key__iexact="public")
+            if not public_channel.has_connection(self):
+                public_channel.connect(self)
+        except ChannelDB.DoesNotExist:
+            pass
 
     @lazy_property
     def notes(self):
@@ -124,7 +142,40 @@ class Character(DefaultCharacter):
         """
         Get the character's known languages.
         """
-        return self.db.languages or []  # Return an empty list if None
+        # Get current languages, initialize if needed
+        current_languages = self.db.languages or []
+        
+        # Convert to list if it's not already
+        if not isinstance(current_languages, list):
+            current_languages = [current_languages]
+        
+        # Clean up the languages list
+        cleaned_languages = []
+        seen = set()
+        
+        # First pass: extract all language strings and clean them
+        for entry in current_languages:
+            # Convert to string and clean it
+            lang_str = str(entry).replace('"', '').replace("'", '').replace('[', '').replace(']', '')
+            # Split on commas and process each part
+            for part in lang_str.split(','):
+                clean_lang = part.strip()
+                if clean_lang and clean_lang.lower() not in seen:
+                    # Check if it's a valid language
+                    for available_lang in AVAILABLE_LANGUAGES.values():
+                        if available_lang.lower() == clean_lang.lower():
+                            cleaned_languages.append(available_lang)
+                            seen.add(available_lang.lower())
+                            break
+        
+        # Ensure English is first
+        if "English" in cleaned_languages:
+            cleaned_languages.remove("English")
+        cleaned_languages.insert(0, "English")
+        
+        # Store the cleaned list back to the database
+        self.db.languages = cleaned_languages
+        return cleaned_languages
 
     def set_speaking_language(self, language):
         """
@@ -132,10 +183,18 @@ class Character(DefaultCharacter):
         """
         if language is None:
             self.db.speaking_language = None
-        elif language in self.db.languages:
-            self.db.speaking_language = language
-        else:
-            raise ValueError(f"You don't know the language: {language}")
+            return
+            
+        # Get clean language list
+        known_languages = self.get_languages()
+        
+        # Case-insensitive check
+        for known in known_languages:
+            if known.lower() == language.lower():
+                self.db.speaking_language = known
+                return
+                
+        raise ValueError(f"You don't know the language: {language}")
 
     def get_speaking_language(self):
         """
@@ -608,6 +667,113 @@ class Character(DefaultCharacter):
             # Restore original Appearance when leaving Crinos
             perm_appearance = self.db.stats.get('attributes', {}).get('social', {}).get('Appearance', {}).get('perm', 1)
             self.set_stat('attributes', 'social', 'Appearance', perm_appearance, temp=True)
+
+    def matches_name(self, searchstring):
+        """
+        Check if the searchstring matches this character's name or alias.
+        """
+        searchstring = searchstring.lower().strip()
+        
+        # First check direct name match
+        if self.key.lower() == searchstring:
+            return True
+            
+        # Then check alias
+        if self.attributes.has("alias"):
+            alias = self.attributes.get("alias")
+            if alias and alias.lower() == searchstring:
+                return True
+            
+        return False
+
+    @classmethod
+    def get_by_alias(cls, searchstring):
+        """
+        Find a character by their alias.
+        
+        Args:
+            searchstring (str): The alias to search for
+            
+        Returns:
+            Character or None: The character with matching alias, if any
+        """
+        from evennia.utils.search import search_object
+        
+        # Search for objects with matching alias attribute
+        matches = search_object(
+            searchstring, 
+            attribute_name="alias",
+            exact=True,
+            typeclass='typeclasses.characters.Character'
+        )
+        
+        return matches[0] if matches else None
+
+    def at_post_create(self):
+        """
+        Called after character creation and after all attributes are set.
+        """
+        super().at_post_create()
+
+        # Auto-subscribe to Public channel
+        try:
+            public_channel = ChannelDB.objects.get(db_key__iexact="public")
+            if not public_channel.has_connection(self):
+                public_channel.connect(self)
+        except ChannelDB.DoesNotExist:
+            pass
+
+    def handle_language_merit_change(self):
+        """
+        Handle changes to Language merit or Natural Linguist merit.
+        Removes excess languages if merit points are reduced.
+        """
+        merits = self.db.stats.get('merits', {})
+        language_points = 0
+        natural_linguist = False
+        
+        # Check for Natural Linguist in both categories
+        for category in ['mental', 'social']:
+            if category in merits:
+                if any(merit.lower().replace(' ', '') == 'naturallinguist' 
+                      for merit in merits[category].keys()):
+                    natural_linguist = True
+                    break
+        
+        # Get Language merit points
+        if 'social' in merits:
+            for merit_name, merit_data in merits['social'].items():
+                if merit_name == 'Language':
+                    base_points = merit_data.get('perm', 0)
+                    language_points = base_points * 2 if natural_linguist else base_points
+                    break
+        
+        # Get current languages
+        current_languages = self.get_languages()
+        
+        # If we have more languages than points allow (accounting for free English)
+        if len(current_languages) - 1 > language_points:
+            # Keep English and only as many additional languages as we have points for
+            new_languages = ["English"]
+            additional_languages = [lang for lang in current_languages if lang != "English"]
+            new_languages.extend(additional_languages[:language_points])
+            
+            # Update languages
+            self.db.languages = new_languages
+            
+            # Reset speaking language to English if current language was removed
+            if self.db.speaking_language not in new_languages:
+                self.db.speaking_language = "English"
+            
+            # Notify the character with more detail
+            removed_languages = set(current_languages) - set(new_languages)
+            self.msg(f"Your language merit points have been reduced to {language_points}. "
+                    f"The following languages have been removed: {', '.join(removed_languages)}\n"
+                    f"Your known languages are now: {', '.join(new_languages)}")
+        
+        # If Natural Linguist was removed, update the display
+        if not natural_linguist and len(current_languages) > 1:
+            self.msg(f"Natural Linguist merit removed. Your current language points: {language_points}")
 
 class Note:
     def __init__(self, name, text, category="General", is_public=False, is_approved=False, 
