@@ -198,10 +198,22 @@ class CmdStats(default_cmds.MuxCommand):
         if character.get_stat('other', 'splat', 'Splat').lower() == 'shifter' and stat.category == 'identity':
             shifter_type = character.get_stat('identity', 'lineage', 'Type')
             if shifter_type and full_stat_name != 'Type':
-                allowed_stats = SHIFTER_IDENTITY_STATS.get(shifter_type, [])
-                if full_stat_name not in allowed_stats:
-                    self.caller.msg(f"|rThe stat '{full_stat_name}' is not valid for {shifter_type} characters.|n")
-                    return
+                # Special handling for Camp/Lodge
+                if shifter_type.lower() == 'garou':
+                    tribe = character.get_stat('identity', 'lineage', 'Tribe')
+                    if tribe and tribe.lower() == 'silver fangs':
+                        if full_stat_name not in ['Lodge', 'Fang House'] + SHIFTER_IDENTITY_STATS.get(shifter_type, []):
+                            self.caller.msg(f"|rThe stat '{full_stat_name}' is not valid for Silver Fangs characters.|n")
+                            return
+                    else:
+                        if full_stat_name not in ['Camp'] + SHIFTER_IDENTITY_STATS.get(shifter_type, []):
+                            self.caller.msg(f"|rThe stat '{full_stat_name}' is not valid for {shifter_type} characters.|n")
+                            return
+                else:
+                    allowed_stats = SHIFTER_IDENTITY_STATS.get(shifter_type, [])
+                    if full_stat_name not in allowed_stats:
+                        self.caller.msg(f"|rThe stat '{full_stat_name}' is not valid for {shifter_type} characters.|n")
+                        return
 
         # Add this check before updating the stat
         if stat.category == 'pools':
@@ -335,15 +347,12 @@ class CmdStats(default_cmds.MuxCommand):
             self.apply_mage_faction_stats(character, new_value)
 
         # After setting a stat, recalculate Willpower and Road
-        if full_stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct', 'Enlightenment']:
+        if full_stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
             new_willpower = calculate_willpower(character)
+            # Set both permanent and temporary values for Willpower
             character.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=False)
             character.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=True)
             self.caller.msg(f"|gRecalculated Willpower to {new_willpower}.|n")
-
-            # If Enlightenment is changed, update the virtues
-            if full_stat_name == 'Enlightenment':
-                self.update_virtues_for_enlightenment(character)
 
             new_road = calculate_road(character)
             character.set_stat('pools', 'moral', 'Road', new_road, temp=False)
@@ -383,6 +392,33 @@ class CmdStats(default_cmds.MuxCommand):
         if (stat.category == 'merits' and 
             (stat.name == 'Language' or stat.name == 'Natural Linguist')):
             character.handle_language_merit_change()
+
+        # Special handling for Shifter Rank
+        if stat.name == 'Rank':
+            splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            if splat == 'Shifter':
+                stat.category = 'identity'
+                stat.stat_type = 'lineage'
+
+        # Check if the character can have this ability
+        if stat.stat_type == 'ability' and not character.can_have_ability(stat.name):
+            self.caller.msg(f"Your character cannot have the {stat.name} ability.")
+            return
+
+        # Special handling for Appearance stat
+        if stat.name == 'Appearance':
+            splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            clan = character.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+            
+            if splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
+                self.caller.msg("Nosferatu and Samedi vampires always have Appearance 0.")
+                return
+            
+            if splat == 'Shifter':
+                form = character.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+                if form == 'Crinos':
+                    self.caller.msg("Characters in Crinos form always have Appearance 0.")
+                    return
 
     def update_virtues_for_enlightenment(self, character):
         """Update virtues based on enlightenment path"""

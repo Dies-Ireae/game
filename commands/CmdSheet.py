@@ -119,6 +119,18 @@ class CmdSheet(MuxCommand):
             if shifter_type:
                 type_specific_stats = SHIFTER_IDENTITY_STATS.get(shifter_type, [])
                 splat_specific_stats.extend(type_specific_stats)
+                
+                # Add Camp/Lodge for Garou characters based on tribe
+                if shifter_type.lower() == 'garou':
+                    # Check if the character is a Silver Fang
+                    tribe = character.db.stats.get('identity', {}).get('lineage', {}).get('Tribe', {}).get('perm', '')
+                    if tribe.lower() == 'silver fangs':
+                        splat_specific_stats.extend(['Lodge', 'Fang House'])
+                    else:
+                        # Only add Camp if it has a value
+                        camp = character.db.stats.get('identity', {}).get('lineage', {}).get('Camp', {}).get('perm', '')
+                        if camp:
+                            splat_specific_stats.append('Camp')
         elif splat.lower() == 'mage':
             mage_faction = character.db.stats.get('identity', {}).get('lineage', {}).get('Mage Faction', {}).get('perm', '')
             splat_specific_stats = ['Essence', 'Mage Faction']
@@ -276,35 +288,42 @@ class CmdSheet(MuxCommand):
             ))
             
             # Add splat-specific abilities
-            if stat_type == 'talent':
-                # Check if character should have Flight
-                should_have_flight = (
-                    (splat == 'Shifter' and shifter_type in ['Corax', 'Camazotz', 'Mokole']) or
-                    (splat == 'Vampire' and clan == 'Gargoyle')
-                )
-                
-                if should_have_flight:
-                    flight = Stat.objects.filter(name='Flight').first()
-                    if flight:
-                        # Insert Flight in alphabetical order among talents
-                        insert_index = next((i for i, ability in enumerate(abilities) 
-                                           if ability.name > 'Flight'), len(abilities))
-                        abilities.insert(insert_index, flight)
-                
-                # Add Primal-Urge for all shifters
-                if splat == 'Shifter':
+            if splat == 'Shifter':
+                if stat_type == 'talent':
+                    # Add Primal-Urge for all shifters
                     primal_urge = Stat.objects.filter(name='Primal-Urge').first()
                     if primal_urge:
-                        abilities.append(primal_urge)
+                        # Insert Primal-Urge in alphabetical order
+                        insert_index = next((i for i, ability in enumerate(abilities) 
+                                           if ability.name > 'Primal-Urge'), len(abilities))
+                        abilities.insert(insert_index, primal_urge)
+                    
+                    # Add Flight ONLY for specific shifter types
+                    if shifter_type and shifter_type.strip() in ['Corax', 'Camazotz', 'Mokole']:
+                        flight = Stat.objects.filter(name='Flight').first()
+                        if flight:
+                            # Insert Flight in alphabetical order
+                            insert_index = next((i for i, ability in enumerate(abilities) 
+                                               if ability.name > 'Flight'), len(abilities))
+                            abilities.insert(insert_index, flight)
+                
+                elif stat_type == 'knowledge':
+                    # Add Rituals for all shifters
+                    rituals = Stat.objects.filter(name='Rituals').first()
+                    if rituals:
+                        # Insert Rituals in alphabetical order
+                        insert_index = next((i for i, ability in enumerate(abilities) 
+                                           if ability.name > 'Rituals'), len(abilities))
+                        abilities.insert(insert_index, rituals)
             
-            elif stat_type == 'knowledge' and splat == 'Shifter':
-                # Add Rituals for Shifters
-                rituals = Stat.objects.filter(name='Rituals').first()
-                if rituals:
-                    # Insert Rituals in alphabetical order among knowledges
+            # Add Flight for Gargoyle vampires
+            elif splat == 'Vampire' and clan and clan.strip() == 'Gargoyle' and stat_type == 'talent':
+                flight = Stat.objects.filter(name='Flight').first()
+                if flight:
+                    # Insert Flight in alphabetical order
                     insert_index = next((i for i, ability in enumerate(abilities) 
-                                       if ability.name > 'Rituals'), len(abilities))
-                    abilities.insert(insert_index, rituals)
+                                       if ability.name > 'Flight'), len(abilities))
+                    abilities.insert(insert_index, flight)
 
             return abilities
 
@@ -497,18 +516,26 @@ class CmdSheet(MuxCommand):
         # Add a blank line between sections
         left_column.append(" " * 38)
 
-        left_column.append(divider("Merits & Flaws", width=38, color="|b"))
+        # Separate Merits section with consistent dot width
+        left_column.append(divider("Merits", width=38, color="|b"))
         merits = character.db.stats.get('merits', {})
         for merit_type, merit_dict in merits.items():
             for merit, values in merit_dict.items():
                 merit_value = values.get('perm', 0)
-                left_column.append(" " + format_stat(merit, merit_value, width=37))
+                # Use the same width=38 as backgrounds
+                left_column.append(format_stat(merit, merit_value, width=38))
 
+        # Add a blank line between Merits and Flaws
+        left_column.append(" " * 38)
+
+        # Separate Flaws section with consistent dot width
+        left_column.append(divider("Flaws", width=38, color="|b"))
         flaws = character.db.stats.get('flaws', {})
         for flaw_type, flaw_dict in flaws.items():
             for flaw, values in flaw_dict.items():
                 flaw_value = values.get('perm', 0)
-                left_column.append(" " + format_stat(flaw, flaw_value, width=37))
+                # Use the same width=38 as backgrounds
+                left_column.append(format_stat(flaw, flaw_value, width=38))
 
         # Ensure both columns have the same number of rows
         max_len = max(len(powers), len(left_column))

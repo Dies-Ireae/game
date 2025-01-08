@@ -1,87 +1,8 @@
 from evennia.utils import evtable
 from evennia.commands.default.muxcommand import MuxCommand
+from world.wod20th.utils.language_data import AVAILABLE_LANGUAGES
 
 # This dictionary should be populated with all available languages
-AVAILABLE_LANGUAGES = {
-    # major world languages
-    "arabic": "Arabic",
-    "bengali": "Bengali",
-    "chinese": "Chinese (Mandarin)",
-    "english": "English",
-    "french": "French",
-    "german": "German",
-    "hindi": "Hindi",
-    "indonesian": "Indonesian",
-    "italian": "Italian",
-    "japanese": "Japanese",
-    "korean": "Korean",
-    "persian": "Persian (Farsi)",
-    "portuguese": "Portuguese",
-    "russian": "Russian",
-    "spanish": "Spanish",
-    "turkish": "Turkish",
-    "urdu": "Urdu",
-    "vietnamese": "Vietnamese",
-    
-    # african languages
-    "amharic": "Amharic",        # ethiopia
-    "hausa": "Hausa",            # nigeria, niger, ghana
-    "igbo": "Igbo",              # nigeria
-    "lingala": "Lingala",        # congo basin
-    "oromo": "Oromo",            # ethiopia, kenya
-    "somali": "Somali",          # somalia, ethiopia
-    "swahili": "Swahili",        # east africa
-    "twi": "Twi",                # ghana
-    "wolof": "Wolof",            # senegal, gambia
-    "yoruba": "Yoruba",          # nigeria, benin
-    "zulu": "Zulu",              # south africa
-    
-    # european languages
-    "czech": "Czech",
-    "danish": "Danish",
-    "dutch": "Dutch",
-    "finnish": "Finnish",
-    "greek": "Greek",
-    "hungarian": "Hungarian",
-    "norwegian": "Norwegian",
-    "polish": "Polish",
-    "romanian": "Romanian",
-    "serbian": "Serbian",
-    "bulgarian": "Bulgarian",
-    "bosnian": "Bosnian",
-    "croatian": "Croatian",
-    "czech": "Czech",
-    "swedish": "Swedish",
-    "ukrainian": "Ukrainian",
-    
-    # asian languages (most common)
-    "cantonese": "Chinese (Cantonese)",
-    "gujarati": "Gujarati",
-    "khmer": "Khmer",
-    "malay": "Malay",
-    "punjabi": "Punjabi",
-    "tamil": "Tamil",
-    "thai": "Thai",
-    "vietnamese": "Vietnamese",
-    "burmese": "Burmese",
-    "lao": "Lao",
-    "khmer": "Khmer",
-    "telugu": "Telugu",
-    
-    # middle eastern languages that aren't arabic
-    "hebrew": "Hebrew",
-    "kurdish": "Kurdish",
-    
-    # indigenous american Languages
-    "navajo": "Navajo",
-    "quechua": "Quechua",
-    
-    # pacific languages
-    "hawaiian": "Hawaiian",
-    "maori": "Maori",
-    "tagalog": "Tagalog"
-}
-
 class CmdLanguage(MuxCommand):
     """
     Set your speaking language, view known languages, or add a new language.
@@ -172,22 +93,22 @@ class CmdLanguage(MuxCommand):
         natural_linguist = False
         merits = self.caller.db.stats.get('merits', {})
         
-        # Check for Natural Linguist in both mental and social categories
-        for category in ['mental', 'social']:
-            if category in merits:
-                category_merits = merits[category]  # Get the merits for this category
-                if any(merit.lower().replace(' ', '') == 'naturallinguist' 
-                      for merit in category_merits.keys()):
-                    natural_linguist = True
+        # Check for Natural Linguist in all merit categories
+        for category in merits:
+            category_merits = merits[category]
+            if any(merit.lower().replace(' ', '') == 'naturallinguist' 
+                  for merit in category_merits.keys()):
+                natural_linguist = True
+                break
         
-        # Check for Language merit in social category
-        if 'social' in merits:
-            social_merits = merits['social']
-            for merit_name, merit_data in social_merits.items():
+        # Check for Language merit in all merit categories
+        for category in merits:
+            category_merits = merits[category]
+            for merit_name, merit_data in category_merits.items():
                 if merit_name == 'Language':
                     base_points = merit_data.get('perm', 0)
                     language_merit_points = base_points * 2 if natural_linguist else base_points
-                    break  # Found the main Language merit, no need to check instances
+                    break  # Found the main Language merit, no need to check further
                 elif merit_name.startswith('Language('):
                     base_points = merit_data.get('perm', 0)
                     points = base_points * 2 if natural_linguist else base_points
