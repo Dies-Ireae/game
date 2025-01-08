@@ -86,6 +86,13 @@ class CmdSelfStat(default_cmds.MuxCommand):
                 self.caller.msg(f"Stat '{self.stat_name}' not found.")
                 return
 
+        # Special handling for Shifter Rank
+        if stat.name == 'Rank':
+            splat = self.caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            if splat == 'Shifter':
+                stat.category = 'identity'
+                stat.stat_type = 'lineage'
+
         # Check if the character can have this ability
         if stat.stat_type == 'ability' and not self.caller.can_have_ability(stat.name):
             self.caller.msg(f"Your character cannot have the {stat.name} ability.")
