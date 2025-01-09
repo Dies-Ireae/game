@@ -21,11 +21,15 @@ class PoseBreakMixin:
         ]
         
         for receiver in filtered_receivers:
-            if receiver != caller and (not exclude or receiver not in exclude):
+            # Only send pose break if receiver has them enabled
+            if (receiver != caller and 
+                (not exclude or receiver not in exclude) and 
+                receiver.db.show_pose_breaks is not False):
                 receiver.msg(pose_break)
         
-        # Always send the pose break to the caller
-        caller.msg(pose_break)
+        # Send pose break to caller if they have it enabled
+        if caller.db.show_pose_breaks is not False:
+            caller.msg(pose_break)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """

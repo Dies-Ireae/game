@@ -62,13 +62,15 @@ class CmdPemit(EmitBaseMixin, PoseBreakMixin, default_cmds.MuxCommand):
         # Find all target players globally
         found_targets = []
         for target_name in targets:
-            # Use global search for characters
             target = caller.search(target_name, global_search=True)
             if target:
                 found_targets.append(target)
 
         if not found_targets:
             return
+
+        # Send pose break before the message if enabled
+        self.send_pose_break(exclude=found_targets)  # Exclude targets from room pose break
 
         # Check if the language switch is used
         use_language = 'language' in self.switches
@@ -174,6 +176,14 @@ class CmdRemit(EmitBaseMixin, PoseBreakMixin, default_cmds.MuxCommand):
         # Process special characters in the message
         processed_message = self.process_special_characters(message)
 
+        # Send pose break before the message if enabled
+        # Note: We send pose break to the target room's occupants
+        if target and not (hasattr(target, 'db') and target.db.roomtype == 'OOC Area'):
+            original_location = self.caller.location
+            self.caller.location = target  # Temporarily move caller for pose break
+            self.send_pose_break()
+            self.caller.location = original_location  # Restore original location
+
         # Check if the language switch is used
         use_language = 'language' in self.switches
 
@@ -274,17 +284,17 @@ class CmdEmit(EmitBaseMixin, PoseBreakMixin, default_cmds.MuxCommand):
         # Process special characters in the message
         processed_args = self.process_special_characters(self.args)
 
-        # Check if the language switch is used
-        use_language = 'language' in self.switches
-
         # Filter receivers based on Umbra state
         filtered_receivers = [
             obj for obj in caller.location.contents
             if obj.has_account and obj.db.in_umbra == caller.db.in_umbra
         ]
 
-        # Send pose break before the message
+        # Send pose break before the message if enabled
         self.send_pose_break()
+
+        # Check if the language switch is used
+        use_language = 'language' in self.switches
 
         if use_language:
             # Handle language-specific emit

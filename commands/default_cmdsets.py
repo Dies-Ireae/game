@@ -58,6 +58,7 @@ from commands.CmdAlias import CmdAlias
 from commands.CmdInfo import CmdInfo
 from commands.CmdLFRP import CmdLFRP
 from commands.comms import CmdChannel
+from commands.CmdPoseBreak import CmdPoseBreak
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -105,6 +106,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdSpendGain())
         self.add(CmdWhere())
         #self.add(CmdCharGen())
+
+        self.add(CmdPoseBreak())
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
