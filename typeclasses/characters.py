@@ -14,7 +14,8 @@ from world.wod20th.utils.ansi_utils import wrap_ansi
 import re
 import random
 from datetime import datetime
-
+from world.wod20th.utils.language_data import AVAILABLE_LANGUAGES
+from evennia.comms.models import ChannelDB
 
 class Character(DefaultCharacter):
     """
@@ -118,7 +119,6 @@ class Character(DefaultCharacter):
                 return True
             return False
         except Exception as e:
-            logger.log_err(f"Error in change_note_status: {e}")
             return False
 
     def get_display_name(self, looker, **kwargs):
@@ -511,16 +511,26 @@ class Character(DefaultCharacter):
         return None
 
     def set_stat(self, category, stat_type, stat_name, value, temp=False):
-        """
-        Set the value of a stat, considering instances if applicable.
-        Also handles special cases like Appearance for certain splats/forms.
-        """
-        if not hasattr(self.db, "stats") or not self.db.stats:
-            self.db.stats = {}
+        """Set a stat value."""
+        if not hasattr(self, 'db') or not self.db.stats:
+            return
+
+        # Store old Natural Linguist state before any changes
+        had_natural_linguist = False
+        for cat in self.db.stats.get('merits', {}).values():
+            if any(merit.lower().replace(' ', '') == 'naturallinguist' 
+                  for merit, data in cat.items() 
+                  if data.get('perm', 0) > 0):
+                had_natural_linguist = True
+                break
+
+        # Create nested dictionaries if they don't exist
         if category not in self.db.stats:
             self.db.stats[category] = {}
         if stat_type not in self.db.stats[category]:
             self.db.stats[category][stat_type] = {}
+        
+        # If stat doesn't exist, create it with both perm and temp values
         if stat_name not in self.db.stats[category][stat_type]:
             self.db.stats[category][stat_type][stat_name] = {'perm': 0, 'temp': 0}
 
@@ -539,10 +549,30 @@ class Character(DefaultCharacter):
                 return
 
         # Normal stat setting
-        if temp:
-            self.db.stats[category][stat_type][stat_name]['temp'] = value
-        else:
-            self.db.stats[category][stat_type][stat_name]['perm'] = value
+        key = 'temp' if temp else 'perm'
+        old_value = self.db.stats[category][stat_type][stat_name].get(key, 0)
+        self.db.stats[category][stat_type][stat_name][key] = value
+
+        # If this is a language-related merit change
+        if not self.db.approved and not temp:  # Only during chargen, only for permanent changes
+            if ((stat_name == 'Language' and value < old_value) or
+                (stat_name == 'Natural Linguist' and had_natural_linguist) or
+                (stat_name.startswith('Language(') and value < old_value)):
+                # Import here to avoid circular imports
+                from commands.CmdLanguage import CmdLanguage
+                cmd = CmdLanguage()
+                cmd.caller = self
+                if cmd.validate_languages():
+                    cmd.list_languages()
+
+        # If value is 0, remove the stat entirely (do this after language validation)
+        if value == 0:
+            del self.db.stats[category][stat_type][stat_name]
+            # Clean up empty dictionaries
+            if not self.db.stats[category][stat_type]:
+                del self.db.stats[category][stat_type]
+            if not self.db.stats[category]:
+                del self.db.stats[category]
 
     def check_stat_value(self, category, stat_type, stat_name, value, temp=False):
         """
@@ -775,6 +805,23 @@ class Character(DefaultCharacter):
         # If Natural Linguist was removed, update the display
         if not natural_linguist and len(current_languages) > 1:
             self.msg(f"Natural Linguist merit removed. Your current language points: {language_points}")
+
+    def update_merit(self, merit_name, new_value):
+        """Update a merit's value and validate languages if necessary."""
+        old_value = self.db.stats.get('merits', {}).get(merit_name, 0)
+        
+        # Update the merit value
+        # ... your existing merit update code ...
+        
+        # If it's a language-related merit, validate languages
+        if (merit_name == 'Language' or 
+            merit_name.startswith('Language(') or 
+            merit_name == 'Natural Linguist'):
+            # Import the command
+            from commands.CmdLanguage import CmdLanguage
+            cmd = CmdLanguage()
+            cmd.validate_languages(self)
+            cmd.list_languages()
 
 class Note:
     def __init__(self, name, text, category="General", is_public=False, is_approved=False, 
