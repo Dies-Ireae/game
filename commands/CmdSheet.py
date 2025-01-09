@@ -609,6 +609,12 @@ class CmdSheet(MuxCommand):
             path = character.get_stat('identity', 'personal', 'Enlightenment')
             path_virtues = PATH_VIRTUES.get(path, ['Conscience', 'Self-Control', 'Courage'])
             
+            # Add Road/Path rating first for vampires
+            if splat.lower() == 'vampire':
+                road_value = character.get_stat('pools', 'moral', 'Road') or 0
+                dots = "." * (19 - len("Road"))
+                virtues_list.append(f" Road{dots}{road_value}".ljust(25))
+            
             for virtue in path_virtues:
                 virtue_value = virtues.get(virtue, {}).get('perm', 0)
                 dots = "." * (19 - len(virtue))

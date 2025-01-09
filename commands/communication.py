@@ -1,6 +1,7 @@
 from evennia.commands.default.muxcommand import MuxCommand
 from evennia import search_object
 from evennia.utils.utils import inherits_from
+from typeclasses.characters import Character
 
 class AdminCommand(MuxCommand):
     """
@@ -260,7 +261,16 @@ class CmdSummon(AdminCommand):
             caller.msg("Usage: +summon <player>")
             return
 
-        target = self.search_for_character(self.args)
+        # First try direct name match
+        target = None
+        chars = caller.search(self.args, global_search=True, typeclass='typeclasses.characters.Character', quiet=True)
+        if chars:
+            target = chars[0] if isinstance(chars, list) else chars
+            
+        # If no direct match, try alias
+        if not target:
+            target = Character.get_by_alias(self.args.lower())
+
         if not target:
             caller.msg(f"Could not find character '{self.args}'.")
             return
@@ -269,7 +279,16 @@ class CmdSummon(AdminCommand):
             caller.msg("You can only summon characters.")
             return
 
+        # Check if target is connected
+        if not target.has_account or not target.sessions.count():
+            caller.msg(f"{target.name} is not currently online.")
+            return
+
         old_location = target.location
+        if not old_location:
+            caller.msg(f"{target.name} doesn't have a valid location.")
+            return
+
         target.move_to(caller.location, quiet=True)
         caller.msg(f"You have summoned {target.name} to your location.")
         target.msg(f"{caller.name} has summoned you.")
@@ -297,13 +316,31 @@ class CmdJoin(AdminCommand):
             caller.msg("Usage: +join <player>")
             return
 
-        target = self.search_for_character(self.args)
+        # First try direct name match
+        target = None
+        chars = caller.search(self.args, global_search=True, typeclass='typeclasses.characters.Character', quiet=True)
+        if chars:
+            target = chars[0] if isinstance(chars, list) else chars
+            
+        # If no direct match, try alias
+        if not target:
+            target = Character.get_by_alias(self.args.lower())
+
         if not target:
             caller.msg(f"Could not find character '{self.args}'.")
             return
 
         if not inherits_from(target, "typeclasses.characters.Character"):
             caller.msg("You can only join characters.")
+            return
+
+        # Check if target is connected and has a location
+        if not target.has_account or not target.sessions.count():
+            caller.msg(f"{target.name} is not currently online.")
+            return
+
+        if not target.location:
+            caller.msg(f"{target.name} doesn't have a valid location to join.")
             return
 
         caller.move_to(target.location, quiet=True)

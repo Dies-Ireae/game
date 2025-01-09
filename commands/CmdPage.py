@@ -8,6 +8,7 @@ from evennia.utils.utils import make_iter
 from evennia.comms.models import Msg
 from evennia.utils.search import search_object
 from typeclasses.characters import Character
+from django.contrib.auth.models import User as AccountDB
 
 class CmdPage(DefaultCmdPage):
     """
@@ -81,7 +82,7 @@ class CmdPage(DefaultCmdPage):
 
         # Parse the message for new pages
         if "=" not in self.args:
-            self.caller.msg("Usage: page <character>[,<character2>,...]=<message>")
+            self.msg("Usage: page <character>[,<character2>,...]=<message>")
             return
             
         targets, message = self.args.split("=", 1)
@@ -97,22 +98,40 @@ class CmdPage(DefaultCmdPage):
         
         for recipient in recipient_list:
             target_obj = None
-            # First try direct character search (case-insensitive)
-            chars = search_object(recipient, typeclass='typeclasses.characters.Character')
-            matching_chars = [char for char in chars if char.key.lower() == recipient.lower()]
+            # First try direct character search using evennia's search_object
+            chars = search_object(recipient, typeclass=Character, exact=True)
             
-            if matching_chars:
-                target_obj = matching_chars[0]
+            if chars:
+                target_obj = chars[0]  # Take the first exact match
             else:
-                # If no direct match, try alias
-                target_obj = Character.get_by_alias(recipient.lower())
+                # If no exact match, try case-insensitive search
+                chars = search_object(recipient, typeclass=Character)
+                matching_chars = [char for char in chars if char.key.lower() == recipient.lower()]
+                if matching_chars:
+                    target_obj = matching_chars[0]
+                else:
+                    # If still no match, try alias as last resort
+                    target_obj = Character.get_by_alias(recipient.lower())
 
             if target_obj:
-                if target_obj.account:
-                    if target_obj.sessions.count():  # Check if they're online
-                        account_recipients.append(target_obj.account)
-                    else:
-                        offline_recipients.append(target_obj.name)
+                # Try to get the account through different methods
+                account = None
+                if hasattr(target_obj, 'account') and target_obj.account:
+                    account = target_obj.account
+                elif hasattr(target_obj, 'player'):  # Some systems use 'player' instead of 'account'
+                    account = target_obj.player
+                
+                if not account:
+                    offline_recipients.append(target_obj.name)
+                    continue
+                    
+                # Check if the account is actually connected
+                if not account.sessions.count():
+                    offline_recipients.append(target_obj.name)
+                    continue
+                    
+                # If we get here, the character has a valid, connected account
+                account_recipients.append(account)
                 continue
 
             # If we get here, we couldn't find the recipient

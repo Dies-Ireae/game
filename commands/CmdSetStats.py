@@ -195,7 +195,8 @@ class CmdStats(default_cmds.MuxCommand):
             pass
         
         # Check if the stat being set is an identity stat for a shifter
-        if character.get_stat('other', 'splat', 'Splat').lower() == 'shifter' and stat.category == 'identity':
+        current_splat = character.get_stat('other', 'splat', 'Splat')
+        if current_splat and current_splat.lower() == 'shifter' and stat.category == 'identity':
             shifter_type = character.get_stat('identity', 'lineage', 'Type')
             if shifter_type and full_stat_name != 'Type':
                 # Special handling for Camp/Lodge
@@ -219,9 +220,9 @@ class CmdStats(default_cmds.MuxCommand):
         if stat.category == 'pools':
             splat = character.get_stat('other', 'splat', 'Splat')
             valid_pools = ['Willpower']
-            if splat.lower() == 'vampire':
+            if splat and splat.lower() == 'vampire':
                 valid_pools.extend(['Blood', 'Road'])
-            elif splat.lower() == 'shifter':
+            elif splat and splat.lower() == 'shifter':
                 valid_pools.extend(['Gnosis', 'Rage'])
             
             if full_stat_name not in valid_pools:
@@ -329,7 +330,8 @@ class CmdStats(default_cmds.MuxCommand):
             character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value}.|n")
 
         # If the stat is 'Type' for a Shifter, apply the correct pools and renown
-        if full_stat_name == 'Type' and character.get_stat('other', 'splat', 'Splat').lower() == 'shifter':
+        current_splat = character.get_stat('other', 'splat', 'Splat')
+        if full_stat_name == 'Type' and current_splat and current_splat.lower() == 'shifter':
             self.apply_shifter_pools(character, new_value)
 
         # If the stat is Willpower, update the temporary Willpower pool to match the permanent value
@@ -396,7 +398,7 @@ class CmdStats(default_cmds.MuxCommand):
         # Special handling for Shifter Rank
         if stat.name == 'Rank':
             splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
-            if splat == 'Shifter':
+            if splat and splat == 'Shifter':
                 stat.category = 'identity'
                 stat.stat_type = 'lineage'
 
@@ -410,11 +412,11 @@ class CmdStats(default_cmds.MuxCommand):
             splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
             clan = character.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
             
-            if splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
+            if splat and splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
                 self.caller.msg("Nosferatu and Samedi vampires always have Appearance 0.")
                 return
             
-            if splat == 'Shifter':
+            if splat and splat == 'Shifter':
                 form = character.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
                 if form == 'Crinos':
                     self.caller.msg("Characters in Crinos form always have Appearance 0.")

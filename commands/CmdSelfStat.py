@@ -90,7 +90,7 @@ class CmdSelfStat(default_cmds.MuxCommand):
         # Special handling for Shifter Rank
         if stat.name == 'Rank':
             splat = self.caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
-            if splat == 'Shifter':
+            if splat and splat == 'Shifter':
                 stat.category = 'identity'
                 stat.stat_type = 'lineage'
 
@@ -136,11 +136,11 @@ class CmdSelfStat(default_cmds.MuxCommand):
             splat = self.caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
             clan = self.caller.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
             
-            if splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
+            if splat and splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
                 self.caller.msg("Nosferatu and Samedi vampires always have Appearance 0.")
                 return
             
-            if splat == 'Shifter':
+            if splat and splat == 'Shifter':
                 form = self.caller.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
                 if form == 'Crinos':
                     self.caller.msg("Characters in Crinos form always have Appearance 0.")

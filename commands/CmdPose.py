@@ -21,15 +21,11 @@ class PoseBreakMixin:
         ]
         
         for receiver in filtered_receivers:
-            # Only send pose break if receiver has them enabled
-            if (receiver != caller and 
-                (not exclude or receiver not in exclude) and 
-                receiver.db.show_pose_breaks is not False):
+            if receiver != caller and (not exclude or receiver not in exclude):
                 receiver.msg(pose_break)
         
-        # Send pose break to caller if they have it enabled
-        if caller.db.show_pose_breaks is not False:
-            caller.msg(pose_break)
+        # Always send the pose break to the caller
+        caller.msg(pose_break)
 
     def msg_contents(self, message, exclude=None, from_obj=None, **kwargs):
         """
@@ -74,10 +70,10 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         """
         super().parse()
         
-       # if self.cmdstring == ":":
-            #Add a space after colon if not present
-           # self.args = " " + self.args.lstrip()
-        if self.cmdstring == ";":
+        if self.cmdstring == ":":
+            # Add a space after colon if not present
+            self.args = " " + self.args.lstrip()
+        elif self.cmdstring == ";":
             # Remove space after semicolon if present
             self.args = self.args.lstrip()
 
@@ -119,4 +115,3 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         # Send the pose to filtered receivers
         for receiver in filtered_receivers:
             receiver.msg(pose_message)
-
