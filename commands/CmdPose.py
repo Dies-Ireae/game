@@ -70,10 +70,7 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         """
         super().parse()
         
-        if self.cmdstring == ":":
-            # Add a space after colon if not present
-            self.args = " " + self.args.lstrip()
-        elif self.cmdstring == ";":
+        if self.cmdstring == ";":
             # Remove space after semicolon if present
             self.args = self.args.lstrip()
 
@@ -85,11 +82,17 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
         return message
 
     def func(self):
-        "Perform the pose"
         caller = self.caller
         if not self.args:
             caller.msg("Pose what?")
             return
+
+        # Check if there's a language-tagged speech and set speaking language
+        if "~" in self.args:
+            speaking_language = caller.get_speaking_language()
+            if not speaking_language:
+                caller.msg("You need to set a speaking language first with +language <language>")
+                return
 
         # Send pose break before processing the message
         self.send_pose_break()
@@ -109,9 +112,40 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
             if obj.has_account and obj.db.in_umbra == caller.db.in_umbra
         ]
 
-        # Construct the pose message
-        pose_message = f"{poser_name} {processed_args}"
-
-        # Send the pose to filtered receivers
+        # Process the pose for each receiver
         for receiver in filtered_receivers:
-            receiver.msg(pose_message)
+            # If there's language-tagged speech in the pose, process it
+            if "~" in processed_args:
+                parts = []
+                current_pos = 0
+                for match in re.finditer(r'"~([^"]+)"', processed_args):
+                    # Add text before the speech
+                    parts.append(processed_args[current_pos:match.start()])
+                    
+                    # Process the speech
+                    speech = match.group(1)
+                    _, msg_understand, msg_not_understand, _ = caller.prepare_say(speech, language_only=True)
+                    
+                    # Check for Universal Language merit
+                    has_universal = any(
+                        merit.lower().replace(' ', '') == 'universallanguist'
+                        for category in receiver.db.stats.get('merits', {}).values()
+                        for merit in category.keys()
+                    )
+                    
+                    if receiver == caller or has_universal or (speaking_language and speaking_language in receiver.get_languages()):
+                        parts.append(f'"{msg_understand}"')
+                    else:
+                        parts.append(f'"{msg_not_understand}"')
+                    
+                    current_pos = match.end()
+                
+                # Add any remaining text
+                parts.append(processed_args[current_pos:])
+                
+                # Construct final message
+                final_message = f"{poser_name} {''.join(parts)}"
+                receiver.msg(final_message)
+            else:
+                # No language-tagged speech, send normal pose
+                receiver.msg(f"{poser_name} {processed_args}")

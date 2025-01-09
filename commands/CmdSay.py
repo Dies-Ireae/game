@@ -55,10 +55,21 @@ class CmdSay(PoseBreakMixin, MuxCommand):
         # Send messages to receivers
         for receiver in filtered_receivers:
             if receiver != caller:
-                if language and language in receiver.get_languages():
+                # Check for Universal Language merit
+                has_universal = any(
+                    merit.lower().replace(' ', '') == 'universallanguage'
+                    for category in receiver.db.stats.get('merits', {}).values()
+                    for merit in category.keys()
+                )
+
+                # Get the languages the receiver knows
+                receiver_languages = receiver.get_languages()
+
+                # If they have Universal Language, know the language, or it's not a language-tagged message
+                if has_universal or not language or (language and language in receiver_languages):
                     receiver.msg(msg_understand)
                 else:
                     receiver.msg(msg_not_understand)
-
-        # Send message to the speaker
-        caller.msg(msg_self)
+            else:
+                # The speaker always understands their own speech
+                receiver.msg(msg_self)

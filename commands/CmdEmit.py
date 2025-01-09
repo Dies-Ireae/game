@@ -12,7 +12,7 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
       @emit/language <message>
 
     Switches:
-      /language - Use this to emit a message in your character's set language.
+      /language - Use this to emit a message in your set language.
 
     Examples:
       @emit A cool breeze blows through the room.
@@ -24,7 +24,7 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
     """
 
     key = "@emit"
-    aliases = ["@remit", "\\\\"]
+    aliases = ["\\\\"]
     locks = "cmd:all()"
     help_category = "Storytelling"
 
@@ -43,22 +43,15 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
             caller.msg("Usage: @emit <message>")
             return
 
-        # Check if the room is an OOC Area
-        if hasattr(caller.location, 'db') and caller.location.db.roomtype == 'OOC Area':
-            # Process special characters in the message
-            processed_args = self.process_special_characters(self.args)
-            
-            # Send message without pose break in OOC Area
-            for obj in caller.location.contents:
-                if obj.has_account:
-                    obj.msg(processed_args)
-            return
-
         # Process special characters in the message
         processed_args = self.process_special_characters(self.args)
 
-        # Check if the language switch is used
-        use_language = 'language' in self.switches
+        # Check if there's a language-tagged speech and set speaking language
+        if "~" in processed_args or 'language' in self.switches:
+            speaking_language = caller.get_speaking_language()
+            if not speaking_language:
+                caller.msg("You need to set a speaking language first with +language <language>")
+                return
 
         # Filter receivers based on Umbra state
         filtered_receivers = [
@@ -69,49 +62,56 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
         # Send pose break before the message
         self.send_pose_break()
 
-        if use_language:
-            # Handle language-specific emit
+        if 'language' in self.switches:
+            # The entire emit is in the set language
             speaking_language = caller.get_speaking_language()
-            message = processed_args.strip()
+            _, msg_understand, msg_not_understand, _ = caller.prepare_say(processed_args, language_only=True)
 
-            def process_speech(match):
-                content = match.group(1)
-                if content.startswith('~'):
-                    content = content[1:]  # Remove the tilde
-                    _, msg_understand, msg_not_understand, _ = caller.prepare_say(content, language_only=True)
-                    return f'"{msg_understand}"', f'"{msg_not_understand}"'
-                else:
-                    return f'"{content}"', f'"{content}"'
-
-            # Process the message
-            parts_understand = []
-            parts_not_understand = []
-            last_end = 0
-            for match in re.finditer(r'"(.*?)"', message):
-                parts_understand.append(message[last_end:match.start()])
-                parts_not_understand.append(message[last_end:match.start()])
-                
-                understand, not_understand = process_speech(match)
-                parts_understand.append(understand)
-                parts_not_understand.append(not_understand)
-                
-                last_end = match.end()
-            parts_understand.append(message[last_end:])
-            parts_not_understand.append(message[last_end:])
-
-            emit_understand = "".join(parts_understand)
-            emit_not_understand = "".join(parts_not_understand)
-
-            # Send language-specific emits
             for receiver in filtered_receivers:
-                if receiver != caller:
-                    if speaking_language and speaking_language in receiver.get_languages():
-                        receiver.msg(emit_understand)
-                    else:
-                        receiver.msg(emit_not_understand)
+                has_universal = any(
+                    merit.lower().replace(' ', '') == 'universallanguage'
+                    for category in receiver.db.stats.get('merits', {}).values()
+                    for merit in category.keys()
+                )
+                
+                if receiver == caller or has_universal or speaking_language in receiver.get_languages():
+                    receiver.msg(msg_understand)
                 else:
-                    receiver.msg(emit_understand)
+                    receiver.msg(msg_not_understand)
         else:
-            # Send non-language emits
+            # Handle mixed language content
             for receiver in filtered_receivers:
-                receiver.msg(processed_args)
+                if "~" in processed_args:
+                    parts = []
+                    current_pos = 0
+                    for match in re.finditer(r'"~([^"]+)"', processed_args):
+                        # Add text before the speech
+                        parts.append(processed_args[current_pos:match.start()])
+                        
+                        # Process the speech
+                        speech = match.group(1)
+                        _, msg_understand, msg_not_understand, _ = caller.prepare_say(speech, language_only=True)
+                        
+                        # Check for Universal Language merit
+                        has_universal = any(
+                            merit.lower().replace(' ', '') == 'universallanguage'
+                            for category in receiver.db.stats.get('merits', {}).values()
+                            for merit in category.keys()
+                        )
+                        
+                        speaking_language = caller.get_speaking_language()
+                        if receiver == caller or has_universal or (speaking_language and speaking_language in receiver.get_languages()):
+                            parts.append(f'"{msg_understand}"')
+                        else:
+                            parts.append(f'"{msg_not_understand}"')
+                        
+                        current_pos = match.end()
+                    
+                    # Add any remaining text
+                    parts.append(processed_args[current_pos:])
+                    
+                    # Send the final message
+                    receiver.msg(''.join(parts))
+                else:
+                    # No language-tagged content, send as is
+                    receiver.msg(processed_args)

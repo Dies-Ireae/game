@@ -62,6 +62,68 @@ class CmdSelfStat(default_cmds.MuxCommand):
         except ValueError:
             self.stat_name = self.value_change = self.instance = self.category = None
 
+    def initialize_stats(self, splat):
+        """Initialize the basic stats structure based on splat type."""
+        # Base structure common to all splats
+        base_stats = {
+            'other': {'splat': {'Splat': {'perm': splat, 'temp': splat}}},
+            'identity': {'personal': {}, 'lineage': {}},
+            'abilities': {'ability': {}},
+            'attributes': {'physical': {}, 'social': {}, 'mental': {}},
+            'backgrounds': {'background': {}},
+            'merits': {},
+            'flaws': {},
+            'powers': {}, 
+            'pools': {'dual': {}, 'moral': {}},
+            'virtues': {'moral': {}},
+            'archetype': {'personal': {}}  # For Nature/Demeanor
+        }
+
+        # Splat-specific additions
+        if splat.lower() == 'vampire':
+            base_stats['powers']['discipline'] = {}
+            base_stats['pools']['dual']['Blood'] = {'perm': 10, 'temp': 10}  # Default to 13th generation
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['moral']['Road'] = {'perm': 1, 'temp': 1}
+            
+        elif splat.lower() == 'mage':
+            base_stats['powers']['sphere'] = {}
+            base_stats['pools']['dual']['Arete'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Quintessence'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            
+        elif splat.lower() == 'shifter':
+            base_stats['powers']['gift'] = {}
+            base_stats['powers']['rite'] = {}
+            base_stats['pools']['dual']['Rage'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Gnosis'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            base_stats['advantages'] = {'renown': {}}
+            
+        elif splat.lower() == 'changeling':
+            base_stats['powers']['art'] = {}
+            base_stats['powers']['realm'] = {}
+            base_stats['pools']['dual']['Glamour'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Banality'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+        
+        else:  # Mortal or other
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+
+        # Initialize basic attributes with default value of 1
+        for category in ['physical', 'social', 'mental']:
+            if category == 'physical':
+                attrs = ['Strength', 'Dexterity', 'Stamina']
+            elif category == 'social':
+                attrs = ['Charisma', 'Manipulation', 'Appearance']
+            else:  # mental
+                attrs = ['Perception', 'Intelligence', 'Wits']
+            
+            for attr in attrs:
+                base_stats['attributes'][category][attr] = {'perm': 1, 'temp': 1}
+
+        return base_stats
+
     def func(self):
         """Execute the command."""
         # Check if character is approved
@@ -199,3 +261,14 @@ class CmdSelfStat(default_cmds.MuxCommand):
 
         except ValueError as e:
             self.caller.msg(str(e))
+
+        # When setting splat for the first time
+        if self.stat_name.lower() == 'splat':
+            if not self.value_change:
+                self.caller.msg("You must specify a splat type.")
+                return
+            
+            # Initialize the stats structure based on splat
+            self.caller.db.stats = self.initialize_stats(self.value_change)
+            self.caller.msg(f"|gInitialized character as {self.value_change} with basic stats.|n")
+            return

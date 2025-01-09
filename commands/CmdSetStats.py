@@ -123,12 +123,32 @@ class CmdStats(default_cmds.MuxCommand):
                 self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
                 return
 
+        # When setting splat for the first time or resetting stats
+        if self.stat_name and self.stat_name.lower() == 'splat':
+            if not self.value_change:
+                self.caller.msg("You must specify a splat type.")
+                return
+            
+            # Initialize the stats structure based on splat
+            self.initialize_stats(character, self.value_change)
+            return
+
         # Handle the reset command
         if self.stat_name and self.stat_name.lower() == 'reset':
-            character.db.stats = {}
-            self.caller.msg(f"|gReset all stats for {character.name}.|n")
-            character.msg(f"|y{self.caller.name}|n |greset all your stats.|n")
-            return
+            if not self.value_change:
+                character.db.stats = {}
+                self.caller.msg(f"|gReset all stats for {character.name}.|n")
+                character.msg(f"|y{self.caller.name}|n |greset all your stats.|n")
+                return
+            elif self.value_change.lower() == 'splat':
+                # Get current splat if it exists
+                current_splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm')
+                if current_splat:
+                    # Reinitialize with current splat
+                    self.initialize_stats(character, current_splat)
+                else:
+                    self.caller.msg(f"|rNo splat found for {character.name}. Please set a splat first.|n")
+                return
 
         if not self.stat_name:
             self.caller.msg("|rUsage: +stats <character>/<stat>[(<instance>)]/[<category>]=[+-]<value>|n")
@@ -639,6 +659,71 @@ class CmdStats(default_cmds.MuxCommand):
         # Set the stat value
         target.set_stat(category, stat_type, stat_name, value, temp=temp)
         return True
+
+    def initialize_stats(self, character, splat):
+        """Initialize the basic stats structure based on splat type."""
+        # Base structure common to all splats
+        base_stats = {
+            'other': {'splat': {'Splat': {'perm': splat, 'temp': splat}}},
+            'identity': {'personal': {}, 'lineage': {}},
+            'abilities': {'ability': {}},
+            'attributes': {'physical': {}, 'social': {}, 'mental': {}},
+            'backgrounds': {'background': {}},
+            'merits': {},
+            'flaws': {},
+            'powers': {},  # Initialize empty powers dict for all splats
+            'pools': {'dual': {}, 'moral': {}},
+            'virtues': {'moral': {}},
+            'archetype': {'personal': {}}  # For Nature/Demeanor
+        }
+
+        # Splat-specific additions
+        if splat.lower() == 'vampire':
+            base_stats['powers']['discipline'] = {}
+            base_stats['pools']['dual']['Blood'] = {'perm': 10, 'temp': 10}  # Default to 13th generation
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['moral']['Road'] = {'perm': 1, 'temp': 1}
+            
+        elif splat.lower() == 'mage':
+            base_stats['powers']['sphere'] = {}
+            base_stats['pools']['dual']['Arete'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Quintessence'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            
+        elif splat.lower() == 'shifter':
+            base_stats['powers']['gift'] = {}
+            base_stats['powers']['rite'] = {}
+            base_stats['pools']['dual']['Rage'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Gnosis'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            base_stats['advantages'] = {'renown': {}}
+            
+        elif splat.lower() == 'changeling':
+            base_stats['powers']['art'] = {}
+            base_stats['powers']['realm'] = {}
+            base_stats['pools']['dual']['Glamour'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Banality'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+        
+        else:  # Mortal or other
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+
+        # Initialize basic attributes with default value of 1
+        for category in ['physical', 'social', 'mental']:
+            if category == 'physical':
+                attrs = ['Strength', 'Dexterity', 'Stamina']
+            elif category == 'social':
+                attrs = ['Charisma', 'Manipulation', 'Appearance']
+            else:  # mental
+                attrs = ['Perception', 'Intelligence', 'Wits']
+            
+            for attr in attrs:
+                base_stats['attributes'][category][attr] = {'perm': 1, 'temp': 1}
+
+        # Set the stats on the character
+        character.db.stats = base_stats
+        self.caller.msg(f"|gInitialized {character.name} as {splat} with basic stats.|n")
+        character.msg(f"|y{self.caller.name}|n |ginitialized your character as {splat} with basic stats.|n")
 
 from evennia.commands.default.muxcommand import MuxCommand
 from world.wod20th.models import Stat
