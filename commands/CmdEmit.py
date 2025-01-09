@@ -180,7 +180,8 @@ class CmdRemit(EmitBaseMixin, PoseBreakMixin, default_cmds.MuxCommand):
         if use_language:
             # Handle language-specific emit
             speaking_language = caller.get_speaking_language()
-            message = processed_args.strip()
+            processed_message = self.process_special_characters(message)
+            message = processed_message.strip()
 
             def process_speech(match):
                 content = match.group(1)

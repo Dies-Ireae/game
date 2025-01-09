@@ -1,7 +1,8 @@
-from evennia import default_cmds
+from evennia import Command, default_cmds
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, calculate_willpower, calculate_road
 from evennia.utils import search
 import re
+from commands.CmdLanguage import CmdLanguage
 
 class CmdSelfStat(default_cmds.MuxCommand):
     """
@@ -117,7 +118,13 @@ class CmdSelfStat(default_cmds.MuxCommand):
         if self.value_change == '':
             if stat.category in self.caller.db.stats and stat.stat_type in self.caller.db.stats[stat.category]:
                 if full_stat_name in self.caller.db.stats[stat.category][stat.stat_type]:
-                    del self.caller.db.stats[stat.category][stat.stat_type][full_stat_name]
+                    # For language-related stats, pass 0 instead of removing directly
+                    if (full_stat_name == 'Language' or 
+                        full_stat_name.startswith('Language(') or 
+                        full_stat_name == 'Natural Linguist'):
+                        self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, 0)
+                    else:
+                        del self.caller.db.stats[stat.category][stat.stat_type][full_stat_name]
                     self.caller.msg(f"|gRemoved stat '{full_stat_name}'.|n")
                     return
                 else:
@@ -160,6 +167,17 @@ class CmdSelfStat(default_cmds.MuxCommand):
             if not self.caller.db.approved:
                 self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
                 self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
+                
+                # Check if this is a language-related merit change
+                if (full_stat_name == 'Language' or 
+                    full_stat_name.startswith('Language(') or 
+                    full_stat_name == 'Natural Linguist'):
+                    # Validate languages after merit change
+                    cmd_lang = CmdLanguage()
+                    cmd_lang.caller = self.caller
+                    if cmd_lang.validate_languages():
+                        cmd_lang.list_languages()
+            
             # If already approved, only update temp for pools and dual stats
             elif stat.category == 'pools' or stat.stat_type == 'dual':
                 self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)

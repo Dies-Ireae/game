@@ -77,14 +77,10 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # any commands you add below will overload the default ones.
         #
         self.add(CmdGradientName())
-        self.add(CmdShortDesc())
-        self.add(CmdPose())
-        self.add(CmdStats())
-        self.add(CmdSpecialty())
-        self.add(CmdEmit())
         self.add(BBSCmdSet)
         self.add(OssCmdSet)
         self.add(CmdFaeDesc())
+        self.add(CmdStats())
 
         self.add(CmdSheet())
         self.add(CmdInfo())
@@ -108,18 +104,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdPump())
         self.add(CmdSpendGain())
         self.add(CmdWhere())
-        self.add(CmdCharGen())
-        self.add(CmdSelfStat())
-        self.add(CmdStaff())
-        self.add(CmdUnfindable())
-        self.add(JobSystemCmdSet)
-        self.add(CmdUnpuppet())
-        self.add(CmdSubmit())
-        self.add(CmdFinger())
-        self.add(CmdAlias())
+        #self.add(CmdCharGen())
 
-        self.add(CmdLFRP())
-        self.add(CmdChannel())
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
     """
@@ -154,7 +140,21 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdUnapprove())
         self.add(CmdPage())
         self.add(CmdFinger())
+        self.add(CmdSelfStat())
+        self.add(CmdStaff())
         self.add(CmdSpecialty())
+        self.add(CmdUnfindable())
+        self.add(JobSystemCmdSet)
+        self.add(CmdUnpuppet())
+        self.add(CmdSubmit())
+        self.add(CmdFinger())
+        self.add(CmdAlias())
+        self.add(CmdLFRP())
+        self.add(CmdChannel())
+        self.add(CmdShortDesc())
+        self.add(CmdPose())
+        self.add(CmdEmit())
+
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """

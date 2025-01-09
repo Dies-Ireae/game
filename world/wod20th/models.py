@@ -159,6 +159,7 @@ class Note(models.Model):
     character_note_id = models.IntegerField(default=1)
 
     class Meta:
+        app_label = 'wod20th'
         unique_together = ('owner', 'character_note_id')
 
     def save(self, *args, **kwargs):
@@ -251,6 +252,7 @@ class ShapeshifterForm(models.Model):
     lock_string = models.CharField(max_length=255, default='examine:all();control:perm(Admin)')
 
     class Meta:
+        app_label = 'wod20th'
         unique_together = ('name', 'shifter_type')
 
     def __str__(self):
