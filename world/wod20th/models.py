@@ -145,6 +145,7 @@ class CharacterSheet(SharedMemoryModel):
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
 
+"""
 class Note(models.Model):
     owner = models.ForeignKey('objects.ObjectDB', related_name='notes', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -172,8 +173,10 @@ class Note(models.Model):
 
     @property
     def id(self):
-        """Override to return character-specific ID"""
+        #Override to return character-specific ID
+
         return self.character_note_id
+        """
 
 def calculate_willpower(character):
     """Calculate Willpower based on virtues."""

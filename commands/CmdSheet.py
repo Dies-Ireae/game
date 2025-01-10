@@ -285,7 +285,7 @@ class CmdSheet(MuxCommand):
                 category='abilities',
                 stat_type=stat_type,
                 name__in=BASE_ABILITIES[stat_type]
-            ))
+            ).order_by('name'))
             
             # Add splat-specific abilities
             if splat == 'Shifter':
