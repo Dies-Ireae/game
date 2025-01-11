@@ -197,7 +197,8 @@ class CmdNotes(MuxCommand):
 
         name, text = self.args.split("=", 1)
         name = name.strip()
-        text = text.strip()
+        # Convert %r markers to newlines and handle any double newlines
+        text = text.strip().replace("%r", "\n").replace("\n\n", "\n")
 
         # Handle category in name
         if "/" in name:
@@ -612,14 +613,18 @@ class CmdNotes(MuxCommand):
 
         output += divider("", width=width, fillchar="-", color="|r") + "\n"
         
-        # Note content
-        content_lines = note.text.replace('|/', '\n').split('\n')
+        # Note content - properly handle line breaks
+        text = note.text.strip()
+        # Split on actual newlines, not %r
+        content_lines = text.split('\n')
         wrapped_lines = []
         for line in content_lines:
             if line.strip():
-                wrapped_lines.append(wrap_ansi(line.strip(), width=width-2))
+                wrapped_lines.extend(wrap_ansi(line.strip(), width=width-2).split('\n'))
+            else:
+                wrapped_lines.append('')  # Preserve empty lines
+        
         output += '\n'.join(wrapped_lines) + "\n"
-
         output += footer(width=width, fillchar="|r=|n")
         self.caller.msg(output)
 
