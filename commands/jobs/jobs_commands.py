@@ -9,7 +9,7 @@ from django.db import models, transaction, connection
 from evennia.utils.utils import crop
 from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.ansi_utils import wrap_ansi
-from world.wod20th.utils.formatting import header, footer, divider
+from world.wod20th.utils.formatting import header, footer, divider, format_stat
 from textwrap import fill
 from django.utils import timezone
 from django.db.models import Max, F
@@ -185,7 +185,16 @@ class CmdJobs(MuxCommand):
                 output += "|cAttached Objects:|n None\n"
             
             output += divider("Description", width=78, fillchar="-", color="|r", text_color="|c") + "\n"
-            output += wrap_ansi(job.description, width=76, left_padding=2) + "\n\n"
+            
+            # Handle description text wrapping
+            paragraphs = [p.strip() for p in job.description.split('\n\n') if p.strip()]
+            for i, paragraph in enumerate(paragraphs):
+                # Wrap text at a consistent width with proper indentation
+                lines = wrap_ansi(paragraph, width=70)  # Reduced width for consistent wrapping
+                for line in lines.split('\n'):
+                    output += "  " + line.strip() + "\n"
+                if i < len(paragraphs) - 1:
+                    output += "\n"
             
             if job.comments:
                 output += divider("Comments", width=78, fillchar="-", color="|r", text_color="|c") + "\n"
@@ -193,7 +202,7 @@ class CmdJobs(MuxCommand):
                     output += f"|c{comment['author']} [{comment['created_at']}]:|n\n"
                     output += wrap_ansi(comment['text'], width=76, left_padding=2) + "\n\n"
             
-            output += footer(width=78, fillchar="|r-|n")
+            output += divider("", width=78, fillchar="-", color="|r") + "\n"
             self.caller.msg(output)
         except ValueError:
             self.caller.msg("Invalid job ID.")
@@ -214,9 +223,13 @@ class CmdJobs(MuxCommand):
 
         title_desc, description = parts
         title_desc = title_desc.strip()
-        description = description.strip()
+        # Convert %r markers to newlines and normalize paragraph spacing
+        description = description.strip().replace("%r", "\n")
+        # Normalize multiple newlines to double newlines for paragraph spacing
+        while "\n\n\n" in description:
+            description = description.replace("\n\n\n", "\n\n")
 
-        # Handle category/title format - split on first / only
+        # Handle category/title format
         if "/" in title_desc:
             category, title = title_desc.split("/", 1)
             category = category.strip().upper()
@@ -950,6 +963,54 @@ class CmdJobs(MuxCommand):
 
         except Job.DoesNotExist:
             self.caller.msg(f"Job #{job_id} not found.")
+
+    def display_note(self, note):
+        """Display a note with formatting."""
+        width = 78
+        output = header(f"Job #{note.note_id}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
+
+        if note.category:
+            output += f"|c{note.category}|n"
+            output += f" |w#{note.note_id}|n\n"
+
+        output += format_stat("Note Title:", note.name, width=width) + "\n"
+        output += format_stat("Visibility:", "Public" if note.is_public else "Private", width=width) + "\n"
+        
+        # Show approval status and details
+        if note.is_approved:
+            output += format_stat("Approved:", "Yes", width=width) + "\n"
+            if note.approved_by:
+                output += format_stat("Approved By:", note.approved_by, width=width) + "\n"
+            if note.approved_at:
+                output += format_stat("Approved At:", note.approved_at.strftime("%Y-%m-%d %H:%M:%S"), width=width) + "\n"
+        else:
+            output += format_stat("Approved:", "No", width=width) + "\n"
+
+        # Show creation and update times for staff
+        if self.caller.check_permstring("Builders"):
+            output += format_stat("Created:", note.created_at.strftime("%Y-%m-%d %H:%M:%S"), width=width) + "\n"
+            output += format_stat("Updated:", note.updated_at.strftime("%Y-%m-%d %H:%M:%S"), width=width) + "\n"
+
+        output += divider("", width=width, fillchar="-", color="|r") + "\n"
+        
+        # Note content - properly handle line breaks and indentation
+        text = note.text.strip()
+        # Split on actual newlines
+        paragraphs = [p.strip() for p in text.split('\n') if p.strip()]
+        
+        # Process each paragraph
+        for i, paragraph in enumerate(paragraphs):
+            # Wrap the paragraph text
+            wrapped_lines = wrap_ansi(paragraph, width=width-4).split('\n')
+            # Add proper indentation to each line
+            for line in wrapped_lines:
+                output += "  " + line + "\n"
+            # Add a blank line between paragraphs, but not after the last one
+            if i < len(paragraphs) - 1:
+                output += "\n"
+        
+        output += footer(width=width, fillchar="|r=|n")
+        self.caller.msg(output)
 
 def create_jobs_help_entry():
     """Create or update the jobs help entry."""
