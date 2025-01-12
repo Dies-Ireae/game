@@ -1652,33 +1652,41 @@ class Character(DefaultCharacter):
             self.msg(f"Error awarding IC XP: {str(e)}")
             return False
 
-    def at_pre_channel_msg(self, message):
+    def at_pre_channel_msg(self, message, channel, senders=None, **kwargs):
         """
         Called before a character receives a message from a channel.
         
         Args:
             message (str): The message to be received
+            channel (Channel): The channel the message is from
+            senders (list): List of senders who should receive the message
             
         Returns:
             message (str or None): The processed message or None to abort receiving
         """
-        return message
+        return self.account.at_pre_channel_msg(message, channel, senders, **kwargs)
 
-    def channel_msg(self, message):
+    def channel_msg(self, message, channel, senders=None, **kwargs):
         """
         Called when a character receives a message from a channel.
         
         Args:
             message (str): The message received
             channel (Channel): The channel the message is from
+            senders (list): List of senders who should receive the message
         """
-        self.msg(message)
+        self.account.channel_msg(message, channel, senders, **kwargs)
 
-    def at_post_channel_message(self):
+    def at_post_channel_msg(self, message, channel, senders=None, **kwargs):
         """
         Called after a character has received a message from a channel.
+        
+        Args:
+            message (str): The message received
+            channel (Channel): The channel the message is from
+            senders (list): List of senders who should receive the message
         """
-        pass
+        return self.account.at_post_channel_msg(message, channel, senders, **kwargs)
 
 class Note:
     def __init__(self, name, text, category="General", is_public=False, is_approved=False, 
