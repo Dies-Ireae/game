@@ -11,9 +11,12 @@ class CmdXP(default_cmds.MuxCommand):
     
     Usage:
       +xp                     - View your XP
+      +xp <name>             - View another character's XP (Staff only)
+      +xp/desc <name>        - View detailed XP history (Staff only)
+      +xp/sub <name>/<stat> <level>=<amount>/<reason> - Remove XP from character (Staff only)
       +xp/init               - Initialize scene tracking
-      +xp/endscene          - Manually end current scene
-      +xp/add <name>=<amt>    - Add XP to a character (Staff only)
+      +xp/endscene          - Manually end current scene (only if scene doesn't end automatically, remove in future)
+      +xp/add <name>=<amt>   - Add XP to a character (Staff only)
       +xp/spend <stat> <rating>=<reason> - Spend XP (Must be in OOC area)
       +xp/forceweekly       - Force weekly XP distribution (Staff only)
       
@@ -34,8 +37,144 @@ class CmdXP(default_cmds.MuxCommand):
             self._display_xp(self.caller)
             return
             
-        # Process switches first
+        # Staff viewing another character's XP
+        if self.args and not self.switches:
+          
+            # Check if viewing self
+            if self.args.lower() == self.caller.name.lower():
+                self._display_xp(self.caller)
+                return
+                
+            # Staff check - allow builders or higher to view others
+            if not (self.caller.check_permstring("builders") or 
+                   self.caller.check_permstring("Wizards") or 
+                   self.caller.check_permstring("Immortals")):
+                self.caller.msg("You don't have permission to view others' XP.")
+                return
+                
+            # Search for target character
+            target = search_object(self.args.strip(), typeclass='typeclasses.characters.Character')
+            if not target:
+                self.caller.msg(f"Character '{self.args}' not found.")
+                return
+            target = target[0]  # Get first match
+            
+            # Display XP info
+            self._display_xp(target)
+            return
+
+        # Process switches
         if self.switches:
+            # Add new staff commands
+            if "desc" in self.switches:
+                if not self.caller.check_permstring("builders"):
+                    self.caller.msg("You don't have permission to view detailed XP history.")
+                    return
+                    
+                target = search_object(self.args.strip(), typeclass='typeclasses.characters.Character')
+                if not target:
+                    self.caller.msg(f"Character '{self.args}' not found.")
+                    return
+                target = target[0]
+                self._display_detailed_history(target)
+                return
+
+            if "sub" in self.switches:
+                if not self.caller.check_permstring("builders"):
+                    self.caller.msg("You don't have permission to remove XP.")
+                    return
+                    
+                try:
+                    # Split into target/stat and amount/reason parts
+                    if "=" not in self.args:
+                        self.caller.msg("Usage: +xp/sub <name>/<stat> <level>=<amount>/<reason>")
+                        return
+                        
+                    target_info, amount_info = self.args.split("=", 1)
+                    
+                    # Parse target info
+                    if "/" not in target_info:
+                        self.caller.msg("Must specify both character name and stat.")
+                        return
+                    target_name, stat_info = target_info.split("/", 1)
+                    
+                    # Parse amount info
+                    if "/" not in amount_info:
+                        self.caller.msg("Must specify both amount and reason.")
+                        return
+                    amount, reason = amount_info.split("/", 1)
+                    
+                    # Get stat level if provided
+                    stat_parts = stat_info.strip().split()
+                    if len(stat_parts) > 1:
+                        stat_name = " ".join(stat_parts[:-1])
+                        stat_level = stat_parts[-1]
+                        try:
+                            stat_level = int(stat_level)
+                        except ValueError:
+                            stat_name = stat_info
+                            stat_level = None
+                    else:
+                        stat_name = stat_info
+                        stat_level = None
+                    
+                    # Find target character
+                    target = search_object(target_name.strip(), 
+                                        typeclass='typeclasses.characters.Character')
+                    if not target:
+                        self.caller.msg(f"Character '{target_name}' not found.")
+                        return
+                    target = target[0]
+                    
+                    # Validate XP amount
+                    try:
+                        xp_amount = Decimal(amount).quantize(Decimal('0.01'), rounding=ROUND_DOWN)
+                        if xp_amount <= 0:
+                            raise ValueError
+                    except (ValueError, InvalidOperation):
+                        self.caller.msg("Amount must be a positive number.")
+                        return
+
+                    if target.db.xp['current'] < xp_amount:
+                        self.caller.msg(f"Character only has {target.db.xp['current']} XP available.")
+                        return
+
+                    # Remove XP
+                    target.db.xp['total'] -= xp_amount
+                    target.db.xp['current'] -= xp_amount
+                    
+                    # Format the reason with stat details
+                    formatted_reason = f"{stat_name}"
+                    if stat_level is not None:
+                        formatted_reason += f" (Level {stat_level})"
+                    if reason:
+                        formatted_reason += f" - {reason}"
+                    
+                    # Log the removal
+                    removal = {
+                        'type': 'removal',
+                        'amount': float(xp_amount),
+                        'stat_name': stat_name,
+                        'stat_level': stat_level,
+                        'reason': formatted_reason,
+                        'staff_name': self.caller.name,
+                        'timestamp': datetime.now().isoformat()
+                    }
+                    
+                    if 'spends' not in target.db.xp:
+                        target.db.xp['spends'] = []
+                    target.db.xp['spends'].insert(0, removal)
+                    
+                    # Notify staff and target
+                    self.caller.msg(f"Removed {xp_amount} XP from {target.name} for {formatted_reason}")
+                    target.msg(f"{xp_amount} XP was removed by {self.caller.name} for {formatted_reason}")
+                    self._display_xp(target)
+                    
+                except ValueError as e:
+                    self.caller.msg("Usage: +xp/sub <name>/<stat> <level>=<amount>/<reason>")
+                    self.caller.msg("Example: +xp/sub Bob/Strength 3=5.00/Correcting error")
+                return
+
             if "init" in self.switches:
                 self.caller.init_scene_data()
                 self.caller.msg("Scene tracking initialized.")
@@ -228,24 +367,45 @@ class CmdXP(default_cmds.MuxCommand):
                 self.caller.msg("You don't have permission to force weekly XP distribution.")
                 return
                 
-            # Find and execute the weekly XP script
-            weekly_script = search_object("weekly_xp_awards", typeclass="world.wod20th.scripts.WeeklyXPScript")
-            if not weekly_script:
-                # Create the script if it doesn't exist
-                from evennia import create_script
-                weekly_script = create_script("world.wod20th.scripts.WeeklyXPScript")
-                self.caller.msg("Weekly XP script created.")
-            else:
-                weekly_script = weekly_script[0]
-                self.caller.msg("Found existing weekly XP script.")
-            
-            weekly_script.at_repeat(caller=self.caller)
-            self.caller.msg("Weekly XP distribution has been executed.")
-            return
+            try:
+                # Find all character objects that:
+                # 1. Are not staff
+                # 2. Have scene data
+                # 3. Have completed at least one scene this week
+                characters = Character.objects.filter(
+                    db_typeclass_path__contains='characters.Character'
+                )
+                
+                base_xp = Decimal('4.00')
+                awarded_count = 0
+                
+                for char in characters:
+                    # Skip if character is staff
+                    if hasattr(char, 'check_permstring') and char.check_permstring("builders"):
+                        continue
+                        
+                    # Skip if no scene data or no completed scenes
+                    if (not hasattr(char, 'db') or 
+                        not char.db.scene_data or 
+                        not char.db.scene_data.get('completed_scenes', 0)):
+                        continue
+                        
+                    # Award XP if they've participated in scenes
+                    if hasattr(char, 'add_xp'):
+                        char.add_xp(base_xp, "Weekly Activity", self.caller)
+                        self.caller.msg(f"Awarded {base_xp} XP to {char.name}")
+                        awarded_count += 1
+                
+                self.caller.msg(f"\nWeekly XP distribution completed. Awarded XP to {awarded_count} active characters.")
+                
+            except Exception as e:
+                self.caller.msg(f"Error during XP distribution: {str(e)}")
+                return
 
     def _display_xp(self, character):
         """Displays XP information for a character."""
         xp = character.db.xp
+        
         if not xp:
             # Initialize XP if it doesn't exist
             xp = {
@@ -269,12 +429,16 @@ class CmdXP(default_cmds.MuxCommand):
         dash_count = (total_width - title_len) // 2
         header = f"{'|b-|n' * dash_count}{title}{'|b-|n' * (total_width - dash_count - title_len)}\n"
         
-        # Calculate IC XP (only from weekly awards)
+        # Calculate IC XP (from weekly awards and scene rewards)
         ic_xp = Decimal('0.00')
+        award_xp = Decimal('0.00')
         if xp.get('spends'):
             for entry in xp['spends']:
-                if entry['type'] == 'receive' and entry['reason'] == 'Weekly Activity':
-                    ic_xp += Decimal(str(entry['amount']))
+                if entry['type'] == 'receive':
+                    if entry['reason'] == 'Weekly Activity':
+                        ic_xp += Decimal(str(entry['amount']))
+                    else:
+                        award_xp += Decimal(str(entry['amount']))
         
         # Update the stored IC XP value
         xp['ic_earned'] = ic_xp
@@ -294,12 +458,12 @@ class CmdXP(default_cmds.MuxCommand):
         current_xp = f"{'|wCurrent XP:|n':<{left_col_width}}{xp['current']:>{right_col_width}.2f}"
         
         # right column values
-        award_xp = f"{'|wAward XP:|n':<{left_col_width}}{xp['current']:>{right_col_width}.2f}"
+        award_xp_display = f"{'|wAward XP:|n':<{left_col_width}}{award_xp:>{right_col_width}.2f}"
         spent_xp = f"{'|wSpent XP:|n':<{left_col_width}}{xp['spent']:>{right_col_width}.2f}"
         
         # and then we bring it together
         spacing = " " * 14  # column spacing
-        exp_section = f"{ic_xp_display}{spacing}{award_xp}\n"
+        exp_section = f"{ic_xp_display}{spacing}{award_xp_display}\n"
         exp_section += f"{total_xp}{spacing}{spent_xp}\n"
         exp_section += f"{current_xp}\n"
         
@@ -378,7 +542,7 @@ class CmdXP(default_cmds.MuxCommand):
                 footer
             )
         
-        character.msg(display) 
+        self.caller.msg(display) 
 
     def _determine_stat_category(self, stat_name):
         """Determine the category and type of a stat based on its name."""
@@ -456,3 +620,39 @@ class CmdXP(default_cmds.MuxCommand):
             'Academics', 'Computer', 'Finance', 'Enigmas', 'Investigation', 'Law',
             'Medicine', 'Occult', 'Politics', 'Science', 'Technology'
         ] 
+
+    def _display_detailed_history(self, character):
+        """Display detailed XP history for a character."""
+        if not character.db.xp or not character.db.xp.get('spends'):
+            self.caller.msg(f"{character.name} has no XP history.")
+            return
+            
+        table = EvTable("|wTimestamp|n", 
+                       "|wType|n", 
+                       "|wAmount|n", 
+                       "|wDetails|n",
+                       width=78)
+                       
+        for entry in character.db.xp['spends']:
+            timestamp = datetime.fromisoformat(entry['timestamp'])
+            entry_type = entry['type'].title()
+            amount = f"{float(entry['amount']):.2f}"
+            
+            if entry_type == "Spend":
+                if 'stat_name' in entry and 'previous_rating' in entry:
+                    details = (f"{entry['stat_name']} "
+                             f"({entry['previous_rating']} -> {entry['new_rating']})")
+                else:
+                    details = entry.get('reason', 'No reason given')
+            else:
+                details = entry.get('reason', 'No reason given')
+                
+            table.add_row(
+                timestamp.strftime('%Y-%m-%d %H:%M'),
+                entry_type,
+                amount,
+                details
+            )
+            
+        self.caller.msg(f"\n|wDetailed XP History for {character.name}|n")
+        self.caller.msg(str(table)) 
