@@ -1,0 +1,76 @@
+{% extends "wiki/base_wiki.html" %}
+{% load static %}
+
+{% block titleblock %}Search Results{% endblock %}
+
+{% block content %}
+<div class="left_content">
+    <h1>Search Results</h1>
+    
+    <div class="search-form">
+        <form action="{% url 'wiki:search' %}" method="get">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search wiki pages...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    {% if search_performed %}
+        {% if results %}
+            <p>Found {{ results|length }} result{{ results|length|pluralize }} for "{{ query }}":</p>
+            <div class="search-results">
+                {% for page in results %}
+                    <div class="search-result">
+                        <h2><a href="{% url 'wiki:page_detail' page.slug %}">{{ page.title }}</a></h2>
+                        <div class="meta">
+                            Last edited by {{ page.last_editor|default:"Unknown" }} 
+                            on {{ page.updated_at|date:"F j, Y" }}
+                        </div>
+                        <div class="excerpt">
+                            {{ page.content|truncatewords:50|safe }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if results.has_other_pages %}
+                <div class="pagination">
+                    {% if results.has_previous %}
+                        <a href="?q={{ query }}&page={{ results.previous_page_number }}">&laquo; Previous</a>
+                    {% endif %}
+                    
+                    <span class="current">
+                        Page {{ results.number }} of {{ results.paginator.num_pages }}
+                    </span>
+                    
+                    {% if results.has_next %}
+                        <a href="?q={{ query }}&page={{ results.next_page_number }}">Next &raquo;</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="no-results">
+                <p>No results found for "{{ query }}".</p>
+                <p class="suggestion">Try:</p>
+                <ul>
+                    <li>Using different keywords</li>
+                    <li>Using more general terms</li>
+                    <li>Checking your spelling</li>
+                </ul>
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Enter a search term above to find wiki pages.</p>
+    {% endif %}
+    
+    {% if debug %}
+        <div class="debug-info">
+            <h3>Debug Information</h3>
+            <pre>
+Query: {{ query }}
+Results count: {{ results|length }}
+Search performed: {{ search_performed }}
+            </pre>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

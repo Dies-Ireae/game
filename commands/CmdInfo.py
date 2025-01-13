@@ -1,5 +1,5 @@
 from evennia.commands.default.muxcommand import MuxCommand
-from world.wod20th.models import Stat, CATEGORIES, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, CLAN, MAGE_FACTION, MAGE_SPHERES, \
+from world.wod20th.models import Stat, STAT_TYPES, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, CLAN, MAGE_FACTION, MAGE_SPHERES, \
     TRADITION, TRADITION_SUBFACTION, CONVENTION, METHODOLOGIES, NEPHANDI_FACTION, SEEMING, KITH, SEELIE_LEGACIES, \
     UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road
 from evennia.utils.ansi import ANSIString
@@ -13,29 +13,52 @@ class CmdInfo(MuxCommand):
       +info
       +info <topic>
       +info/search <keyword>
+      +info/type <stat_type>
 
     Switches:
       /search   - Search all abilities for a keyword
+      /type     - Show all entries of a specific type (gift, discipline, etc)
       /<splat>  - View only entries matching specified splat
 
     Examples:
       +info/fera merits  - View merits belonging only to fera
-      +info merits       - View all merits across all splats 
+      +info merits       - View all merits across all splats
+      +info/type gift    - View all gifts
     """
     key = "info"
     aliases = []
     help_category = "Chargen & Character Info"
-    ignore_categories = {"pools", "other", "legacy", "virtues", "identity"}
+    
+    # Group similar stat types together
+    DISPLAY_CATEGORIES = {
+        'Attributes': ['physical', 'social', 'mental'],
+        'Abilities': ['skill', 'knowledge', 'talent', 'ability'],
+        'Secondary Abilities': ['secondary_knowledge', 'secondary_talent', 'secondary_skill', 'secondary_ability'],
+        'Powers': ['discipline', 'gift', 'art', 'sphere', 'bygone_power'],
+        'Advantages': ['advantage', 'background'],
+        'Supernatural': ['lineage', 'enlightenment', 'path'],
+        'Merits & Flaws': ['merit', 'flaw'],
+        'Identity': ['splat', 'kith', 'seeming', 'house'],
+        'Other': ['other', 'specialty', 'trait']
+    }
+    
+    ignore_categories = {'other', 'specialty'}  # Categories to ignore in searches
 
     def func(self):
         if not self.args and not self.switches:
             # Display all possible categories
             return self.list_categories()
-        if ('search' in self.switches):
-            # We doing a search!
+            
+        if 'search' in self.switches:
             if not self.args:
                 return self.caller.msg("Include something to search for!")
             return self.search_all(self.args.strip())
+            
+        if 'type' in self.switches:
+            if not self.args:
+                return self.caller.msg("Include a type to filter by!")
+            return self.show_type(self.args.strip())
+            
         only_splat = ''
         valid_splats = {'changeling', 'fera', 'shifter', 'vampire', 'mage'}
         if any(value.lower() in valid_splats for value in self.switches):
@@ -46,9 +69,7 @@ class CmdInfo(MuxCommand):
         elif (subject := self.match_subject(self.args.strip(), only_splat)):
             self.show_subject(subject)
         else:
-            skills = Stat.objects.filter(category="abilities", stat_type="skill")
-            for i, skill in enumerate(skills):
-                self.caller.msg(f"|r{skill.name}|n")
+            self.caller.msg(f"No matches found for '{self.args.strip()}'.")
 
     def format_header(self, text, width=78):
         return f"|r{'=' * 5}< |w{text}|r >{'=' * (width - len(text) - 9)}|n\n"
@@ -57,11 +78,19 @@ class CmdInfo(MuxCommand):
         return f"|r{'=' * width}|n\n"
 
     def match_category(self, input_str):
+        """Match category and return tuple of (key, display_name)."""
         input_str_lower = input_str.lower()
-        for key, display_name in CATEGORIES:
-            if input_str_lower in (key.lower(), display_name.lower()):
-                return key, display_name
-        return None  # Return None if no match is found
+        
+        # Check display categories first
+        for display_name, stat_types in self.DISPLAY_CATEGORIES.items():
+            if input_str_lower == display_name.lower():
+                return (stat_types, display_name)
+            # Also check individual stat types within each category
+            for stat_type in stat_types:
+                if input_str_lower == stat_type.lower():
+                    return ([stat_type], display_name)
+        
+        return None
     
     def match_subject(self, input_str, only_splat):
         results = Stat.objects.filter(name__iexact=input_str)
@@ -73,25 +102,44 @@ class CmdInfo(MuxCommand):
 
     def list_categories(self):
         string = self.format_header("+Info Categories", width=78)
-        i = 0
-        for key, title in [category for category in CATEGORIES if category[0] not in self.ignore_categories]:
-            i += 1
-            string += title.center(26)
-            if i % 3 == 0:
-                string += "\r\n"
+        
+        # Get the display categories (excluding empty ones)
+        categories = [cat for cat in self.DISPLAY_CATEGORIES.keys()]
+        
+        # Calculate rows needed (3 columns)
+        rows = (len(categories) + 2) // 3
+        
+        # Pad the list for complete rows
+        while len(categories) % 3 != 0:
+            categories.append('')
+            
+        # Print in rows
+        for row in range(rows):
+            for col in range(3):
+                idx = row * 3 + col
+                if idx < len(categories):
+                    title = categories[idx]
+                    string += title.center(26)
+            string += "\r\n"
+            
         string += self.format_footer(width=78)
-
         self.caller.msg(string)
     
     def show_category(self, category, only_splat):
-        string = self.format_header(f"+Info {category[1]}", width=78)
-        results = Stat.objects.filter(category=category[0]).order_by('name', 'splat')
-        if (only_splat != ''):
+        stat_types, display_name = category
+        string = self.format_header(f"+Info {display_name}", width=78)
+        
+        # Query for stats of the specified types
+        results = Stat.objects.filter(stat_type__in=stat_types).order_by('name', 'splat')
+        
+        # Apply splat filter if specified
+        if only_splat:
             results = results.filter(splat__iexact=only_splat)
 
-        if (len(results) <= 0):
+        if not results.exists():
             string += "No results to show.\r\n"
-        elif (category[0] == "merits" or category[0] == "flaws"):
+        elif display_name == "Merits & Flaws":
+            # Merit/flaw table formatting
             table = EvTable("|wName|n", "|wSplat|n", "|wType|n", "|wValues|n", border="none")
             table.reformat_column(0, width=30, align="l")
             table.reformat_column(1, width=18, align="l")
@@ -100,18 +148,14 @@ class CmdInfo(MuxCommand):
                 formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
                 table.add_row(result.name, result.splat, result.stat_type, formatted_values)
             string += ANSIString(table)
-        elif (category[0] == "backgrounds"):
-            table = EvTable("|wName|n", "|wSplat|n", border="none")
-            table.reformat_column(0, width=30, align="l")
-            table.reformat_column(1, width=18, align="l")
-            for result in results:
-                table.add_row(result.name, result.splat, result.stat_type)
-            string += ANSIString(table)
         else:
+            # Two-column format for other categories
             for i, result in enumerate(results):
                 string += result.name.center(39)
-                if i % 2 == 0:
+                if i % 2 == 1:
                     string += "\r\n"
+            if len(results) % 2:  # Add final newline if odd number of results
+                string += "\r\n"
         
         string += self.format_footer(width=78)
         self.caller.msg(string)
@@ -131,30 +175,96 @@ class CmdInfo(MuxCommand):
         self.caller.msg(string)
     
     def search_all(self, input_str):
-        # Perform a case-insensitive search by name (partial or full match)
-        filtered_categories = [category for category in CATEGORIES if category[0] not in self.ignore_categories]
-        filtered_categories = [category[0] for category in filtered_categories]
-        matches = Stat.objects.filter(name__icontains=input_str, category__in=filtered_categories)
+        # Get all valid stat types from our DISPLAY_CATEGORIES
+        valid_stat_types = []
+        for stat_types in self.DISPLAY_CATEGORIES.values():
+            valid_stat_types.extend(stat_types)
+        
+        # Remove ignored categories
+        valid_stat_types = [st for st in valid_stat_types if st not in self.ignore_categories]
+        
+        # Perform a case-insensitive search by name
+        matches = Stat.objects.filter(
+            name__icontains=input_str,
+            stat_type__in=valid_stat_types
+        )
         
         if not matches.exists():
             # If no name matches, search by description
-            matches = Stat.objects.filter(description__icontains=input_str, category__in=filtered_categories)
+            matches = Stat.objects.filter(
+                description__icontains=input_str,
+                stat_type__in=valid_stat_types
+            )
             if not matches.exists():
                 return self.caller.msg(f"No matches found containing the text '{input_str}'.")
+        
         if len(matches) == 1:
             return self.show_subject(matches[0])
-        string = self.format_header(f"+Info Search: {input_str.ljust(-16)}", width=78)
-        table = EvTable("|wName|n", "|wSplat|n", "|wCategory|n", "|wType|n", border="none")
+            
+        string = self.format_header(f"+Info Search: {input_str}", width=78)
+        table = EvTable("|wName|n", "|wSplat|n", "|wType|n", border="none")
         table.reformat_column(0, width=30, align="l")
         table.reformat_column(1, width=22, align="l")
         table.reformat_column(2, width=16, align="l")
+        
         for result in matches[:10]:
-            table.add_row(result.name, result.splat, result.category, result.stat_type)
+            table.add_row(result.name, result.splat, result.stat_type)
+            
         string += ANSIString(table)
         matches_string = f"\r\n    There were |w{len(matches)}|n matches"
-        if (len(matches) > 10):
+        if len(matches) > 10:
             matches_string += ", and some were truncated."
-        string += matches_string.rjust(-78) + "\r\n"
+        string += matches_string + "\r\n"
+        string += self.format_footer(width=78)
+        self.caller.msg(string)
+                    
+    def show_type(self, type_name):
+        """Show all entries of a specific stat type."""
+        # Get all valid stat types from our DISPLAY_CATEGORIES
+        valid_stat_types = []
+        for stat_types in self.DISPLAY_CATEGORIES.values():
+            valid_stat_types.extend(stat_types)
+        
+        # Try to match the input to a valid stat type
+        type_name_lower = type_name.lower()
+        matched_type = None
+        
+        # First try exact match
+        for stat_type in valid_stat_types:
+            if stat_type.lower() == type_name_lower:
+                matched_type = stat_type
+                break
+        
+        # If no exact match, try partial match
+        if not matched_type:
+            for stat_type in valid_stat_types:
+                if type_name_lower in stat_type.lower().replace('_', ' '):
+                    matched_type = stat_type
+                    break
+        
+        if not matched_type:
+            return self.caller.msg(f"No stat type found matching '{type_name}'.")
+        
+        # Get all matches for the type
+        results = Stat.objects.filter(stat_type__iexact=matched_type).order_by('name')
+        
+        if not results.exists():
+            return self.caller.msg(f"No entries found for type '{matched_type}'.")
+        
+        string = self.format_header(f"+Info Type: {matched_type.title()}", width=78)
+        
+        # Use table format for better organization
+        table = EvTable("|wName|n", "|wSplat|n", "|wValues|n", border="none")
+        table.reformat_column(0, width=30, align="l")
+        table.reformat_column(1, width=20, align="l")
+        table.reformat_column(2, width=20, align="l")
+        
+        for result in results:
+            formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
+            table.add_row(result.name, result.splat or "Any", formatted_values)
+            
+        string += ANSIString(table)
+        string += f"\r\n    There were |w{len(results)}|n entries of type '{matched_type}'.\r\n"
         string += self.format_footer(width=78)
         self.caller.msg(string)
                     
