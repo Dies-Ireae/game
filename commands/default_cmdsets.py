@@ -20,24 +20,25 @@ from commands.CmdShortDesc import CmdShortDesc
 from commands.CmdPose import CmdPose
 from commands.CmdSetStats import CmdStats, CmdSpecialty
 from commands.CmdSheet import CmdSheet
+from commands.CmdInfo import CmdInfo
 from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
 from commands.CmdLanguage import CmdLanguage
 import evennia.contrib.game_systems.mail as mail
-from  commands.CmdRoll import CmdRoll
+from commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
-from commands.CmdEmit import CmdEmit
+from commands.CmdEmit import CmdEmit, CmdPemit, CmdRemit
 from commands.CmdNotes import CmdNotes
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.building import CmdSetRoomResources, CmdSetRoomType, CmdSetUmbraDesc, CmdSetGauntlet, CmdUmbraInfo
 #from commands.requests import CmdRequests
 from commands.CmdUmbraInteraction import CmdUmbraInteraction
 from commands.communication import CmdMeet, CmdPlusIc, CmdPlusOoc, CmdOOC, CmdSummon, CmdJoin
-from commands.admin import CmdApprove, CmdUnapprove
+from commands.admin import CmdApprove, CmdUnapprove, CmdAdminLook
 from commands.CmdPump import CmdPump
 from commands.CmdSpendGain import CmdSpendGain
 from commands.where import CmdWhere
-from commands.chargen import CmdCharGen
+from commands.chargen import CmdCharGen, CmdSubmit
 from commands.CmdSelfStat import CmdSelfStat
 from commands.CmdShift import CmdShift
 from commands.CmdStaff import CmdStaff
@@ -50,6 +51,14 @@ from commands.CmdFaeDesc import CmdFaeDesc
 from commands.CmdLook import CmdLook
 from commands.CmdEvents import CmdEvents
 from commands.jobs.jobs_cmdset import JobSystemCmdSet
+from commands.CmdUnpuppet import CmdUnpuppet
+from commands.CmdPage import CmdPage
+from commands.CmdFinger import CmdFinger
+from commands.CmdAlias import CmdAlias
+from commands.CmdInfo import CmdInfo
+from commands.CmdLFRP import CmdLFRP
+from commands.comms import CmdChannel
+from commands.CmdPoseBreak import CmdPoseBreak
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -69,16 +78,13 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         # any commands you add below will overload the default ones.
         #
         self.add(CmdGradientName())
-        self.add(CmdShortDesc())
-        self.add(CmdPose())
-        self.add(CmdStats())
-        self.add(CmdEmit())
         self.add(BBSCmdSet)
         self.add(OssCmdSet)
         self.add(CmdFaeDesc())
+        self.add(CmdStats())
 
-        self.add(CmdSpecialty())
         self.add(CmdSheet())
+        self.add(CmdInfo())
         self.add(CmdHurt())
         self.add(CmdHeal())
         self.add(CmdEvents())
@@ -88,7 +94,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdShift())
         self.add(CmdWeather())
         self.add(CmdChangelingInteraction())
-        self.add(CmdLook())
+        self.add(CmdAdminLook())
+        self.add(CmdInfo())
 
         self.add(CmdUmbraInteraction())
         self.add(CmdMeet())
@@ -98,11 +105,9 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdPump())
         self.add(CmdSpendGain())
         self.add(CmdWhere())
-        self.add(CmdCharGen())
-        self.add(CmdSelfStat())
-        self.add(CmdStaff())
-        self.add(CmdUnfindable())
-        self.add(JobSystemCmdSet)
+        #self.add(CmdCharGen())
+
+        self.add(CmdPoseBreak())
 
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
@@ -136,6 +141,23 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdJoin())
         self.add(CmdApprove())
         self.add(CmdUnapprove())
+        self.add(CmdPage())
+        self.add(CmdFinger())
+        self.add(CmdSelfStat())
+        self.add(CmdStaff())
+        self.add(CmdSpecialty())
+        self.add(CmdUnfindable())
+        self.add(JobSystemCmdSet)
+        self.add(CmdUnpuppet())
+        self.add(CmdSubmit())
+        self.add(CmdFinger())
+        self.add(CmdAlias())
+        self.add(CmdLFRP())
+        self.add(CmdChannel())
+        self.add(CmdShortDesc())
+        self.add(CmdPose())
+        self.add(CmdEmit())
+
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """
