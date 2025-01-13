@@ -32,6 +32,7 @@ mypy-extensions==1.0.0
 packaging==24.1
 parameterized==0.8.1
 pathspec==0.12.1
+pillow==11.1.0
 platformdirs==4.2.2
 psycopg2-binary==2.9.9
 pycparser==2.22
@@ -39,7 +40,6 @@ pydantic==1.10.16
 pytz==2024.1
 PyYAML==6.0.1
 requests==2.32.3
-setuptools==69.5.1
 simpleeval==0.9.13
 six==1.16.0
 sqlparse==0.5.0
@@ -50,5 +50,4 @@ typing_extensions==4.12.2
 tzdata==2024.1
 uritemplate==4.1.1
 urllib3==2.2.3
-wheel==0.43.0
 zope.interface==6.4.post2
