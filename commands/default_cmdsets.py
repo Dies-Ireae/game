@@ -57,7 +57,6 @@ from commands.CmdFinger import CmdFinger
 from commands.CmdAlias import CmdAlias
 from commands.CmdInfo import CmdInfo
 from commands.CmdLFRP import CmdLFRP
-from commands.comms import CmdChannel
 from commands.CmdPoseBreak import CmdPoseBreak
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
@@ -153,7 +152,6 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdFinger())
         self.add(CmdAlias())
         self.add(CmdLFRP())
-        self.add(CmdChannel())
         self.add(CmdShortDesc())
         self.add(CmdPose())
         self.add(CmdEmit())
