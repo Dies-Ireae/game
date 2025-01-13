@@ -53,6 +53,21 @@ If for some reason you need to start or stop the server after running setup.py, 
    evennia <any command>
    ```
 
+## Handling Model Changes
+
+When changes are made to Django models in Evennia, it is important to update the database schema by creating and committing migrations. Follow these steps:
+
+1. Run the `makemigrations` command to generate migration files:
+   ```bash
+   evennia makemigrations wod20th
+   ```
+
+2. Commit the generated migration files to the repository
+
+Never delete the `migrations` folder or its contents unless you are intentionally resetting the database schema, as it contains critical files for database versioning.
+
+If migrations are not properly generated and committed, the database may become inconsistent, causing errors in the game.
+
 ## Contributing
 
 We welcome contributions to Dies Irae! To contribute:
