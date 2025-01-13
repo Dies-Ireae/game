@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Check for unstaged changes in model files
+MODEL_FILES_CHANGED=$(git diff --name-only | grep -E "models\\.py$")
+
+if [[ -n $MODEL_FILES_CHANGED ]]; then
+  echo "Model files have changed. Checking for migration requirements..."
+
+  # Activate virtual environment
+  if [[ -f "venv/bin/activate" ]]; then
+    source venv/bin/activate
+  elif [[ -f "venv\\Scripts\\activate" ]]; then
+    source venv\\Scripts\\activate
+  else
+    echo "Virtual environment not found. Ensure you have a venv activated."
+    exit 1
+  fi
+
+  # Run makemigrations
+  python manage.py makemigrations --check
+  if [[ $? -eq 1 ]]; then
+    echo "Unapplied migrations detected. Generating migrations..."
+    python manage.py makemigrations
+    echo "Migrations generated. Please add them to your commit."
+    git add $(git ls-files --others --exclude-standard -- '*.py' | grep migrations)
+    exit 1
+  else
+    echo "No new migrations required."
+  fi
+else
+  echo "No changes in model files. Skipping migration check."
+fi

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Check for uncommitted migration files
+UNCOMMITTED_MIGRATIONS=$(git status --porcelain | grep -E "M|A|??" | grep "migrations/")
+
+if [[ -n $UNCOMMITTED_MIGRATIONS ]]; then
+  echo "Uncommitted migration files detected:"
+  echo "$UNCOMMITTED_MIGRATIONS"
+  echo "Please commit your migration files before pushing."
+  exit 1
+else
+  echo "All migrations are committed. Proceeding with push."
+fi

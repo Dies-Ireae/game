@@ -9,6 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent
 VENV_DIR = BASE_DIR / "venv"
 REQUIREMENTS_FILE = BASE_DIR / "requirements.txt"
 SECRET_SETTINGS_FILE = BASE_DIR / "server/conf/secret_settings.py"
+HOOKS_DIR = BASE_DIR / "hooks"
+GIT_HOOKS_DIR = BASE_DIR / ".git/hooks"
 
 # Helper functions
 def run_command(command, cwd=None):
@@ -61,6 +63,19 @@ def generate_secret_settings():
     else:
         print("secret_settings.py already exists.")
 
+def copy_git_hooks():
+    """Copy custom hooks from hooks/ to .git/hooks."""
+    if HOOKS_DIR.exists():
+        print("Copying Git hooks...")
+        for hook in HOOKS_DIR.iterdir():
+            target_hook = GIT_HOOKS_DIR / hook.name
+            if hook.is_file():
+                target_hook.write_bytes(hook.read_bytes())
+                target_hook.chmod(0o755)  # Ensure hooks are executable
+                print(f"Copied {hook.name} to .git/hooks.")
+    else:
+        print("No hooks directory found. Skipping Git hooks setup.")
+
 def start_server():
     """Start the Evennia server."""
     print("Starting Evennia server...")
@@ -73,6 +88,7 @@ def main():
     install_requirements()
     run_migrations()
     generate_secret_settings()
+    copy_git_hooks()
     start_server()
 
 if __name__ == "__main__":
