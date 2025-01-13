@@ -2,7 +2,7 @@ from evennia.commands.default.muxcommand import MuxCommand
 from evennia.utils.search import search_object
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, CLAN, MAGE_FACTION, MAGE_SPHERES, \
     TRADITION, TRADITION_SUBFACTION, CONVENTION, METHODOLOGIES, NEPHANDI_FACTION, SEEMING, KITH, SEELIE_LEGACIES, \
-    UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road
+    UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road, MORTALPLUS_TYPES, MORTALPLUS_POWERS
 from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.damage import format_damage, format_status, format_damage_stacked
 from world.wod20th.utils.formatting import format_stat, header, footer, divider
@@ -146,6 +146,58 @@ class CmdSheet(MuxCommand):
                 splat_specific_stats.append('Nephandi Faction')
         elif splat.lower() == 'changeling':
             splat_specific_stats = ['Kith', 'Seeming', 'House']
+        elif splat.lower() == 'mortal+':
+            mortalplus_type = character.db.stats.get('identity', {}).get('lineage', {}).get('Mortal+ Type', {}).get('perm', '')
+            splat_specific_stats = ['Mortal+ Type']
+            
+            # Add type-specific stats
+            if mortalplus_type == 'Ghoul':
+                splat_specific_stats.extend(['Domitor', 'Clan'])
+            elif mortalplus_type == 'Kinfolk':
+                splat_specific_stats.extend(['Tribe'])
+            elif mortalplus_type == 'Kinain':
+                splat_specific_stats.extend(['Kith', 'Seeming'])
+            
+            # Add powers section based on type
+            if mortalplus_type in MORTALPLUS_TYPES:
+                power_types = MORTALPLUS_TYPES[mortalplus_type]
+                for power_type in power_types:
+                    power_type_lower = power_type.lower().replace(' ', '_')
+                    powers.append(divider(power_type, width=38, color="|b"))
+                    
+                    # Special handling for Kinain Arts and Realms
+                    if power_type == 'Arts':
+                        arts = character.db.stats.get('powers', {}).get('arts', {})
+                        for art, values in arts.items():
+                            art_value = values.get('perm', 0)
+                            powers.append(format_stat(art, art_value, default=0, width=38))
+                    elif power_type == 'Realms':
+                        realms = character.db.stats.get('powers', {}).get('realms', {})
+                        for realm, values in realms.items():
+                            realm_value = values.get('perm', 0)
+                            powers.append(format_stat(realm, realm_value, default=0, width=38))
+                    else:
+                        power_dict = character.db.stats.get('powers', {}).get(power_type_lower, {})
+                        for power, values in power_dict.items():
+                            power_value = values.get('perm', 0)
+                            powers.append(format_stat(power, power_value, default=0, width=38))
+                            
+            # Add appropriate pools
+            if mortalplus_type == 'Ghoul':
+                pools_list.append(format_stat('Blood', format_pool_value(character, 'Blood'), width=25))
+            elif mortalplus_type == 'Kinfolk':
+                # Check if character has the Gnosis Merit
+                merits = character.db.stats.get('merits', {}).get('merit', {})
+                gnosis_merit = next((value.get('perm', 0) for merit, value in merits.items() 
+                                   if merit.lower() == 'gnosis'), 0)
+                
+                # Only show Gnosis if they have the Merit
+                if gnosis_merit >= 5:
+                    pools_list.append(format_stat('Gnosis', format_pool_value(character, 'Gnosis'), width=25))
+            elif mortalplus_type == 'Kinain':
+                pools_list.append(format_stat('Glamour', format_pool_value(character, 'Glamour'), width=25))
+            
+            pools_list.append(format_stat('Willpower', format_pool_value(character, 'Willpower'), width=25))
         else:
             splat_specific_stats = []
 
@@ -584,6 +636,58 @@ class CmdSheet(MuxCommand):
         elif splat.lower() == 'changeling':
             pools_list.append(format_stat('Glamour', format_pool_value(character, 'Glamour'), width=25))
             pools_list.append(format_stat('Banality', format_pool_value(character, 'Banality'), width=25))
+            pools_list.append(format_stat('Willpower', format_pool_value(character, 'Willpower'), width=25))
+        elif splat.lower() == 'mortal+':
+            mortalplus_type = character.db.stats.get('identity', {}).get('lineage', {}).get('Mortal+ Type', {}).get('perm', '')
+            splat_specific_stats = ['Mortal+ Type']
+            
+            # Add type-specific stats
+            if mortalplus_type == 'Ghoul':
+                splat_specific_stats.extend(['Domitor', 'Clan'])
+            elif mortalplus_type == 'Kinfolk':
+                splat_specific_stats.extend(['Tribe', 'Breed'])
+            elif mortalplus_type == 'Kinain':
+                splat_specific_stats.extend(['Kith', 'Seeming'])
+            
+            # Add powers section based on type
+            if mortalplus_type in MORTALPLUS_TYPES:
+                power_types = MORTALPLUS_TYPES[mortalplus_type]
+                for power_type in power_types:
+                    power_type_lower = power_type.lower().replace(' ', '_')
+                    powers.append(divider(power_type, width=38, color="|b"))
+                    
+                    # Special handling for Kinain Arts and Realms
+                    if power_type == 'Arts':
+                        arts = character.db.stats.get('powers', {}).get('arts', {})
+                        for art, values in arts.items():
+                            art_value = values.get('perm', 0)
+                            powers.append(format_stat(art, art_value, default=0, width=38))
+                    elif power_type == 'Realms':
+                        realms = character.db.stats.get('powers', {}).get('realms', {})
+                        for realm, values in realms.items():
+                            realm_value = values.get('perm', 0)
+                            powers.append(format_stat(realm, realm_value, default=0, width=38))
+                    else:
+                        power_dict = character.db.stats.get('powers', {}).get(power_type_lower, {})
+                        for power, values in power_dict.items():
+                            power_value = values.get('perm', 0)
+                            powers.append(format_stat(power, power_value, default=0, width=38))
+                            
+            # Add appropriate pools
+            if mortalplus_type == 'Ghoul':
+                pools_list.append(format_stat('Blood', format_pool_value(character, 'Blood'), width=25))
+            elif mortalplus_type == 'Kinfolk':
+                # Check if character has the Gnosis Merit
+                merits = character.db.stats.get('merits', {}).get('merit', {})
+                gnosis_merit = next((value.get('perm', 0) for merit, value in merits.items() 
+                                   if merit.lower() == 'gnosis'), 0)
+                
+                # Only show Gnosis if they have the Merit
+                if gnosis_merit >= 5:
+                    pools_list.append(format_stat('Gnosis', format_pool_value(character, 'Gnosis'), width=25))
+            elif mortalplus_type == 'Kinain':
+                pools_list.append(format_stat('Glamour', format_pool_value(character, 'Glamour'), width=25))
+            
             pools_list.append(format_stat('Willpower', format_pool_value(character, 'Willpower'), width=25))
         else:
             # Default/Mortal

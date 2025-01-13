@@ -149,3 +149,10 @@ class CmdPose(PoseBreakMixin, default_cmds.MuxCommand):
             else:
                 # No language-tagged speech, send normal pose
                 receiver.msg(f"{poser_name} {processed_args}")
+
+        # Add this at the end of the func method
+        try:
+            caller.record_scene_activity()
+            caller.msg("|wDebug: Pose triggered scene activity check.|n")
+        except Exception as e:
+            caller.msg(f"|rDebug Error: {str(e)}|n")

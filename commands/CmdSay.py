@@ -67,9 +67,19 @@ class CmdSay(PoseBreakMixin, MuxCommand):
 
                 # If they have Universal Language, know the language, or it's not a language-tagged message
                 if has_universal or not language or (language and language in receiver_languages):
+                    _, msg_understand, _, _ = caller.prepare_say(speech, viewer=receiver)
                     receiver.msg(msg_understand)
                 else:
+                    _, _, msg_not_understand, _ = caller.prepare_say(speech, viewer=receiver)
                     receiver.msg(msg_not_understand)
             else:
                 # The speaker always understands their own speech
+                msg_self, _, _, _ = caller.prepare_say(speech, viewer=receiver)
                 receiver.msg(msg_self)
+
+        # Add this at the end of the func method
+        try:
+            self.caller.record_scene_activity()
+            self.caller.msg("|wDebug: Say triggered scene activity check.|n")
+        except Exception as e:
+            self.caller.msg(f"|rDebug Error: {str(e)}|n")

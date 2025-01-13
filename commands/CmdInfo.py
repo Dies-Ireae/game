@@ -14,16 +14,19 @@ class CmdInfo(MuxCommand):
       +info <topic>
       +info/search <keyword>
       +info/type <stat_type>
+      +info/shifter <shifter_type>
 
     Switches:
       /search   - Search all abilities for a keyword
       /type     - Show all entries of a specific type (gift, discipline, etc)
       /<splat>  - View only entries matching specified splat
+      /shifter  - View gifts for a specific shifter type (garou, ananasi, etc)
 
     Examples:
       +info/fera merits  - View merits belonging only to fera
       +info merits       - View all merits across all splats
       +info/type gift    - View all gifts
+      +info/shifter ananasi - View all Ananasi gifts
     """
     key = "info"
     aliases = []
@@ -59,6 +62,11 @@ class CmdInfo(MuxCommand):
                 return self.caller.msg("Include a type to filter by!")
             return self.show_type(self.args.strip())
             
+        if 'shifter' in self.switches:
+            if not self.args:
+                return self.caller.msg("Include a shifter type to filter by!")
+            return self.show_shifter_gifts(self.args.strip())
+
         only_splat = ''
         valid_splats = {'changeling', 'fera', 'shifter', 'vampire', 'mage'}
         if any(value.lower() in valid_splats for value in self.switches):
@@ -140,10 +148,11 @@ class CmdInfo(MuxCommand):
             string += "No results to show.\r\n"
         elif display_name == "Merits & Flaws":
             # Merit/flaw table formatting
-            table = EvTable("|wName|n", "|wSplat|n", "|wType|n", "|wValues|n", border="none")
+            table = EvTable("|wName|n", "|wSplat|n", "|wShifter Type|n", "|wType|n", "|wValues|n", border="none")
             table.reformat_column(0, width=30, align="l")
             table.reformat_column(1, width=18, align="l")
             table.reformat_column(2, width=16, align="l")
+            table.reformat_column(3, width=16, align="l")
             for result in results:
                 formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
                 table.add_row(result.name, result.splat, result.stat_type, formatted_values)
@@ -169,6 +178,9 @@ class CmdInfo(MuxCommand):
         string += "\r\n"
         if subject.splat:
             string += f"  |wSplat:|n {subject.splat}\r\n"
+        # Add shifter_type for gifts
+        if subject.stat_type == 'gift' and subject.shifter_type:
+            string += f"  |wShifter Type:|n {subject.shifter_type.title()}\r\n"
         string += "\r\n"
         string += subject.description + "\r\n"
         string += self.format_footer(width=78)
@@ -202,13 +214,14 @@ class CmdInfo(MuxCommand):
             return self.show_subject(matches[0])
             
         string = self.format_header(f"+Info Search: {input_str}", width=78)
-        table = EvTable("|wName|n", "|wSplat|n", "|wType|n", border="none")
+        table = EvTable("|wName|n", "|wSplat|n", "|wShifter Type|n", "|wType|n", border="none")
         table.reformat_column(0, width=30, align="l")
         table.reformat_column(1, width=22, align="l")
         table.reformat_column(2, width=16, align="l")
+        table.reformat_column(3, width=16, align="l")
         
         for result in matches[:10]:
-            table.add_row(result.name, result.splat, result.stat_type)
+            table.add_row(result.name, result.splat, result.shifter_type, result.stat_type)
             
         string += ANSIString(table)
         matches_string = f"\r\n    There were |w{len(matches)}|n matches"
@@ -254,17 +267,62 @@ class CmdInfo(MuxCommand):
         string = self.format_header(f"+Info Type: {matched_type.title()}", width=78)
         
         # Use table format for better organization
-        table = EvTable("|wName|n", "|wSplat|n", "|wValues|n", border="none")
-        table.reformat_column(0, width=30, align="l")
-        table.reformat_column(1, width=20, align="l")
-        table.reformat_column(2, width=20, align="l")
+        if matched_type == 'gift':
+            table = EvTable("|wName|n", "|wSplat|n", "|wShifter Type|n", "|wValues|n", border="none")
+            table.reformat_column(0, width=30, align="l")
+            table.reformat_column(1, width=15, align="l")
+            table.reformat_column(2, width=15, align="l")
+            table.reformat_column(3, width=10, align="l")
+        else:
+            table = EvTable("|wName|n", "|wSplat|n", "|wValues|n", border="none")
+            table.reformat_column(0, width=30, align="l")
+            table.reformat_column(1, width=20, align="l")
+            table.reformat_column(2, width=20, align="l")
         
         for result in results:
             formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
-            table.add_row(result.name, result.splat or "Any", formatted_values)
+            if matched_type == 'gift':
+                table.add_row(
+                    result.name, 
+                    result.splat or "Any", 
+                    result.shifter_type.title() if result.shifter_type else "None",
+                    formatted_values
+                )
+            else:
+                table.add_row(result.name, result.splat or "Any", formatted_values)
             
         string += ANSIString(table)
         string += f"\r\n    There were |w{len(results)}|n entries of type '{matched_type}'.\r\n"
+        string += self.format_footer(width=78)
+        self.caller.msg(string)
+                    
+    def show_shifter_gifts(self, shifter_type):
+        """Show all gifts for a specific shifter type."""
+        # Get all gifts for the specified shifter type
+        results = Stat.objects.filter(
+            stat_type='gift',
+            shifter_type__iexact=shifter_type
+        ).order_by('name')
+        
+        if not results.exists():
+            return self.caller.msg(f"No gifts found for shifter type '{shifter_type}'.")
+        
+        string = self.format_header(f"+Info {shifter_type.title()} Gifts", width=78)
+        
+        # Use table format for better organization
+        table = EvTable("|wName|n", "|wValues|n", "|wDescription|n", border="none")
+        table.reformat_column(0, width=25, align="l")
+        table.reformat_column(1, width=10, align="l")
+        table.reformat_column(2, width=43, align="l")
+        
+        for result in results:
+            formatted_values = str(result.values[0]) if result.values else "N/A"
+            # Truncate description if too long
+            desc = result.description[:40] + "..." if len(result.description) > 40 else result.description
+            table.add_row(result.name, formatted_values, desc)
+            
+        string += ANSIString(table)
+        string += f"\r\n    Found |w{len(results)}|n gifts for {shifter_type.title()}.\r\n"
         string += self.format_footer(width=78)
         self.caller.msg(string)
                     

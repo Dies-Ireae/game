@@ -120,11 +120,16 @@ class CmdFinger(MuxCommand):
                 target = Character.get_by_alias(search_term.lower())
 
             if not target:
-                self.caller.msg(f"Could not find character '{search_term}'.")
+                self.caller.msg(f"This character does not exist.")
                 return
 
-        # Get basic character info
-        full_name = target.db.stats.get('identity', {}).get('personal', {}).get('Full Name', {}).get('perm', target.key)
+        # Get basic character info - modified to handle None case
+        try:
+            full_name = target.db.stats.get('identity', {}).get('personal', {}).get('Full Name', {}).get('perm', target.key)
+            if full_name is None:
+                full_name = target.key
+        except AttributeError:
+            full_name = target.key
         
         # Calculate idle time
         idle_seconds = self.get_idle_time(target)

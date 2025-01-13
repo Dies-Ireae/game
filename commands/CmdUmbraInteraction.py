@@ -13,6 +13,7 @@ class CmdUmbraInteraction(MuxCommand):
     +step: Attempt to step sideways into or out of the Umbra.
            Optional modifier (e.g. +step -2) for temporary difficulty adjustment
     +peek: Look across the Gauntlet without entering the Umbra.
+           (Shifters only)
     +gauntlet/check: Check current Gauntlet difficulty
     """
 
@@ -27,6 +28,10 @@ class CmdUmbraInteraction(MuxCommand):
             if self.cmdstring == "+step":
                 self.do_step()
             elif self.cmdstring == "+peek":
+                # Check if the character is a Shifter before allowing peek
+                if not hasattr(self.caller, 'is_shifter') or not self.caller.is_shifter():
+                    self.caller.msg("Only Shifters can peek across the Gauntlet.")
+                    return
                 self.do_peek()
             return
             
@@ -76,7 +81,10 @@ class CmdUmbraInteraction(MuxCommand):
         if self.caller.tags.get("in_umbra", category="state"):
             self.caller.msg("You're already in the Umbra. Use +step to return to the material world.")
         else:
+            # Get the peek result and handle any line breaks
             result = self.caller.location.peek_umbra(self.caller)
+            if result:
+                result = result.replace("%r", "\n").replace("\n\n", "\n")
             self.caller.msg(result)
 
     def do_check_gauntlet(self):

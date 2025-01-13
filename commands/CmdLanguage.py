@@ -622,14 +622,12 @@ class CmdLanguage(MuxCommand):
         language_merit_points = 0
         natural_linguist = False
         
-        # Check for Natural Linguist more strictly
+        # Check for Natural Linguist
         for category in merits:
             category_merits = merits[category]
-            for merit_name, merit_data in category_merits.items():
-                if merit_name.lower().replace(' ', '') == 'naturallinguist' and merit_data.get('perm', 0) > 0:
-                    natural_linguist = True
-                    break
-            if natural_linguist:
+            if any(merit.lower().replace(' ', '') == 'naturallinguist' 
+                  for merit in category_merits.keys()):
+                natural_linguist = True
                 break
         
         # Calculate total available points
@@ -674,12 +672,7 @@ class CmdLanguage(MuxCommand):
             # Update the character's languages
             target.db.languages = final_languages
             target.msg(f"Removed {', '.join(languages_removed)} to stay within language point limits.")
-            
-            # Force a recheck of currently speaking language
-            current_speaking = target.db.currently_speaking
-            if current_speaking in languages_removed:
-                target.db.currently_speaking = "English"
-                target.msg("You are now speaking English.")
+            return True
         
         return False
 
@@ -692,6 +685,7 @@ class CmdLanguage(MuxCommand):
             for category in self.db.stats.get('merits', {}).values()
             for merit in category.keys()
         )
+        
         # If it's a language-related merit and the value decreased, validate languages
         if ((merit_name == 'Language' and new_value < old_value) or
             (merit_name == 'Natural Linguist' and had_natural_linguist) or

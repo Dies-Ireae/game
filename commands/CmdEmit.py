@@ -115,3 +115,10 @@ class CmdEmit(PoseBreakMixin, default_cmds.MuxCommand):
                 else:
                     # No language-tagged content, send as is
                     receiver.msg(processed_args)
+
+        # Add this at the end of the func method
+        try:
+            self.caller.record_scene_activity()
+            self.caller.msg("|wDebug: Emit triggered scene activity check.|n")
+        except Exception as e:
+            self.caller.msg(f"|rDebug Error: {str(e)}|n")

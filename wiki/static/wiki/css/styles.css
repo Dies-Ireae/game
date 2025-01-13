@@ -556,9 +556,24 @@ ul {
     line-height: 1.6;
     z-index: 900;
     max-width: 100%;
+    max-height: calc(100vh - 450px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
+.context_menu::-webkit-scrollbar {
+    width: 6px;
+}
 
+.context_menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.context_menu::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
 
 .context_menu ul {
     list-style: none;
@@ -567,11 +582,13 @@ ul {
 }
 
 .context_menu ul li h4 {
-    padding: 10px 0 !important;
-    font-size: 20px !important;
-    font-family: 'impact_label_reversed', Arial, sans-serif;
+    position: sticky;
+    top: 0;
+    background-color: #000;
+    z-index: 1;
+    padding: 10px 0;
+    margin: 0;
 }
-
 
 .context_menu ul li {
     margin: 10px 0 0 45px;

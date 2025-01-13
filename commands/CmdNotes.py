@@ -197,8 +197,8 @@ class CmdNotes(MuxCommand):
 
         name, text = self.args.split("=", 1)
         name = name.strip()
-        # Convert %r markers to newlines and handle any double newlines
-        text = text.strip().replace("%r", "\n").replace("\n\n", "\n")
+        # Convert %r markers to newlines, properly handling double %r
+        text = text.strip().replace("%r%r", "\n\n").replace("%r", "\n")
 
         # Handle category in name
         if "/" in name:
@@ -220,7 +220,8 @@ class CmdNotes(MuxCommand):
 
         note_id, text = self.args.split("=", 1)
         note_id = note_id.strip()
-        text = text.strip()
+        # Convert %r markers to newlines, properly handling double %r
+        text = text.strip().replace("%r%r", "\n\n").replace("%r", "\n")
 
         if self.caller.update_note(note_id, text=text):
             self.caller.msg(f"Note '{note_id}' updated.")
@@ -615,15 +616,16 @@ class CmdNotes(MuxCommand):
         
         # Note content - properly handle line breaks
         text = note.text.strip()
-        # Split on actual newlines, not %r
+        # Split on actual newlines, preserving empty lines for spacing
         content_lines = text.split('\n')
         wrapped_lines = []
         for line in content_lines:
             if line.strip():
-                wrapped_lines.extend(wrap_ansi(line.strip(), width=width-2).split('\n'))
+                # Add a space before each non-empty line for better readability
+                wrapped_lines.extend([' ' + l for l in wrap_ansi(line.strip(), width=width-2).split('\n')])
             else:
                 wrapped_lines.append('')  # Preserve empty lines
-        
+
         output += '\n'.join(wrapped_lines) + "\n"
         output += footer(width=width, fillchar="|r=|n")
         self.caller.msg(output)
