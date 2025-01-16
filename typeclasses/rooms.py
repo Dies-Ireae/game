@@ -277,8 +277,17 @@ class RoomParent(DefaultRoom):
         """
         self.db.temp_gauntlet_modifier = modifier
         
-        if duration > 0:
-            self.db.temp_gauntlet_expiry = datetime.now().timestamp() + duration
+
+        if success[0] > 0:
+            if self.db.umbra_desc:
+                # Format the Umbra description
+                umbra_header = header("Umbra Vision", width=78, fillchar=ANSIString("|r-|n"))
+                formatted_desc = self.format_description(self.db.umbra_desc)
+                umbra_footer = footer(width=78, fillchar=ANSIString("|r-|n"))
+                
+                return f"You successfully pierce the Gauntlet and glimpse into the Umbra:\n\n{umbra_header}\n{formatted_desc}\n{umbra_footer}"
+            else:
+                return "You successfully pierce the Gauntlet, but there's nothing unusual to see in the Umbra here."
         else:
             self.db.temp_gauntlet_expiry = None
         
@@ -310,7 +319,8 @@ class RoomParent(DefaultRoom):
         """
         Format the description with proper paragraph handling and indentation.
         """
-        paragraphs = desc.split('%r', '%R')
+        desc = desc.replace('%r', '%R')
+        paragraphs = desc.split('%R')
         formatted_paragraphs = []
         for i, p in enumerate(paragraphs):
             if not p.strip():
