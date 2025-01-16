@@ -11,6 +11,7 @@ def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=
     stat_str = f" {stat}"
     
     if stat == "Paradox":
+        # For Paradox, only show the temporary value
         value_str = str(tempvalue)
     elif stat == "Arete":
         # For Arete, don't show temporary value
@@ -18,7 +19,6 @@ def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=
     elif tempvalue is not None and int(tempvalue) != int(value):  # Convert to int for comparison
         if not allow_zero and tempvalue == 0:
             tempvalue = 1
-
         # Only show temporary value if it's numerically different
 
         value_str = f"{value}({tempvalue})"
@@ -27,7 +27,7 @@ def format_stat(stat, value, width=25, default=None, tempvalue=None, allow_zero=
         value_str = str(value)
 
     # Truncate the stat name if it's too long
-    max_stat_length = width - len(value_str) - 4
+    max_stat_length = width - len(value_str) - 4  # 4 for the dots and spaces
     if len(stat_str) > max_stat_length:
         stat_str = stat_str[:max_stat_length-3] + "..."
 
@@ -65,6 +65,7 @@ def divider(title, width=78, fillchar="-", color="|r", text_color="|n"):
     if title:
         # Calculate the width of the title text without color codes
         title_width = len(ANSIString(title).clean())
+        
         # Calculate padding on each side of the title
         padding = (width - title_width - 2) // 2  # -2 for spaces around the title
         

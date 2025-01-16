@@ -1,25 +1,41 @@
 from evennia import default_cmds
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, calculate_willpower, calculate_road
 from evennia.utils import search
+from evennia.utils.search import search_object
+from typeclasses.characters import Character
 
-# Define the allowed identity stats for each shifter type
-SHIFTER_IDENTITY_STATS = {
-    "Garou": ["Tribe", "Breed", "Auspice"],
-    "Gurahl": ["Tribe", "Breed", "Auspice"],
-    "Rokea": ["Tribe", "Breed", "Auspice"],
-    "Ananasi": ["Aspect", "Ananasi Faction", "Breed", "Ananasi Cabal"],
-    "Ajaba": ["Aspect", "Breed"],
-    "Bastet": ["Tribe", "Breed"],
-    "Corax": ["Breed"],
-    "Kitsune": ["Kitsune Path", "Kitsune Faction", "Breed"],
-    "Mokole": ["Varnas", "Stream", "Breed"],
-    "Nagah": ["Crown", "Breed", "Auspice"],
-    "Nuwisha": ["Breed"],
-    "Ratkin": ["Aspect", "Plague", "Breed"]
+PATH_VIRTUES = {
+    'Humanity': ('Conscience', 'Self-Control'),
+    'Night': ('Conviction', 'Instinct'),
+    'Beast': ('Conviction', 'Instinct'),
+    'Harmony': ('Conscience', 'Instinct'),
+    'Evil Revelations': ('Conviction', 'Self-Control'),
+    'Self-Focus': ('Conviction', 'Instinct'),
+    'Scorched Heart': ('Conviction', 'Self-Control'),
+    'Entelechy': ('Conviction', 'Self-Control'),
+    'Sharia El-Sama': ('Conscience', 'Self-Control'),
+    'Asakku': ('Conviction', 'Instinct'),
+    'Death and the Soul': ('Conviction', 'Self-Control'),
+    'Honorable Accord': ('Conscience', 'Self-Control'),
+    'Feral Heart': ('Conviction', 'Instinct'),
+    'Orion': ('Conviction', 'Instinct'),
+    'Power and the Inner Voice': ('Conviction', 'Instinct'),
+    'Lilith': ('Conviction', 'Instinct'),
+    'Caine': ('Conviction', 'Instinct'),
+    'Cathari': ('Conviction', 'Instinct'),
+    'Redemption': ('Conscience', 'Self-Control'),
+    'Metamorphosis': ('Conviction', 'Instinct'),
+    'Bones': ('Conviction', 'Self-Control'),
+    'Typhon': ('Conviction', 'Self-Control'),
+    'Paradox': ('Conviction', 'Self-Control'),
+    'Blood': ('Conviction', 'Self-Control'),
+    'Hive': ('Conviction', 'Instinct')
 }
 
 class CmdStats(default_cmds.MuxCommand):
     """
+    Set character stats as staff.
+
     Usage:
       +stats <character>/<stat>[(<instance>)]/<category>=[+-]<value>
       +stats me/<stat>[(<instance>)]/<category>=[+-]<value>
@@ -29,15 +45,19 @@ class CmdStats(default_cmds.MuxCommand):
     Examples:
       +stats Bob/Strength/Physical=+2
       +stats Alice/Firearms/Skill=-1
-      +stats John/Status(Ventrue)/Social=
+      +stats John/Status(Ventrue)/Social=3
       +stats me=reset
-      +stats me/Strength=3
+      +stats me/Nature=Curmudgeon
+      +stats Bob/Demeanor=Visionary
+
+    This is the staff version of +selfstat with the same functionality
+    but can be used on any character.
     """
 
-    key = "stats"
-    aliases = ["stat"]
-    locks = "cmd:perm(Builder)"  # Only Builders and above can use this command
-    help_category = "Chargen & Character Info"
+    key = "+stats"
+    aliases = ["stats", "+setstats", "setstats"]
+    locks = "cmd:perm(Builder)"
+    help_category = "Staff"
 
     def parse(self):
         """
@@ -100,7 +120,6 @@ class CmdStats(default_cmds.MuxCommand):
 
     def func(self):
         """Implement the command"""
-
         if not self.character_name:
             self.caller.msg("|rUsage: +stats <character>/<stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
@@ -108,11 +127,29 @@ class CmdStats(default_cmds.MuxCommand):
         if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
-            character = self.caller.search(self.character_name)
+            # First try exact match
+            character = None
+            # Search for both online and offline characters
+            matches = search_object(self.character_name, 
+                                 typeclass='typeclasses.characters.Character',
+                                 exact=True)
+            
+            if not matches:
+                # If no exact match, try case-insensitive
+                matches = search_object(self.character_name, 
+                                     typeclass='typeclasses.characters.Character')
+                matches = [obj for obj in matches if obj.key.lower() == self.character_name.lower()]
+            
+            if matches:
+                character = matches[0]
+            
+            # If still no match, try alias
+            if not character:
+                character = Character.get_by_alias(self.character_name.lower())
 
-        if not character:
-            self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
-            return
+            if not character:
+                self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
+                return
 
         # Handle the reset command
         if self.stat_name and self.stat_name.lower() == 'reset':
@@ -159,12 +196,19 @@ class CmdStats(default_cmds.MuxCommand):
             return
 
         # Handle stat removal (empty value) - Move this before validation
+
         if not self.value_change:
             if stat.category in character.db.stats and stat.stat_type in character.db.stats[stat.category]:
                 if full_stat_name in character.db.stats[stat.category][stat.stat_type]:
                     del character.db.stats[stat.category][stat.stat_type][full_stat_name]
                     self.caller.msg(f"|gRemoved stat '{full_stat_name}' from {character.name}.|n")
                     character.msg(f"|y{self.caller.name}|n |rremoved your stat|n '|y{full_stat_name}|n'.")
+                    
+                    # Check if we need to update languages after merit removal
+                    if (stat.category == 'merits' and 
+                        (stat.name == 'Language' or stat.name == 'Natural Linguist')):
+                        character.handle_language_merit_change()
+
                     return
                 else:
                     self.caller.msg(f"|rStat '{full_stat_name}' not found on {character.name}.|n")
@@ -363,7 +407,129 @@ class CmdStats(default_cmds.MuxCommand):
                 self.caller.msg(f"|gUpdated {character.name}'s {full_stat_name} to {new_value} (both permanent and temporary).|n")
                 character.msg(f"|y{self.caller.name}|n |gset your {full_stat_name} to {new_value} (both permanent and temporary).|n")
                 return
+        # After merit changes, check if we need to update languages
+        if (stat.category == 'merits' and 
+            (stat.name == 'Language' or stat.name == 'Natural Linguist')):
+            character.handle_language_merit_change()
 
+<<<<<<< Updated upstream
+=======
+        # Special handling for Shifter Rank
+        if stat.name == 'Rank':
+            splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            if splat and splat == 'Shifter':
+                stat.category = 'identity'
+                stat.stat_type = 'lineage'
+
+        # Check if the character can have this ability
+        if stat.stat_type == 'ability' and not character.can_have_ability(stat.name):
+            self.caller.msg(f"Your character cannot have the {stat.name} ability.")
+            return
+
+        # Special handling for Appearance stat
+        if stat.name == 'Appearance':
+            splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            clan = character.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
+            
+            if splat and splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
+                self.caller.msg("Nosferatu and Samedi vampires always have Appearance 0.")
+                return
+            
+            if splat and splat == 'Shifter':
+                form = character.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
+                if form == 'Crinos':
+                    self.caller.msg("Characters in Crinos form always have Appearance 0.")
+                    return
+
+        try:
+            # Store old values for comparison
+            old_type = character.get_stat('identity', 'lineage', 'Type')
+            old_aspect = character.get_stat('identity', 'lineage', 'Aspect')
+            
+            # Set the stat
+            character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
+            
+            # If character is not approved, set temp value equal to permanent value
+            if not character.db.approved:
+                character.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
+                
+                # Check if we're setting Type or Aspect for a Shifter
+                splat = character.get_stat('other', 'splat', 'Splat')
+                current_type = character.get_stat('identity', 'lineage', 'Type')
+                
+                if splat == 'Shifter':
+                    # If Type changed or Aspect changed for an Ajaba
+                    if (stat.name == 'Type' and old_type != current_type) or \
+                       (stat.name == 'Aspect' and old_aspect != self.value_change and current_type == 'Ajaba'):
+                        self.caller.msg("Debug: Applying shifter stats after Type/Aspect change...")
+                        self.apply_shifter_stats(character)
+
+                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
+            
+        except ValueError as e:
+            self.caller.msg(str(e))
+
+        # Inside func() method, when handling the 'Type' stat:
+        if stat.name == 'Type':
+            splat = character.get_stat('other', 'splat', 'Splat')
+            if splat:
+                splat = splat.lower()
+                
+                if splat == 'shifter':
+                    # Set shifter type
+                    character.set_stat('identity', 'lineage', 'Type', new_value, temp=False)
+                    character.set_stat('identity', 'lineage', 'Type', new_value, temp=True)
+                    # Initialize shifter-specific stats
+                    self.apply_shifter_stats(character)
+                    
+                elif splat == 'mortal+':
+                    # Set mortal+ type
+                    character.set_stat('identity', 'lineage', 'Mortal+ Type', new_value, temp=False)
+                    character.set_stat('identity', 'lineage', 'Mortal+ Type', new_value, temp=True)
+                    # Initialize mortal+-specific stats
+                    self.apply_mortalplus_stats(character)
+                    
+                else:
+                    self.caller.msg(f"|rType setting not applicable for {splat} characters.|n")
+                    return
+
+        # After setting virtues, update Willpower and Road/Humanity
+        if self.stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
+            splat = character.get_stat('other', 'splat', 'Splat', temp=False)
+            if splat and splat.lower() == 'vampire':
+                # Set Willpower equal to Courage
+                courage = character.get_stat('virtues', 'moral', 'Courage', temp=False) or 0
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=False)
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=True)
+                
+                # Calculate Road based on Path
+                enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
+                if enlightenment in PATH_VIRTUES:
+                    virtue1, virtue2 = PATH_VIRTUES[enlightenment]
+                    value1 = character.get_stat('virtues', 'moral', virtue1, temp=False) or 0
+                    value2 = character.get_stat('virtues', 'moral', virtue2, temp=False) or 0
+                    road = value1 + value2
+                    character.set_stat('pools', 'moral', 'Road', road, temp=False)
+                    character.set_stat('pools', 'moral', 'Road', road, temp=True)
+                    self.caller.msg(f"|gRecalculated Willpower to {courage} and Road to {road}.|n")
+                    character.msg(f"|gYour Willpower has been set to {courage} and Road to {road}.|n")
+                    
+            elif splat and splat.lower() in ['mortal', 'mortal+']:
+                # Original Humanity calculation for mortals
+                courage = character.get_stat('virtues', 'moral', 'Courage', temp=False) or 0
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=False)
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=True)
+                
+                conscience = character.get_stat('virtues', 'moral', 'Conscience', temp=False) or 0
+                self_control = character.get_stat('virtues', 'moral', 'Self-Control', temp=False) or 0
+                humanity = conscience + self_control
+                character.set_stat('virtues', 'moral', 'Humanity', humanity, temp=False)
+                character.set_stat('virtues', 'moral', 'Humanity', humanity, temp=True)
+                
+                self.caller.msg(f"|gRecalculated Willpower to {courage} and Humanity to {humanity}.|n")
+                character.msg(f"|gYour Willpower has been set to {courage} and Humanity to {humanity}.|n")
+
+>>>>>>> Stashed changes
     def update_virtues_for_enlightenment(self, character):
         """Update virtues based on enlightenment path"""
         # Initialize virtues if they don't exist
@@ -636,11 +802,29 @@ class CmdSpecialty(MuxCommand):
         if self.character_name.lower().strip() == 'me':
             character = self.caller
         else:
-            character = self.caller.search(self.character_name)
+            # First try exact match
+            character = None
+            # Search for both online and offline characters
+            matches = search_object(self.character_name, 
+                                 typeclass='typeclasses.characters.Character',
+                                 exact=True)
+            
+            if not matches:
+                # If no exact match, try case-insensitive
+                matches = search_object(self.character_name, 
+                                     typeclass='typeclasses.characters.Character')
+                matches = [obj for obj in matches if obj.key.lower() == self.character_name.lower()]
+            
+            if matches:
+                character = matches[0]
+            
+            # If still no match, try alias
+            if not character:
+                character = Character.get_by_alias(self.character_name.lower())
 
-        if not character:
-            self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
-            return
+            if not character:
+                self.caller.msg(f"|rCharacter '{self.character_name}' not found.|n")
+                return
 
         # Fetch the stat definition from the database
         try:

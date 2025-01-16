@@ -1,0 +1,566 @@
+[
+    {
+        "name": "Enemy Ways",
+        "description": "The Corax gains an acute and accurate danger sense. This Gift is taught by one of Grandfather Thunder's Stormcrows.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Open Seal",
+        "description": "With this Gift, the Garou can open nearly any sort of closed or locked physical device. A raccoon-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Raven's Gleaning",
+        "description": "The Corax may tell, at a glance, whether or not a shiny object is worth obtaining. A raven-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Scent of the True Form",
+        "description": "The Philodox is able to scent the truth of those she meets, literally sniffing out an individual's true form. A vulture-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Truth of Gaia",
+        "description": "As judges of the Litany, Philodox have the ability to sense whether others have spoken truth or falsehood. A Gaffling of Falcon teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Word Beyond",
+        "description": "This Gift allows the Corax to create a message out of any available materials while in the Umbra, which can be instinctively understood by other wereravens. One of Coyote's brood teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Morse",
+        "description": "By tapping out his message onto a nearby hard surface, a Corax can make sure that someone out there gets his message. This Gift is taught by a machine-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Persuasion",
+        "description": "This Gift allows a homid to become more persuasive when dealing with others, in such a way that his statements and arguments are imbued with added meaning or credibility. An ancestor-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Voice of the Mimic",
+        "description": "The Corax may perfectly mimic any voice or sound she has ever heard. A mynah-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Carrion's Call",
+        "description": "This Gift helps Corax execute their duties with regard to the slain, leading them to fresh corpses. It is taught by a vulture-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Messenger's Fortitude",
+        "description": "As the Silent Strider Gift, but enabling flight rather than running. Camp: Freebooters (Black Furies). The Garou can run at full speed for three days without rest, food or water.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Razor Feathers",
+        "description": "The Corax's wing-feathers become hard and sharp as steel. This Gift is taught by a steel-spirit, and only functions when the wereraven is in Crinos.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Speech of the World",
+        "description": "This Gift allows Gaia's warriors to read and wield the spirit of speech, bypassing the need to learn different languages and dialects. An ancestor-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Dark Truths",
+        "description": "This Gift allows the Corax to uncover a secret truth or character flaw of an observed subject. A Fly-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Dead Talk",
+        "description": "Sometimes a dead man's last vision just isn't enough. This Gift allows the Corax to interrogate a recently-deceased (no more than 24 hours dead) corpse. It is taught by a vulture-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Eyes of the Eagle",
+        "description": "The Corax's keen eyes easily pierce fog, smoke, clouds, darkness — anything short of a solid object. Eagle-spirits teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Flight of the Swift",
+        "description": "Ravens aren't the fastest fliers out there. This Gift allows a Corax to double their rate of speed. A Swift-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Hummingbird Dart",
+        "description": "The Corax plucks one of her own feathers and hurls it like a dart. A hummingbird-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Attunement",
+        "description": "As the Silent Strider Gift. The Garou may commune with the spirits of a city or town and gain information about the area from them, including rough population, enclaves of Garou or other being and secret tunnels. A rat-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Airt Sense",
+        "description": "As the spirit Charm. The spirit has a natural sense of the 'airts' (directions) of the spirit world, and can travel about without much difficulty. The spirit can create or find spirit tracks at will.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Deceptive Demise",
+        "description": "The Corax uses this Gift to fake her death and distract her enemies. She disappears in a feathery cloud, leaving behind only a bit of blood and ash — but no body. This Gift is taught by a fox-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Flight of Separation",
+        "description": "When the Corax can't outrun an enemy, confusion is the best stratagem. The Corax explodes into an entire murder of ravens, which take off in all directions — but only one is the true wereraven. An avatar of Raven teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Bloody Feather Storm",
+        "description": "Particularly favored by the Tengu of Asia, this Gift causes the wereraven's feathers to rain down on everyone beneath him in a deadly razor-storm. This Gift is taught by a monsoon- or hurricane-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Gauntlet Runner",
+        "description": "The Corax may pass quickly and easily through the Gauntlet. Any Wyld-spirit can teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Gift of Eyes",
+        "description": "The Corax can pass along a vision from an eye they've drunk to any non-Corax they choose. The image is transferred in all its glory and gore, just as the Corax himself first saw it. Raven or one of his spirits teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Moments of Eclipse",
+        "description": "There are times when a Corax must make a near-supreme sacrifice, voluntarily severing his connection to the Sun. Given by Helios reluctantly to his new acquisitions, this Gift allows a Corax to sever his connection to the Sun temporarily.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Portents",
+        "description": "The wereraven may look into the future. A wind-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Theft of Stars",
+        "description": "This Gift renders its target completely unable to see any light derived from a natural source (the sun, moon, or stars, as well as any manner of bioluminescence). Helios's avatar teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Thieving Talons of the Magpie",
+        "description": "As the Ragabash Gift, which the Corax originally taught to the Garou. The Garou can steal the powers of others and use them herself. These powers can be Garou Gifts, spirit Charms, vampiric Disciplines, True Magic or any other such power. Naturally, a magpie-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Spirit Speech",
+        "description": "As the Theurge Gift. This Gift allows the Garou to communicate with encountered spirits. The Garou is thus able to address them whether they wish to be adddressed or not. Of course, nothing (usually) prevents the spirit from ignoring the Theurge or leaving. Any spirit can teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Targeted Heave",
+        "description": "A trick swiped from real buzzards, Targeted Heave may well be the most disgusting weapon in the Scabs' arsenal. When cornered or just feeling ornery, a Buzzard can call upon this Gift and heave up the contents of his stomach — digestive juices and all — at a target up to 10 feet away.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Omens and Signs",
+        "description": "Corax can find symbolic portents in their surroundings without even trying — but this Gift helps. The world is full of omens, after all, but a Corax with this Gift knows where to look for them. This Gift is taught by a Stormcrow.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Sky's Beneficence",
+        "description": "The Corax can accurately drop a package of any sort onto a target from any altitude she can reach. Whether the package is a letter, hand grenade, or a more… natural... offering is up to the wereraven. Any aerial spirit can teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Sky's Shadow",
+        "description": "There's little that is more frustrating than a creeping sensation that you're being watched. This Gift allows a Corax to bestow that feeling on the target of her choice without necessitating that the Corax herself tail her victim. Sometimes the Gift creates the shadow of a large bird that follows the target everywhere; other times, it just imbues a sense of pure paranoia. Any bird spirit can teach this gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Swallow's Return",
+        "description": "This Gift will safely carry a Corax home, even when she doesn't know where 'home' is. A swallow-spirit teaches it.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Taking the Forgotten",
+        "description": "As the Ragabash Gift. The Ragabash with this Gift can steal something from a target, and his victim will forget that she ever possessed the stolen item. A mouse-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Tongues",
+        "description": "As per the Homid Gift. This Gift allows the user to read or write any human language encountered, no matter how ancient or obscure. Galliards often use this Gift when translating ancient texts to revive old legends or compose new songs for moots. This Gift is taught by a Raven-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Wire Sitter",
+        "description": "As the Ragabash Gift: Spider's Song. The Ragabash can steal messages from the Weaver's web, plucking them from the air or eavesdropping as they race through telephone lines. The Ragabash must be aware that a conversation is happening to listen in on it. Spider- and raven-spirits teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Poisoned Flesh",
+        "description": "By calling upon Poisoned Flesh, a Buzzard can taint the meat of a corpse — anything from a roadkill squirrel to a human body — so that it is poisonous. Even a Corax' legendarily tough digestive tract can't do anything with the garbage this gift leaves behind; it's sheer poison.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Larder of the Shrike",
+        "description": "Shrikes are notorious for killing more than they need, then storing the corpses for later use. Shrike-spirits can share the knowledge of the benefits that can accrue from such behavior. Essentially, this Gift allows the Corax to store food — and anything else, like, say, a corpse—in perfect condition for up to a year, so long as the stored item is allowed to hang free in the Corax' 'larder.'",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Mynah's Touch",
+        "description": "The Corax 'borrows' knowledge of a single Garou Gift. Mynah-spirits teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Scrying",
+        "description": "As the Uktena Gift. By staring into a mirror or other reflective surface, the Uktena can witness distant events or spy on rivals. She can follow a comrade's progress into a dangerous ambush or sneak a peek into the Tremere chantry house. Other supernaturals, especially ones with similar abilities, may have defenses against this Gift, which is taught by a fly-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Sun's Guard",
+        "description": "Given to his children by Raven after their great misadventure with Helios, this Gift protects Corax from heat and flames. An avatar of Raven teaches it.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Plague Feather",
+        "description": "Calling upon Plague Feather allows the Buzzard to distill sickness into a single one of his pinfeathers, pluck it, and leave it behind as a trap for the unwary. The first three people to have skin contact with the feather then run the risk of falling terribly ill.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Sense The Unnatural",
+        "description": "As the lupus Gift. Fianna version is Camp: Tuatha de Fionn. The werewolf can sense any unnatural presence and determine its approximate strength and type. Supernatural presences can include magic, spirits, the Wyrm, wraiths and vampires, although it won't pick them out specifically as such.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            3
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Kiss of Helios",
+        "description": "As the Ahroun Gift. The Ahroun can invoke the sun's power to become completely immune to the damaging effects of fire. Additionally, the Ahroun may ignite any portion of his body and keep it burning for extended periods.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    },
+    {
+        "name": "Vulture's Feast",
+        "description": "One of the great advantages of being a carrion eater is that your dinner plate is rarely empty. There's roadkill everywhere just waiting for you to dig in. What happens, however, if you want something a little fresher? Vulture's Feast allows a Corax to rot flesh with a touch, regardless of whether the target meat is dead or alive.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "corax",
+        "splat": "Fera"
+    }
+]

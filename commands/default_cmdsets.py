@@ -25,16 +25,25 @@ from commands.CmdHurt import CmdHurt
 from commands.CmdHeal import CmdHeal
 from commands.CmdLanguage import CmdLanguage
 import evennia.contrib.game_systems.mail as mail
-from  commands.CmdRoll import CmdRoll
+from commands.CmdRoll import CmdRoll
 from commands.CmdSay import CmdSay
-from commands.CmdEmit import CmdEmit
+from commands.CmdEmit import CmdEmit, CmdPemit, CmdRemit
 from commands.CmdNotes import CmdNotes
+<<<<<<< Updated upstream
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.building import CmdSetRoomResources, CmdSetRoomType, CmdSetUmbraDesc, CmdSetGauntlet, CmdUmbraInfo
 #from commands.requests import CmdRequests
+=======
+from commands.building import (
+    CmdSetRoomResources, CmdSetRoomType, CmdSetUmbraDesc, 
+    CmdSetGauntlet, CmdUmbraInfo, CmdSetHousing, CmdManageBuilding, 
+    CmdSetLock
+)
+
+>>>>>>> Stashed changes
 from commands.CmdUmbraInteraction import CmdUmbraInteraction
 from commands.communication import CmdMeet, CmdPlusIc, CmdPlusOoc, CmdOOC, CmdSummon, CmdJoin
-from commands.admin import CmdApprove, CmdUnapprove
+from commands.admin import CmdApprove, CmdUnapprove, CmdAdminLook, CmdTestLock
 from commands.CmdPump import CmdPump
 from commands.CmdSpendGain import CmdSpendGain
 from commands.where import CmdWhere
@@ -44,15 +53,30 @@ from commands.CmdShift import CmdShift
 from commands.CmdStaff import CmdStaff
 from commands.unfindable import CmdUnfindable
 from commands.CmdChangelingInteraction import CmdChangelingInteraction
+
 from commands.bbs.bbs_cmdset import BBSCmdSet
 from commands.oss.oss_cmdset import OssCmdSet
+
 from commands.CmdWeather import CmdWeather
 from commands.CmdFaeDesc import CmdFaeDesc
-from commands.CmdLook import CmdLook
 from commands.CmdEvents import CmdEvents
 from commands.jobs.jobs_cmdset import JobSystemCmdSet
 from commands.CmdUnpuppet import CmdUnpuppet
 from commands.CmdPage import CmdPage
+from commands.CmdFinger import CmdFinger
+from commands.CmdAlias import CmdAlias
+from commands.CmdInfo import CmdInfo
+from commands.CmdLFRP import CmdLFRP
+<<<<<<< Updated upstream
+from commands.comms import CmdChannel
+=======
+from evennia.commands.default import cmdset_character, cmdset_account
+from commands.CmdXP import CmdXP
+from commands.CmdXPCost import CmdXPCost
+from commands.CmdWho import CmdWho
+from evennia.commands.default import comms
+from commands.housing import CmdRent, CmdVacate, CmdSetApartmentDesc, CmdSetApartmentExit, CmdManageHome, CmdUpdateApartments, CmdListApartments, CmdUpdateExits
+>>>>>>> Stashed changes
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -62,7 +86,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
 
     key = "DefaultCharacter"
-
+    priority = 1
     def at_cmdset_creation(self):
         """
         Populates the cmdset
@@ -75,12 +99,12 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdShortDesc())
         self.add(CmdPose())
         self.add(CmdStats())
+        self.add(CmdSpecialty())
         self.add(CmdEmit())
         self.add(BBSCmdSet)
         self.add(OssCmdSet)
         self.add(CmdFaeDesc())
 
-        self.add(CmdSpecialty())
         self.add(CmdSheet())
         self.add(CmdInfo())
         self.add(CmdHurt())
@@ -92,7 +116,8 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdShift())
         self.add(CmdWeather())
         self.add(CmdChangelingInteraction())
-        self.add(CmdLook())
+        self.add(CmdAdminLook())
+        self.add(CmdInfo())
 
         self.add(CmdUmbraInteraction())
         self.add(CmdMeet())
@@ -104,13 +129,32 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(CmdWhere())
         self.add(CmdCharGen())
         self.add(CmdSelfStat())
+<<<<<<< Updated upstream
         self.add(CmdStaff())
         self.add(CmdUnfindable())
         self.add(JobSystemCmdSet)
         self.add(CmdUnpuppet())
         self.add(CmdSubmit())
+        self.add(CmdFinger())
+        self.add(CmdAlias())
+
+        self.add(CmdLFRP())
+        self.add(CmdChannel())
 
 class AccountCmdSet(default_cmds.AccountCmdSet):
+=======
+        self.add(CmdXP())
+        self.add(CmdXPCost())
+        self.add(CmdWho())
+        self.add(CmdRent())
+        self.add(CmdVacate())
+        self.add(CmdSetApartmentDesc())
+        self.add(CmdSetApartmentExit())
+        self.add(CmdManageHome())
+        self.add(CmdSetLock())
+        
+class AccountCmdSet(cmdset_account.AccountCmdSet):
+>>>>>>> Stashed changes
     """
     This is the cmdset available to the Account at all times. It is
     combined with the `CharacterCmdSet` when the Account puppets a
@@ -141,7 +185,20 @@ class AccountCmdSet(default_cmds.AccountCmdSet):
         self.add(CmdJoin())
         self.add(CmdApprove())
         self.add(CmdUnapprove())
+<<<<<<< Updated upstream
         self.add(CmdPage())
+        self.add(CmdFinger())
+        self.add(CmdSpecialty())
+=======
+        self.add(CmdUnpuppet())
+        self.add(comms.CmdChannel())
+        self.add(CmdSetHousing())
+        self.add(CmdManageBuilding())
+        self.add(CmdUpdateApartments())
+        self.add(CmdListApartments())
+        self.add(CmdUpdateExits())
+        self.add(CmdTestLock())
+>>>>>>> Stashed changes
 
 class UnloggedinCmdSet(default_cmds.UnloggedinCmdSet):
     """

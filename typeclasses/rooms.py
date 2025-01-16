@@ -1,14 +1,16 @@
 from evennia import DefaultRoom
-from evennia.utils.utils import make_iter
+from evennia.utils.utils import make_iter, justify
 from evennia.utils.ansi import ANSIString
-from evennia.utils.search import search_channel
+from evennia.utils import ansi
 from world.wod20th.utils.ansi_utils import wrap_ansi
 from world.wod20th.utils.formatting import header, footer, divider
 from datetime import datetime
 import random
+from evennia.utils.search import search_channel
 
 class RoomParent(DefaultRoom):
 
+ 
     def get_display_name(self, looker, **kwargs):
         """
         Get the name to display for the character.
@@ -120,11 +122,11 @@ class RoomParent(DefaultRoom):
                 else:
                     shortdesc_str ="|h|xType '|n+shortdesc <desc>|h|x' to set a short description.|n"
 
-                if len(ANSIString(shortdesc_str).strip()) > 60:
-                    shortdesc_str = ANSIString(shortdesc_str)[:60]
+                if len(ANSIString(shortdesc_str).strip()) > 55:
+                    shortdesc_str = ANSIString(shortdesc_str)[:55]
                     shortdesc_str = ANSIString(shortdesc_str[:-3] + "...|n")
                 else:
-                    shortdesc_str = ANSIString(shortdesc_str).ljust(60, ' ')
+                    shortdesc_str = ANSIString(shortdesc_str).ljust(55, ' ')
                 
                 string += ANSIString(f" {character.get_display_name(looker).ljust(12)} {ANSIString(idle_time).rjust(7)}|n {shortdesc_str}\n")
 
@@ -146,7 +148,7 @@ class RoomParent(DefaultRoom):
                 string +=" "+  ANSIString(f"{obj.get_display_name(looker)}").ljust(25) + ANSIString(f"{shortdesc}") .ljust(53, ' ') + "\n"
 
         # List all exits
-        exits = [ex for ex in self.contents if ex.destination]
+        exits = [ex for ex in self.contents if ex.destination and ex.access(looker, "view")]
         if exits:
             direction_strings = []
             exit_strings = []
@@ -265,13 +267,17 @@ class RoomParent(DefaultRoom):
         elif modifier > 0:
             self.msg_contents("The Gauntlet seems to thicken in this area...")
 
-    def peek_umbra(self, character):
+    def modify_gauntlet(self, modifier, duration=0):
         """
-        Allows a character to peek into the Umbra.
-        """
-        difficulty = self.get_gauntlet_difficulty() + 2
-        success = self.roll_gnosis(character, difficulty)
+        Temporarily modifies the Gauntlet difficulty of the room.
         
+        Args:
+            modifier (int): The amount to modify the Gauntlet by (negative numbers lower it)
+            duration (int): How long in seconds the modification should last (0 for permanent)
+        """
+        self.db.temp_gauntlet_modifier = modifier
+        
+
         if success[0] > 0:
             if self.db.umbra_desc:
                 # Format the Umbra description
@@ -283,7 +289,31 @@ class RoomParent(DefaultRoom):
             else:
                 return "You successfully pierce the Gauntlet, but there's nothing unusual to see in the Umbra here."
         else:
-            return "You fail to pierce the Gauntlet and see into the Umbra."
+            self.db.temp_gauntlet_expiry = None
+        
+        # Announce the change if it's significant
+        if modifier < 0:
+            self.msg_contents("The Gauntlet seems to thin in this area...")
+        elif modifier > 0:
+            self.msg_contents("The Gauntlet seems to thicken in this area...")
+
+    def peek_umbra(self, looker):
+        """Allow a character to peek into the Umbra version of the room."""
+        # Use the same return_appearance method but with peek_umbra flag
+        appearance = self.return_appearance(looker, peek_umbra=True)
+        
+        # Extract just the description part (between header and first divider)
+        lines = appearance.split('\n')
+        desc_lines = []
+        for line in lines[2:]:  # Skip header lines
+            if line.startswith('---'):  # Stop at first divider
+                break
+            desc_lines.append(line)
+        
+        header = "-" * 30 + "<  Umbra Vision >" + "-" * 31
+        footer = "-" * 78
+        
+        return f"\n{header}\n\n{''.join(desc_lines)}\n{footer}"
 
     def format_description(self, desc):
         """
@@ -307,8 +337,16 @@ class RoomParent(DefaultRoom):
                     formatted_lines.append(wrap_ansi('    ' + line.strip(), width=76))
             
             formatted_paragraphs.append('\n'.join(formatted_lines))
+
         
-        return '\n\n'.join(formatted_paragraphs)
+        # Rejoin lines and handle other formatting
+        desc = '\n'.join(lines)
+        desc = desc.replace('%R', '\n')
+        desc = desc.replace('%r', '\n')
+        
+        # Split into paragraphs and rejoin with proper spacing
+        paragraphs = [p.strip() for p in desc.split('\n') if p.strip()]
+        return '\n\n'.join(paragraphs)
 
     def msg_contents(self, text=None, exclude=None, from_obj=None, mapping=None, **kwargs):
         """
@@ -422,10 +460,7 @@ class RoomParent(DefaultRoom):
         return successes, ones
     
     def initialize(self):
-        """
-        Initialize default attributes if they haven't been set yet.
-        This method can be called on already created objects.
-        """
+        """Initialize default attributes."""
         if not self.attributes.has("initialized"):
             # Initialize attributes
             self.db.location_type = None  # "District", "Sector", "Neighborhood", or "Site"
@@ -438,6 +473,30 @@ class RoomParent(DefaultRoom):
             self.db.roll_log = []  # Initialize an empty list for roll logs
             self.db.initialized = True  # Mark this room as initialized
             self.save()  # Save immediately to avoid ID-related issues
+            
+            # Initialize housing data with proper structure
+            self.db.housing_data = {
+                'is_housing': False,
+                'max_apartments': 0,
+                'current_tenants': {},
+                'apartment_numbers': set(),
+                'required_resources': 0,
+                'building_zone': None,
+                'connected_rooms': set(),
+                'is_lobby': False
+            }
+            
+            # Initialize home data
+            self.db.home_data = {
+                'locked': False,
+                'keyholders': set(),
+                'owner': None
+            }
+            
+            # Set resources as integer instead of dict
+            self.db.resources = 0
+            
+            self.db.initialized = True
         else:
             # Ensure roll_log exists even for previously initialized rooms
             if not hasattr(self.db, 'roll_log'):
@@ -451,6 +510,11 @@ class RoomParent(DefaultRoom):
         self.db.unfindable = False  # Add this line
         self.db.fae_desc = ""
         self.db.roll_log = []  # Initialize empty roll log
+        self.db.home_data = {
+            'locked': False,
+            'keyholders': set(),
+            'owner': None
+        }
 
     def set_as_district(self):
         self.initialize()
@@ -636,6 +700,89 @@ class RoomParent(DefaultRoom):
     def set_fae_description(self, description):
         """Set the fae description of the room."""
         self.db.fae_desc = description
+
+    def is_housing_area(self):
+        """Check if this is a housing area."""
+        return (hasattr(self.db, 'roomtype') and 
+                self.db.roomtype in [
+                    "Apartment Building", "Apartments", 
+                    "Condos", "Condominiums",
+                    "Residential Area", "Residential Neighborhood", 
+                    "Neighborhood"
+                ])
+
+    def is_apartment_building(self):
+        """Check if this is an apartment building."""
+        return (hasattr(self.db, 'roomtype') and 
+                self.db.roomtype in [
+                    "Apartment Building", "Apartments", 
+                    "Condos", "Condominiums"
+                ])
+
+    def is_residential_area(self):
+        """Check if this is a residential neighborhood."""
+        return (hasattr(self.db, 'roomtype') and 
+                self.db.roomtype in [
+                    "Residential Area", "Residential Neighborhood", 
+                    "Neighborhood"
+                ])
+
+    def setup_housing(self, housing_type="Apartment Building", max_units=20):
+        """Set up room as a housing area."""
+        # Set room type
+        self.db.roomtype = housing_type
+        
+        # Initialize housing data
+        self.db.housing_data = {
+            'is_housing': True,
+            'max_apartments': max_units,
+            'current_tenants': {},
+            'apartment_numbers': set(),
+            'is_lobby': True
+        }
+        
+        # Force room appearance update
+        self.at_object_creation()
+
+    def get_available_housing_types(self):
+        """Get available housing types based on area type."""
+        from commands.housing import CmdRent
+        if self.is_apartment_building():
+            return CmdRent.APARTMENT_TYPES
+        elif self.is_residential_area():
+            return CmdRent.RESIDENTIAL_TYPES
+        return {}
+
+    def get_housing_cost(self, unit_type):
+        """Calculate housing cost based on area resources and unit type."""
+        housing_types = self.get_available_housing_types()
+        if unit_type in housing_types:
+            base_resources = self.db.resources or 0
+            return max(1, base_resources + housing_types[unit_type]['resource_modifier'])
+        return 0
+
+    def list_available_units(self):
+        """Return formatted list of available units and their costs."""
+        if not self.is_housing_area():
+            return "This is not a housing area."
+            
+        housing_types = self.get_available_housing_types()
+        if not housing_types:
+            return "No housing types available."
+            
+        from evennia.utils import evtable
+        table = evtable.EvTable(
+            "|wType|n", 
+            "|wRooms|n", 
+            "|wRequired Resources|n", 
+            border="table"
+        )
+        
+        for rtype, data in housing_types.items():
+            cost = self.get_housing_cost(rtype)
+            table.add_row(rtype, data['rooms'], cost)
+            
+        return str(table)
 
 class Room(RoomParent):
     pass

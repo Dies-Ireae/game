@@ -1,4 +1,4 @@
-r"""
+"""
 Evennia settings file.
 
 The available options are found in the default settings file found
@@ -27,6 +27,9 @@ put secret game- or server-specific settings in secret_settings.py.
 # Use the defaults from Evennia unless explicitly overridden
 from evennia.settings_default import *
 import os
+from evennia.contrib.base_systems import color_markups
+SITE_ID = 1  # This tells Django which site object to use
+DEBUG = True
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 ######################################################################
@@ -38,7 +41,6 @@ SITE_ID = 1
 DEFAULT_CMDSETS = [
     'commands.mycmdset.MyCmdset'
 ]
-
 
 TELNET_PORTS = [4201]  
 WEBSERVER_PORTS = [(4200, 4005)] 
@@ -58,13 +60,35 @@ else:
 ALLOWED_HOSTS = ['beta.diesiraemu.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://beta.diesiraemu.com', 'http://beta.diesiraemu.com']
 """
-INSTALLED_APPS += ["world.wod20th", 'world.jobs']  # Add your app to the list of installed apps
+
+BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
+LOCK_FUNC_MODULES = [
+    "evennia.locks.lockfuncs",
+    "world.wod20th.locks", 
+]
+MAX_NR_CHARACTERS = 5
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:4005', 'http://localhost:4000', 'https://diesiraemu.com']
+
+COLOR_ANSI_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_EXTRA_MAP
+COLOR_XTERM256_EXTRA_FG = color_markups.MUX_COLOR_XTERM256_EXTRA_FG
+COLOR_XTERM256_EXTRA_BG = color_markups.MUX_COLOR_XTERM256_EXTRA_BG
+COLOR_XTERM256_EXTRA_GFG = color_markups.MUX_COLOR_XTERM256_EXTRA_GFG
+COLOR_XTERM256_EXTRA_GBG = color_markups.MUX_COLOR_XTERM256_EXTRA_GBG
+COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP = color_markups.MUX_COLOR_ANSI_XTERM256_BRIGHT_BG_EXTRA_MAP
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diesiraemu.com']
+WEBSOCKET_CLIENT_URL = None  # Let Evennia handle this automatically
+
+INSTALLED_APPS += (
+    "world.wod20th",
+    "wiki",
+    "world.jobs",
+)
+
 BASE_ROOM_TYPECLASS = "typeclasses.rooms.RoomParent"
 BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"
-LOCK_FUNC_MODULES = (
-    "evennia.locks.lockfuncs",
-    "world.wod20th.locks",
-)
+
   # Change 8001 to your desired websocket port
 ######################################################################
 # Settings given in secret_settings.py override those in this file.
@@ -75,6 +99,7 @@ except ImportError:
     print("secret_settings.py file not found or failed to import.")
 
 # Add or update the command alias mapping in the settings file
+
 
 """
 Color markups
@@ -235,4 +260,3 @@ AT_SERVER_STARTSTOP_MODULE = "world.wod20th.scripts"
 
 from world.wod20th.locks import LOCK_FUNCS
 
-BASE_CHANNEL_TYPECLASS = "typeclasses.channels.Channel"

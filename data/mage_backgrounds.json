@@ -192,7 +192,7 @@
         "values": [1, 2, 3, 4, 5]
     },
     {
-        "name": "Rank",
+        "name": "BG-Rank",
         "description": "A title of importance among the Masses.",
         "game_line": "Various",
         "category": "backgrounds",

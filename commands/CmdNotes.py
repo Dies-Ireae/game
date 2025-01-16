@@ -12,6 +12,7 @@ from evennia import logger
 from evennia import search_object
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from typeclasses.characters import Note
 
 class CmdNotes(MuxCommand):
     """
@@ -95,43 +96,94 @@ class CmdNotes(MuxCommand):
             # View a specific note
             self.view_note()
 
+    def parse_date(self, date_value):
+        """Helper method to parse dates from various formats."""
+        if isinstance(date_value, datetime):
+            return date_value
+        elif isinstance(date_value, str):
+            try:
+                return datetime.fromisoformat(date_value)
+            except (ValueError, TypeError):
+                return None
+        return None
+
     def list_notes(self):
-        notes = self.caller.get_all_notes()
-        if not notes:
+        """List all notes for the character."""
+        notes_dict = self.caller.attributes.get('notes', {})
+        if not notes_dict:
             self.caller.msg("You don't have any notes.")
             return
 
         width = 78
         notes_by_category = defaultdict(list)
-        for note in notes:
-            notes_by_category[note.category].append(note)
-
-        output = header(f"Notes for {self.caller.name}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
-
-        for category, category_notes in notes_by_category.items():
-            # Category header in white
-            output += f"|w{category}|n ({len(category_notes)})\n"
-            
-            for note in category_notes:
-                # Note header with ID
-                output += f"* #{note.note_id} {note.name}"
-                
-                # Add status if private/pending
-                if hasattr(note, 'is_public') and not note.is_public:
-                    output += " (PRIVATE"
-                    if not note.is_approved:
-                        output += ", PENDING"
-                    output += ")"
-                output += "\n"
-                
-                # Note text indented
-                text_lines = note.text.split('\n')
-                for line in text_lines:
-                    output += "    " + line + "\n"
-
-        output += footer(width=width, fillchar="|r=|n")
         
-        self.caller.msg(output)
+        try:
+            # Process each note from the dictionary
+            for note_id, note_data in notes_dict.items():
+                if not note_data:
+                    continue
+                
+                # Ensure note_data is a dictionary
+                if hasattr(note_data, 'get'):
+                    note_data = dict(note_data)
+                else:
+                    continue
+                    
+                # Create Note object with all fields
+                note = Note(
+                    name=note_data.get('name', 'Unnamed Note'),
+                    text=note_data.get('text', ''),
+                    category=note_data.get('category', 'General'),
+                    is_public=note_data.get('is_public', False),
+                    is_approved=note_data.get('is_approved', False),
+                    approved_by=note_data.get('approved_by'),
+                    approved_at=self.parse_date(note_data.get('approved_at')),
+                    created_at=self.parse_date(note_data.get('created_at')),
+                    updated_at=self.parse_date(note_data.get('updated_at')),
+                    note_id=note_id
+                )
+                
+                notes_by_category[note.category].append(note)
+
+            if not notes_by_category:
+                self.caller.msg("You don't have any valid notes.")
+                return
+
+            output = header(f"Notes for {self.caller.name}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
+
+            # Sort categories alphabetically
+            for category in sorted(notes_by_category.keys()):
+                category_notes = notes_by_category[category]
+                # Sort notes by ID within each category
+                category_notes.sort(key=lambda x: int(x.note_id))
+                
+                # Category header in white
+                output += f"\n|w{category}|n ({len(category_notes)})\n"
+                
+                for note in category_notes:
+                    # Note header with ID
+                    output += f"* #{note.note_id} {note.name}"
+                    
+                    # Add status if private/pending
+                    if not note.is_public:
+                        output += " (PRIVATE"
+                        if not note.is_approved:
+                            output += ", PENDING"
+                        output += ")"
+                    output += "\n"
+                    
+                    # Note text indented and truncated
+                    text_preview = note.text[:60] + "..." if len(note.text) > 60 else note.text
+                    text_lines = text_preview.split('\n')
+                    for line in text_lines:
+                        output += "    " + line + "\n"
+
+            output += footer(width=width, fillchar="|r=|n")
+            self.caller.msg(output)
+            
+        except Exception as e:
+            self.caller.msg(f"Error listing notes: {e}")
+            logger.log_err(f"Error in list_notes: {e}")
 
     def create_note(self):
         """Create a new note."""
@@ -190,10 +242,31 @@ class CmdNotes(MuxCommand):
             target = self.caller
             note_id = self.args
 
-        # Only proceed if not wildcard
-        note = target.get_note(note_id)
-        if not note:
+        # Get notes dictionary
+        notes_dict = target.attributes.get('notes', {})
+        note_data = notes_dict.get(str(note_id))
+        
+        if not note_data:
             self.caller.msg("No note with that ID exists.")
+            return
+
+        # Create Note object
+        if hasattr(note_data, 'get'):
+            note_data = dict(note_data)
+            note = Note(
+                name=note_data.get('name', 'Unnamed Note'),
+                text=note_data.get('text', ''),
+                category=note_data.get('category', 'General'),
+                is_public=note_data.get('is_public', False),
+                is_approved=note_data.get('is_approved', False),
+                approved_by=note_data.get('approved_by'),
+                approved_at=self.parse_date(note_data.get('approved_at')),
+                created_at=self.parse_date(note_data.get('created_at')),
+                updated_at=self.parse_date(note_data.get('updated_at')),
+                note_id=note_id
+            )
+        else:
+            self.caller.msg("Invalid note data format.")
             return
 
         # Check permissions
@@ -205,41 +278,84 @@ class CmdNotes(MuxCommand):
 
     def list_character_notes(self, target):
         """List all viewable notes for a character."""
-        notes = target.get_all_notes()
-        if not notes:
+        notes_dict = target.attributes.get('notes', {})
+        if not notes_dict:
             self.caller.msg(f"{target.name} has no notes.")
             return
 
         width = 78
         notes_by_category = defaultdict(list)
-        for note in notes:
-            # Only show public notes or if viewer is staff
-            if note.is_public or self.caller.check_permstring("Builders") or target == self.caller:
-                notes_by_category[note.category].append(note)
+        is_staff = self.caller.check_permstring("Builders")
+        
+        try:
+            # Process each note from the dictionary
+            for note_id, note_data in notes_dict.items():
+                if not note_data:
+                    continue
+                
+                # Ensure note_data is a dictionary
+                if hasattr(note_data, 'get'):
+                    note_data = dict(note_data)
+                else:
+                    continue
+                    
+                # Create Note object with all fields
+                note = Note(
+                    name=note_data.get('name', 'Unnamed Note'),
+                    text=note_data.get('text', ''),
+                    category=note_data.get('category', 'General'),
+                    is_public=note_data.get('is_public', False),
+                    is_approved=note_data.get('is_approved', False),
+                    approved_by=note_data.get('approved_by'),
+                    approved_at=self.parse_date(note_data.get('approved_at')),
+                    created_at=self.parse_date(note_data.get('created_at')),
+                    updated_at=self.parse_date(note_data.get('updated_at')),
+                    note_id=note_id
+                )
+                
+                # Only show notes if they're public or viewer is staff/self
+                if note.is_public or is_staff or target == self.caller:
+                    notes_by_category[note.category].append(note)
 
-        if not any(notes_by_category.values()):
-            self.caller.msg(f"No viewable notes found for {target.name}.")
-            return
+            if not notes_by_category:
+                self.caller.msg(f"No viewable notes found for {target.name}.")
+                return
 
-        output = header(f"Notes for {target.name}", width=width, fillchar="|r=|n")
+            output = header(f"Notes for {target.name}", width=width, color="|y", fillchar="|r=|n", bcolor="|b")
 
-        for category, category_notes in notes_by_category.items():
-            if category_notes:  # Only show categories that have viewable notes
-                # Just show the category name in cyan, similar to list_notes()
-                output += f"|w{category}|n (#" + str(len(category_notes)) + ")\n"
+            # Sort categories alphabetically
+            for category in sorted(notes_by_category.keys()):
+                category_notes = notes_by_category[category]
+                # Sort notes by ID within each category
+                category_notes.sort(key=lambda x: int(x.note_id))
+                
+                # Category header in white
+                output += f"\n|w{category}|n ({len(category_notes)})\n"
                 
                 for note in category_notes:
-                    truncated_text = note.text[:60] + "..." if len(note.text) > 60 else note.text
-                    wrapped_text = wrap_ansi(truncated_text, width=width-4)
+                    # Note header with ID
+                    output += f"* #{note.note_id} {note.name}"
                     
-                    visibility = "|gPUBLIC|n" if note.is_public else "|rPRIVATE|n"
-                    approved = "|gAPPROVED|n" if note.is_approved else "|rPENDING|n"
-                    note_header = f"|y* |w#{note.note_id}|n {note.name} ({visibility}, {approved})"
-                    output += note_header + "\n"
-                    output += "    " + wrapped_text.replace("\n", "\n    ") + "\n\n"
+                    # Add status if private/pending
+                    if not note.is_public:
+                        output += " (PRIVATE"
+                        if not note.is_approved:
+                            output += ", PENDING"
+                        output += ")"
+                    output += "\n"
+                    
+                    # Note text indented and truncated
+                    text_preview = note.text[:60] + "..." if len(note.text) > 60 else note.text
+                    text_lines = text_preview.split('\n')
+                    for line in text_lines:
+                        output += "    " + line + "\n"
 
-        output += footer(width=width, fillchar="|r=|n")
-        self.caller.msg(output)
+            output += footer(width=width, fillchar="|r=|n")
+            self.caller.msg(output)
+            
+        except Exception as e:
+            self.caller.msg(f"Error listing notes: {e}")
+            logger.log_err(f"Error in list_character_notes: {e}")
 
     def list_notes_by_category(self, category):
         """List all notes in a specific category."""
@@ -502,3 +618,4 @@ class CmdNotes(MuxCommand):
 
         output += footer(width=width, fillchar="|r=|n")
         self.caller.msg(output)
+
