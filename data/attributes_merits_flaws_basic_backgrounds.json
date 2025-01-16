@@ -105,12 +105,12 @@
         "values": [1, 2, 3, 4, 5]
     },
     {
-        "name": "Generation",
+        "name": "BG-Generation",
         "description": "How far removed from Caine the character is.",
         "game_line": "Vampire: The Masquerade",
         "category": "backgrounds",
         "stat_type": "background",
-        "values": [1, 2, 3, 4, 5],
+        "values": [1, 2, 3, 4, 5, 6],
         "splat": "Vampire"
     },
     {
@@ -1005,6 +1005,14 @@
         "category": "merits",
         "stat_type": "supernatural",
         "values": [1, 2, 3, 4]
+    },
+    {
+        "name": "Universal Language",
+        "description": "You can speak any language, and understand any language. This is only available to Kami, certain Bygones, or characters who have been approved to have this ability",
+        "game_line": "All",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5]
     },
     {
         "name": "Negative Wild Talent",

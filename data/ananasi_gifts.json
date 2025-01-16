@@ -1,0 +1,878 @@
+[
+    {
+        "name": "Balance",
+        "description": "As the Stargazer Gift. The Stargazer is able to walk across any ledge, rope, etc., no matter how thin or slippery. Wind-spirits teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Cling",
+        "description": "As the Uktena Gift: Spirit of the Lizard. The werewolf's hands and feet spout hundreds of tiny hooks, allowing her to climb across or cling to any surface — even sheer horizontal surfaces and ceilings. A gecko-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Many Eyes",
+        "description": "The Ananasi can see in 360 degrees around herself. Those looking directly at the werespider see nothing out of the ordinary, but if glimpsed from the corner of the eye, the Ananasi appears to have eyes all around her head.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Blood of Pain",
+        "description": "The Hatar turns her blood into debilitating poison.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Wyrmling Kinship",
+        "description": "The Hatar can convince Wyrm-creatures that she is an ally or someone of no importance.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Inspire",
+        "description": "As the Black Fury Gift: Breath of the Wyld. As the Furies see it, the problem with most humans (and some Garou) is that they have forgotten that the energy of Creation is nourishing, refreshing and ever present. With this Gift, the Black Fury may instill a feeling of vitality and life in a living being. A spirit servant of Pegasus teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Mother's Touch",
+        "description": "As the Theurge Gift. The Garou is able to heal the wounds of any living creature, aggravated or otherwise, simply by laying hands over the afflicted area. The Garou may not heal herself, spirits or the undead with this Gift. A bear- or unicorn-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Illusion of Size",
+        "description": "As the Shadow Lord Gift: Icy Chill of Despair. The Shadow Lord with this Gift can appear to grow larger and more imposing, becoming a terrible, shadowy version of herself. This change in aspect can severely intimidate any onlookers. A Stormcrow teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Open Seal",
+        "description": "With this Gift, the Garou can open nearly any sort of closed or locked physical device. A raccoon-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Curse of the Great Web",
+        "description": "The Viskr makes the process of entering the Umbra more difficult for a single individual.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Shroud",
+        "description": "As the Uktena Gift. The Garou can create a field of inky blackness through which only she can see. A night-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Alter Mood",
+        "description": "The Wyrsta can enhance or dampen the mood of a single individual, making that person elated rather than just happy, or muting utter despair into simple sadness.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Beastmind",
+        "description": "The Garou can reduce the mental faculties of his victim to that of an animal for a short time. An avatar of Griffin teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Bind",
+        "description": "The Ananasi with this Gift is able to attach two objects together by means of a small invisible bond. The bond between the objects cannot easily be broken.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Web Haven",
+        "description": "The Damhàn creates a haven for the night, usually within their normal dwelling as an added level of security. This webbing anchors in the material world as well as in the Umbra, and works primarily as an early warning alarm against potential attacks and as a warning that potential meals are nearby. This web must be spun, but it does not appear as a regular web unless the Ananasi wants it to. It remains invisible to mundane senses, blending into the background.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Web of Smoke",
+        "description": "This Gift creates a simple trap made from webbing. Once the webbing is disturbed, it dissolves into a thick, noxious black smoke, which obscures the vision and smells worse than a hundred or so rotted eggs. While not effective as a weapon, it has stopped many creatures from getting too far into an Ananasi's lair.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Scent of Sweet Honey",
+        "description": "As the Bone Gnawer Gift. A target the Garou touched at some point during the last hour begins to exude a wonderfully sweet aroma, and becomes slightly sticky to the touch. All manner of vermin quickly appear and coat the victim. The resulting coat of gnats, flies, bees and beetles crawls, stings, and generally impairs vision and hearing. Insect-spirits teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Nimbleness",
+        "description": "The Kumo may make extraordinary leaps and jumps. This Gift is taught by a flea-spirit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Shadow Step",
+        "description": "The Kumo seems to disappear and reappear in another location, while in reality she has not moved at all. A spirit minion of Nareau teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Spider Scurry",
+        "description": "As the homid Gift: City Running Called Climb Like an Ape in previous versions. Garou with this Gift find that moving vertically is just as easy as moving horizontally; whether they are walking along a sidewalk, climbing stairs, or scaling the side of a building, their pace doesn't change in the slightest, nor do they tire out more rapidly.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Shadow Sway",
+        "description": "The Kumo seems to blink from one location to another; in reality, she hasn't moved at all. A spirit-minion of Nareau teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            1
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Hand Fangs",
+        "description": "The Ananasi's \"hands\" develop sharp, fang-like points which may be used to inject one dose of venom per hand into a victim.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Man-Spider Form",
+        "description": "Through extensive refinement of her shapeshifting capabilities, the Ananasi learns to take on a \"near-human\" form. This Araneid form darkens the Ananasi's skin and spots it with coarse, bristly hair. Her eyes take on a reddish sheen, and her fingers terminate in small, sharp claws, while her reflexes are dramatically improved.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Replenishment of the Flesh",
+        "description": "The Ananasi may summon spiders and insects to join with her flesh, healing her. She devours the insects, and assimilates the spiders.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Spines",
+        "description": "As the metis Gift: Gift of the Porcupine. When using this Gift, the werewolf undergoes a startling transformation. Her fur becomes elongated, bristly and sharp like the quills of a porcupine. This change makes her an even more fearsome killing machine. A werewolf must be in Crinos, Hispo or Lupus form to use this Gift. Porcupine teaches this Gift, and he has a great fondness for metis.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Beneath Notice",
+        "description": "The Tenere can make one object or a small group of objects blend into the surrounding area.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Breath of Ananasa",
+        "description": "The werespider creates an air pocket that provides her with a few minutes of breathable air.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Blood of Illusion",
+        "description": "Similar to Blood of Pain, the Hatar may transform her blood into a hallucinogenic toxin at will.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Call of the Wyrm",
+        "description": "As the Galliard Gift, this Gift attracts Wyrm-creatures to the Ananasi, often used to bait an ambush. This dangerous Gift actually attracts creatures of the Wyrm. Galliards typically use the Call to bait an ambush or to flush prey from hiding. Any spirit servant of Gaia can teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Arachnophobia",
+        "description": "The Kumoti may inflict an irrational fear of spiders on her victim.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Insight of the Mother",
+        "description": "As the Theurge Gift: Sight From Beyond, the Ananasi receives prophetic visions. When danger stalks the Garou or momentous events are in the offing, visions begin striking the Garou without warning. The nature of the danger is veiled in metaphor — a powerful vampire may appear in the Theurge's dream as a bloody skeleton, while an impending battle might be heralded by dreams of carrion crows. Cross-spirits teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Hydraulic Strength",
+        "description": "As the Level Four general Ananasi Gift. Myrmidons alone may buy this Gift at Level Two. The Ananasi can metabolize the blood she drinks to dramatically increase her strength.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "True Fear",
+        "description": "As the Ahroun Gift. The Ananasi can display the true extent of her power, scaring one chosen foe into quiescence for a number of turns. The Ahroun can display the true extent of her power, scaring one chosen foe into quiescence for a number of turns. Spirits of fear teach this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Mindspeak",
+        "description": "As the Galliard Gift, the Ananasi can place characters into silent communion. By invoking the power of waking dreams, the Garou can place any chosen characters into silent communion. A Chimerling teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Minor Unweaving",
+        "description": "The Viskr may negate a spell, Gift, or other actively-used supernatural power by Unweaving the effect.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Blinding Spit",
+        "description": "If the Ananasi hits her victim's face with her venomous spittle, she blinds her target temporarily.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Visceral Agony",
+        "description": "As the Black Fury Gift, the Ananasi's claws become barbed and venomous, inflicting crippling pain. The werewolf's claws change to barbed, wicked talons dripping with black venom. While wounds caused by these claws cause no extra damage, the pain alone they inflict is crippling. A pain-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Camouflage",
+        "description": "Through the use of this Gift, the Ananasi is able to blend any one object or small group of objects into the surrounding area, coating them in a weblike substance that takes on the color and texture of the things around it. Any character not actively searching the area overlooks the item as a natural part of the surroundings.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Burrow",
+        "description": "As the metis Gift of the same name. The character must be in Pithus form to use this Gift. Those who learn this Gift gain the ability to burrow through the earth. They make a real tunnel, and others can follow them through it.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Morphean Bite",
+        "description": "The Ananasi by and large already have venom, identical in every way to that of their most common spiders. Some are toxic and some are merely irritating. But with this Gift, the Damhàn can also attack supernatural enemies who might have defenses against their natural venom. Anyone bitten by the werespider is knocked unconscious immediately.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Safety Line",
+        "description": "The Ananasi is able to create an invisible strand of strong webbing to protect her from a fall or other excessive motion. The strand is normally about eight feet long, but can be shortened to about three feet or lengthened to about fifteen feet. It is capable of supporting twice the Pithus weight of the Ananasi that created it.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            2
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Entropic Bite",
+        "description": "The Ananasi injects a powerful necrotic toxin with her bite, similar to that of a brown recluse.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Hydraulic Strength",
+        "description": "The Ananasi can metabolize the blood she drinks to dramatically increase her strength.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Understanding the Tapestry",
+        "description": "The Tenere may glimpse hidden connections between apparently unrelated objects.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Web Sheet",
+        "description": "The Tenere can create a large web very quickly.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Ill Winds",
+        "description": "The Hatar weakens the barrier between worlds, allowing Banes to materialize in a location more easily.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Still Blood",
+        "description": "The Ananasi's blood can paralyze a victim through contact.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Mindblock",
+        "description": "Upon learning this Gift, the Garou's mental defenses are strengthened to the utmost. A falcon-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Nature of the Beast",
+        "description": "As the Theurge Gift: Feral Lobotomy, save that its effects wear off at the end of the scene. With but a thought, the Garou can devolve an opponent's mind to that of an animal, effectively destroying his intelligence. A spirit servant of the Griffin totem teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Blood Hunt",
+        "description": "As the Ragabash Gift: Pulse of the Prey, save that the Ananasi must have encountered her mark within the last 24 hours, or fed from him at some point in the past. Name changed to Pulse of the Prey in 20th Anniversary Edition. Was previously Sense of the Prey in older editions. If he knows anything about his prey, the character can track it down as rapidly as he can travel.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Drying Bite",
+        "description": "As the Ragabash Gift: Whelp Body. With this Gift a Garou may deliver a devastating curse upon a foe's body, causing it to weaken or palsy. Many consider the use of this power on a foe to be a declaration of unending war. Either a pain-spirit or a spirit of disease teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Attunement",
+        "description": "As the Bone Gnawer Gift. The Garou may commune with the spirits of a city or town and gain information about the area from them, including rough population, enclaves of Garou or other being and secret tunnels. This Gift does not function in the wilderness, since the Bone Gnawers have lost the knack for conversing with such spirits easily. A rat-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Brethren Call",
+        "description": "The Ananasi may contact the two werespiders closest to her physically, or may summon many natural spiders to her aid. The Ananasi she contacts don't appear immediately, but are notified that their presence is needed; normal spiders appear all at once and are ready to aid the Ananasi.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Wither Limb",
+        "description": "With a snarl and an angry gaze, the werewolf forces a target's arm or leg to twist, desiccate and wither, making it useless. Creatures with regenerative abilities will restore the limb to full function after one scene; otherwise, the effects are permanent. Snake-spirits, spider-spirits and other venomous spirits teach this Gift. Some werewolves even invoke spirits of disease to learn this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Greater Unweaving",
+        "description": "As the Rank Two Gift: Minor Unweaving, but this Gift unravels any single Gift or power of Level 3 or lower. The Viskr may negate a spell, Gift, or other actively-used supernatural power by Unweaving the effect.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            4
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Carapace",
+        "description": "The Ananasi acquires an armored carapace over her exoskeleton that provides additional protection and can regenerate damage.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Survivor",
+        "description": "As the Bone Gnawer Gift. This Gift confers temporary immunity to many environmental factors. The Garou has no need of food, water or sleep, and she does not suffer from temperature extremes. She is also immune to natural diseases and poisons. Wyrm toxins will still affect her, but at half their normal potency.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Thieving Touch of Spiders",
+        "description": "As the Ragabash Gift: Thieving Talons of the Magpie. The Garou can steal the powers of others and use them herself. These powers can be Garou Gifts, spirit Charms, vampiric Disciplines, True Magic or any other such power. Naturally, a magpie-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Burning Blood",
+        "description": "The Ananasi turns her blood to acid.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Assimilation",
+        "description": "A werewolf with this Gift blends smoothly into any culture, no matter how strange or unfamiliar he might normally find it. He could slip among Bedouin nomads as if he were one of them, or he could shop in a Chinese market without anyone noticing that he does not belong. The Gift doesn't hide racial differences, but it does allow the user to mimic the behaviors and mannerisms of a native. It also grants the ability to speak and understand the culture's language, although this knowledge vanishes as the Gift ends. Ancestor-spirits teach this gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Image of the Great Mother",
+        "description": "For a short time, the Ananasi assumes the form of a massive creature with four spider-like legs, four human-like arms, eight glowing red eyes, and enormous fangs, covered over in thick, chitinous armor. The Myrmidon must remain in Crawlerling form for one week after donning the Great Mother's aspect.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Shattering",
+        "description": "This powerful Gift unweaves even mighty magical effects.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Razor Webs",
+        "description": "If she desires, the Ananasi can spin barbed, razor-sharp webbing.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Summon Net-Spider",
+        "description": "The Garou can summon a Net-Spider, a Weaver spirit that gives its summoner near-absolute control over any computer system. The Spider can disrupt, erase or destroy whatever system it is sent into (the exact effects are left to the Storyteller, but are typically destructive). An avatar of Cockroach teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Web of Illusion",
+        "description": "This powerful Gift enables the Ananasi to create an artificial reality in a secured area. The appearance, sounds, and smells are all dictated by the character's will; everyone that enters the area sees, smells, and hears the same things for the duration of the illusion. The Ananasi that creates the illusion can either remain to control the confines, or pre-program the area to react in a particular way upon a particular event; there can never be more than one pre-programmed action for any illusion.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Summon Paradox Spirit",
+        "description": "This powerful Gift not only brings a Paradox-spirit into the area, it also suggests a target for the Paradox-spirit to punish. This Gift only works against targets that are suffering from Paradox as it is, such as mages and those the Viskr has already marked via the rite: Summon Paradox.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Umbral Barrier",
+        "description": "The Ananasi spins her web into the Great Web, strengthening the Gauntlet in the designated area and making it far more difficult for any non-Ananasi to pass into or out of the Umbra in that location. The webs generated by this Gift are intangible and invisible from the Gaia Realm, and merely look like another piece of the Great Web from the Umbra.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Spider on the Mirror",
+        "description": "The Ananasi with this Gift is able to create exact duplicates of herself to act as drones, suddenly turning into a one-woman army. The created drones are mindless, powerless entities, possessing only the physical abilities of the Tenere that created them. Each of the duplicates will act only as directed by their creator, following those directions to the letter.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Touch of the Unweaver",
+        "description": "The Hatar can prevent another creature from regenerating or healing diseases with a touch.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Mass Confusion",
+        "description": "This powerful Gift changes the perception of the individuals in the Kumoti's immediate area. The Ananasi is able to confuse the participants, causing them lose track of where they are, who surrounds them, and which direction they were facing. Friends can appear to be foes, physical objects can appear meters away from their actual locations, and none of the senses can be trusted.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Thousand Hands",
+        "description": "Although Ananasi cannot usually use all their arms to the same effect, this Gift allows Myrmidons to multitask with great efficiency. The Myrmidon may wield multiple weapons or make multiple attacks with each one landing at full effect.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Elder Wisdom",
+        "description": "This Gift enables the Kumo to commune directly with her family's patron. If Marawa, Nareau, or Rati are in a bad mood, they may take out their displeasure at being summoned on the Kumo. Otherwise, they may offer advice or information useful to the user of the Gift. A servant of any of the three patrons teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    },
+    {
+        "name": "Megarachnid",
+        "description": "Gathering the blessings of the Destroyer, the Kumo's Pithus form swells to truly nightmarish proportions, growing as large as a truck. A scorpion-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [
+            5
+        ],
+        "shifter_type": "ananasi",
+        "splat": "Fera"
+    }
+]

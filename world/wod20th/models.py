@@ -85,9 +85,84 @@ STAT_TYPES = [
     ('seeming', 'Seeming'),
     ('house', 'House'),
     ('seelie-legacy', 'Seelie Legacy'),
-    ('unseelie-legacy', 'Unseelie Legacy')
+    ('unseelie-legacy', 'Unseelie Legacy'),
+    ('court', 'Court'),
 ]
 
+<<<<<<< Updated upstream
+=======
+SHIFTER_TYPE_CHOICES = [
+    ('garou', 'Garou'),
+    ('gurahl', 'Gurahl'),
+    ('rokea', 'Rokea'),
+    ('ananasi', 'Ananasi'),
+    ('ajaba', 'Ajaba'),
+    ('bastet', 'Bastet'),
+    ('corax', 'Corax'),
+    ('kitsune', 'Kitsune'),
+    ('mokole', 'Mokole'),
+    ('nagah', 'Nagah'),
+    ('nuwisha', 'Nuwisha'),
+    ('ratkin', 'Ratkin'),
+    ('none', 'None')
+]
+
+AUSPICE_CHOICES = [
+    ('ragabash', 'Ragabash'),
+    ('theurge', 'Theurge'),
+    ('philodox', 'Philodox'),
+    ('galliard', 'Galliard'),
+    ('ahroun', 'Ahroun'),
+    ('none', 'None')
+]
+
+BREED_CHOICES = [
+    ('homid', 'Homid'),
+    ('metis', 'Metis'),
+    ('lupus', 'Lupus'),
+    ('none', 'None')
+]
+
+GAROU_TRIBE_CHOICES = [
+    ('black fury', 'Black Fury'),
+    ('bone gnawer', 'Bone Gnawer'),
+    ('children of gaia', 'Children of Gaia'),
+    ('fianna', 'Fianna'),
+    ('glass walker', 'Glass Walker'),
+    ('red talon', 'Red Talon'),
+    ('shadow lord', 'Shadow Lord'),
+    ('silent strider', 'Silent Strider'),
+    ('silver fang', 'Silver Fang'),
+    ('stargazer', 'Stargazer'),
+    ('uktena', 'Uktena'),
+    ('wendigo', 'Wendigo'),
+    ('none', 'None')
+]
+
+MORTALPLUS_TYPE_CHOICES = [
+    ('ghoul', 'Ghoul'),
+    ('kinfolk', 'Kinfolk'),
+    ('kinain', 'Kinain'),
+    ('sorcerer', 'Sorcerer'),
+    ('psychic', 'Psychic'),
+    ('faithful', 'Faithful'),
+    ('none', 'None')
+]
+MORTALPLUS_POOLS = {
+    'Ghoul': {
+        'Blood': {'default': 3, 'max': 3}
+    },
+    'Kinfolk': {
+        'Gnosis': {'default': 0, 'max': 3}
+    },
+    'Kinain': {
+        'Glamour': {'default': 0, 'max': 3}
+    },
+    'Sorcerer': {
+        'Quintessence': {'default': 0, 'max': 10}
+    },
+}
+>>>>>>> Stashed changes
 class Stat(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default='')  # Changed to non-nullable with default empty string
@@ -100,8 +175,49 @@ class Stat(models.Model):
     hidden = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     instanced = models.BooleanField(default=False, null=True)
-    # add a field for the default value of the stat
     default = models.CharField(max_length=100, blank=True, null=True, default=None)
+    auspice = models.CharField(
+        max_length=100,
+        choices=AUSPICE_CHOICES,
+        default='none',
+        blank=True
+    )
+    breed = models.CharField(
+        max_length=100,
+        choices=BREED_CHOICES,
+        default='none',
+        blank=True
+    )
+    tribe = models.JSONField(
+        default=list,
+        blank=True,
+        null=True,
+        help_text="List of tribes that can learn this gift"
+    )
+    camp = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Specific camp that can learn this gift"
+    )
+    source = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Source book reference"
+    )
+    system = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Game mechanics description"
+    )
+    mortalplus_type = models.CharField(
+        max_length=100,
+        choices=MORTALPLUS_TYPE_CHOICES,
+        default='none',
+        blank=True,
+        help_text="Type of Mortal+ character"
+    )
 
     def __str__(self):
         return self.name
@@ -129,6 +245,37 @@ class Stat(models.Model):
             if self.name in SHIFTER_RENOWN:
                 self.values = SHIFTER_RENOWN[self.name]
         super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        # Get the splat type
+        splat = self.splat.lower() if self.splat else None
+        
+        # Validate type field based on splat
+        if splat == 'shifter' and self.shifter_type:
+            if not isinstance(self.shifter_type, str):
+                raise ValidationError({'shifter_type': 'Must be a string'})
+            valid_types = [choice[0] for choice in SHIFTER_TYPE_CHOICES]
+            if self.shifter_type.lower() not in valid_types and self.shifter_type.lower() != 'none':
+                raise ValidationError({'shifter_type': f'Invalid shifter type: {self.shifter_type}'})
+                
+        elif splat == 'mortal+' and self.mortalplus_type:
+            if not isinstance(self.mortalplus_type, str):
+                raise ValidationError({'mortalplus_type': 'Must be a string'})
+            valid_types = [choice[0] for choice in MORTALPLUS_TYPE_CHOICES]
+            if self.mortalplus_type.lower() not in valid_types and self.mortalplus_type.lower() != 'none':
+                raise ValidationError({'mortalplus_type': f'Invalid Mortal+ type: {self.mortalplus_type}'})
+
+        # Validate tribe field contains valid choices if present
+        if self.tribe:
+            if not isinstance(self.tribe, (list, str)):
+                raise ValidationError({'tribe': 'Must be a list or string'})
+            if isinstance(self.tribe, str):
+                self.tribe = [self.tribe]
+            valid_tribes = [choice[0] for choice in GAROU_TRIBE_CHOICES]
+            for tribe in self.tribe:
+                if tribe.lower() not in valid_tribes and tribe.lower() != 'none':
+                    raise ValidationError({'tribe': f'Invalid tribe: {tribe}'})
 
     class Meta:
         app_label = 'wod20th'

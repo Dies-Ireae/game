@@ -3,6 +3,10 @@ from evennia.utils import logger
 from evennia.commands.default.general import CmdLook
 from evennia.utils.search import search_object
 from typeclasses.characters import Character
+from evennia import Command
+from evennia.utils import search
+from evennia.commands.default.muxcommand import MuxCommand
+from evennia.locks import lockfuncs
 
 
 class CmdApprove(AdminCommand):
@@ -188,4 +192,127 @@ class CmdAdminLook(CmdLook, AdminCommand):
             
         # If not using * prefix, use the default look behavior
         super().func()
+
+class CmdTestLock(MuxCommand):
+    """
+    Test a lock on a character
+    
+    Usage:
+        @testlock <character> = <lockstring>
+        
+    Example:
+        @testlock Nicole = has_splat(Mage)
+        @testlock Nicole = has_tradition(Order of Hermes)
+        @testlock Nicole = has_mage_faction(Traditions)
+    """
+    
+    key = "@testlock"
+    locks = "cmd:perm(Admin)"
+    help_category = "Admin"
+    
+    def extract_value(self, data, *path):
+        """Safely extract a nested value from a dictionary."""
+        try:
+            current = data
+            self.caller.msg(f"DEBUG - Starting path traversal with type: {type(current)}")
+            
+            for key in path:
+                if not hasattr(current, 'get'):
+                    self.caller.msg(f"DEBUG - Object doesn't support get(): {type(current)}")
+                    return None
+                    
+                current = current.get(key, {})
+                self.caller.msg(f"DEBUG - After '{key}': {current} (type: {type(current)})")
+            
+            # If we have a dict with temp/perm, return temp value
+            if hasattr(current, 'get'):
+                if current.get('temp') is not None:
+                    return current.get('temp')
+                if current.get('perm') is not None:
+                    return current.get('perm')
+            return current
+            
+        except Exception as e:
+            self.caller.msg(f"DEBUG - Error extracting {path}: {e}")
+            import traceback
+            self.caller.msg(traceback.format_exc())
+            return None
+            
+    def get_character_value(self, char, *path):
+        """Get a specific value from character stats."""
+        stats = char.db.stats
+        if not stats:
+            self.caller.msg("Debug - No stats found on character")
+            return None
+            
+        self.caller.msg(f"DEBUG - Getting value for path: {path}")
+        self.caller.msg(f"DEBUG - Stats type: {type(stats)}")
+        value = self.extract_value(stats, *path)
+        self.caller.msg(f"DEBUG - Got value: {value}")
+        return value
+    
+    def func(self):
+        if not self.args or not self.rhs:
+            self.caller.msg("Usage: @testlock <character> = <lockstring>")
+            return
+            
+        # Search for character
+        chars = search_object(self.lhs)
+        if not chars:
+            self.caller.msg(f"Could not find '{self.lhs}'.")
+            return
+        
+        char = chars[0]  # Take the first match
+        self.caller.msg(f"Found character: {char.key}")
+        
+        # Show relevant character stats
+        self.caller.msg("\nRelevant character stats:")
+        
+        # Update these paths to match the actual structure
+        splat = self.get_character_value(char, 'other', 'splat', 'Splat')
+        tradition = self.get_character_value(char, 'identity', 'lineage', 'Tradition')
+        faction = self.get_character_value(char, 'identity', 'lineage', 'Mage Faction')
+        
+        # Debug output
+        self.caller.msg("\nRaw stats structure:")
+        self.caller.msg(f"Type: {type(char.db.stats)}")
+        self.caller.msg(str(char.db.stats))
+        
+        self.caller.msg("\nExtracted values:")
+        self.caller.msg(f"Splat: {splat}")
+        self.caller.msg(f"Tradition: {tradition}")
+        self.caller.msg(f"Faction: {faction}")
+            
+        try:
+            # Parse the lock function and args
+            lock_parts = self.rhs.split('(')
+            lock_func = lock_parts[0]
+            lock_args = lock_parts[1].rstrip(')').split(',')
+            lock_args = [arg.strip() for arg in lock_args]
+            
+            self.caller.msg(f"\nTesting lock function: {lock_func}")
+            self.caller.msg(f"With arguments: {lock_args}")
+            
+            # Get the actual function from our WoD lock functions
+            from world.wod20th.locks import LOCK_FUNCS
+            func = LOCK_FUNCS.get(lock_func)
+            
+            if func:
+                self.caller.msg(f"\nLock function found: {func}")
+                # Call the function directly for testing
+                result = func(char, None, *lock_args)
+                self.caller.msg(f"\nDirect function call result: {result}")
+            else:
+                self.caller.msg(f"\nWarning: Lock function '{lock_func}' not found in WoD lock functions")
+                self.caller.msg("Available functions:")
+                self.caller.msg(", ".join(sorted(LOCK_FUNCS.keys())))
+            
+            # Also test through normal lock system
+            result = char.access(self.rhs)
+            self.caller.msg(f"\nLock check result: {result}")
+            
+        except Exception as e:
+            self.caller.msg(f"Error testing lock: {e}")
+            import traceback
+            self.caller.msg(traceback.format_exc())
 
