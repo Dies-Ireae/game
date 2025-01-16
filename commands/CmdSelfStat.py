@@ -31,6 +31,62 @@ PATH_VIRTUES = {
     'Hive': ('Conviction', 'Instinct')
 }
 
+PATH_VIRTUES = {
+    'Humanity': ('Conscience', 'Self-Control'),
+    'Night': ('Conviction', 'Instinct'),
+    'Beast': ('Conviction', 'Instinct'),
+    'Harmony': ('Conscience', 'Instinct'),
+    'Evil Revelations': ('Conviction', 'Self-Control'),
+    'Self-Focus': ('Conviction', 'Instinct'),
+    'Scorched Heart': ('Conviction', 'Self-Control'),
+    'Entelechy': ('Conviction', 'Self-Control'),
+    'Sharia El-Sama': ('Conscience', 'Self-Control'),
+    'Asakku': ('Conviction', 'Instinct'),
+    'Death and the Soul': ('Conviction', 'Self-Control'),
+    'Honorable Accord': ('Conscience', 'Self-Control'),
+    'Feral Heart': ('Conviction', 'Instinct'),
+    'Orion': ('Conviction', 'Instinct'),
+    'Power and the Inner Voice': ('Conviction', 'Instinct'),
+    'Lilith': ('Conviction', 'Instinct'),
+    'Caine': ('Conviction', 'Instinct'),
+    'Cathari': ('Conviction', 'Instinct'),
+    'Redemption': ('Conscience', 'Self-Control'),
+    'Metamorphosis': ('Conviction', 'Instinct'),
+    'Bones': ('Conviction', 'Self-Control'),
+    'Typhon': ('Conviction', 'Self-Control'),
+    'Paradox': ('Conviction', 'Self-Control'),
+    'Blood': ('Conviction', 'Self-Control'),
+    'Hive': ('Conviction', 'Instinct')
+}
+
+PATH_VIRTUES = {
+    'Humanity': ('Conscience', 'Self-Control'),
+    'Night': ('Conviction', 'Instinct'),
+    'Beast': ('Conviction', 'Instinct'),
+    'Harmony': ('Conscience', 'Instinct'),
+    'Evil Revelations': ('Conviction', 'Self-Control'),
+    'Self-Focus': ('Conviction', 'Instinct'),
+    'Scorched Heart': ('Conviction', 'Self-Control'),
+    'Entelechy': ('Conviction', 'Self-Control'),
+    'Sharia El-Sama': ('Conscience', 'Self-Control'),
+    'Asakku': ('Conviction', 'Instinct'),
+    'Death and the Soul': ('Conviction', 'Self-Control'),
+    'Honorable Accord': ('Conscience', 'Self-Control'),
+    'Feral Heart': ('Conviction', 'Instinct'),
+    'Orion': ('Conviction', 'Instinct'),
+    'Power and the Inner Voice': ('Conviction', 'Instinct'),
+    'Lilith': ('Conviction', 'Instinct'),
+    'Caine': ('Conviction', 'Instinct'),
+    'Cathari': ('Conviction', 'Instinct'),
+    'Redemption': ('Conscience', 'Self-Control'),
+    'Metamorphosis': ('Conviction', 'Instinct'),
+    'Bones': ('Conviction', 'Self-Control'),
+    'Typhon': ('Conviction', 'Self-Control'),
+    'Paradox': ('Conviction', 'Self-Control'),
+    'Blood': ('Conviction', 'Self-Control'),
+    'Hive': ('Conviction', 'Instinct')
+}
+
 class CmdSelfStat(default_cmds.MuxCommand):
     """
     Usage:
