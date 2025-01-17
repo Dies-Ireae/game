@@ -1,63 +1,8 @@
-from evennia import default_cmds
+from evennia import Command, default_cmds
 from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, calculate_willpower, calculate_road
 from evennia.utils import search
 import re
-
-PATH_VIRTUES = {
-    'Humanity': ('Conscience', 'Self-Control'),
-    'Night': ('Conviction', 'Instinct'),
-    'Beast': ('Conviction', 'Instinct'),
-    'Harmony': ('Conscience', 'Instinct'),
-    'Evil Revelations': ('Conviction', 'Self-Control'),
-    'Self-Focus': ('Conviction', 'Instinct'),
-    'Scorched Heart': ('Conviction', 'Self-Control'),
-    'Entelechy': ('Conviction', 'Self-Control'),
-    'Sharia El-Sama': ('Conscience', 'Self-Control'),
-    'Asakku': ('Conviction', 'Instinct'),
-    'Death and the Soul': ('Conviction', 'Self-Control'),
-    'Honorable Accord': ('Conscience', 'Self-Control'),
-    'Feral Heart': ('Conviction', 'Instinct'),
-    'Orion': ('Conviction', 'Instinct'),
-    'Power and the Inner Voice': ('Conviction', 'Instinct'),
-    'Lilith': ('Conviction', 'Instinct'),
-    'Caine': ('Conviction', 'Instinct'),
-    'Cathari': ('Conviction', 'Instinct'),
-    'Redemption': ('Conscience', 'Self-Control'),
-    'Metamorphosis': ('Conviction', 'Instinct'),
-    'Bones': ('Conviction', 'Self-Control'),
-    'Typhon': ('Conviction', 'Self-Control'),
-    'Paradox': ('Conviction', 'Self-Control'),
-    'Blood': ('Conviction', 'Self-Control'),
-    'Hive': ('Conviction', 'Instinct')
-}
-
-PATH_VIRTUES = {
-    'Humanity': ('Conscience', 'Self-Control'),
-    'Night': ('Conviction', 'Instinct'),
-    'Beast': ('Conviction', 'Instinct'),
-    'Harmony': ('Conscience', 'Instinct'),
-    'Evil Revelations': ('Conviction', 'Self-Control'),
-    'Self-Focus': ('Conviction', 'Instinct'),
-    'Scorched Heart': ('Conviction', 'Self-Control'),
-    'Entelechy': ('Conviction', 'Self-Control'),
-    'Sharia El-Sama': ('Conscience', 'Self-Control'),
-    'Asakku': ('Conviction', 'Instinct'),
-    'Death and the Soul': ('Conviction', 'Self-Control'),
-    'Honorable Accord': ('Conscience', 'Self-Control'),
-    'Feral Heart': ('Conviction', 'Instinct'),
-    'Orion': ('Conviction', 'Instinct'),
-    'Power and the Inner Voice': ('Conviction', 'Instinct'),
-    'Lilith': ('Conviction', 'Instinct'),
-    'Caine': ('Conviction', 'Instinct'),
-    'Cathari': ('Conviction', 'Instinct'),
-    'Redemption': ('Conscience', 'Self-Control'),
-    'Metamorphosis': ('Conviction', 'Instinct'),
-    'Bones': ('Conviction', 'Self-Control'),
-    'Typhon': ('Conviction', 'Self-Control'),
-    'Paradox': ('Conviction', 'Self-Control'),
-    'Blood': ('Conviction', 'Self-Control'),
-    'Hive': ('Conviction', 'Instinct')
-}
+from commands.CmdLanguage import CmdLanguage
 
 PATH_VIRTUES = {
     'Humanity': ('Conscience', 'Self-Control'),
@@ -145,6 +90,93 @@ class CmdSelfStat(default_cmds.MuxCommand):
         except ValueError:
             self.stat_name = self.value_change = self.instance = self.category = None
 
+    def initialize_stats(self, splat):
+        """Initialize the basic stats structure based on splat type."""
+        # Base structure common to all splats
+        base_stats = {
+            'other': {'splat': {'Splat': {'perm': splat, 'temp': splat}}},
+            'identity': {'personal': {}, 'lineage': {}},
+            'abilities': {
+                'talent': {},
+                'skill': {},
+                'knowledge': {}
+            },
+            'attributes': {
+                'physical': {},
+                'social': {},
+                'mental': {}
+            },
+            'advantages': {'background': {}},
+            'merits': {'merit': {}},
+            'flaws': {'flaw': {}},
+            'powers': {},
+            'pools': {'dual': {}, 'moral': {}},
+            'virtues': {'moral': {}}
+        }
+
+        # Initialize basic attributes with default value of 1
+        for category in ['physical', 'social', 'mental']:
+            if category == 'physical':
+                attrs = ['Strength', 'Dexterity', 'Stamina']
+            elif category == 'social':
+                attrs = ['Charisma', 'Manipulation', 'Appearance']
+            else:  # mental
+                attrs = ['Perception', 'Intelligence', 'Wits']
+            
+            for attr in attrs:
+                base_stats['attributes'][category][attr] = {'perm': 1, 'temp': 1}
+
+        # Splat-specific additions
+        if splat.lower() == 'shifter':
+            base_stats['powers']['gift'] = {}
+            base_stats['powers']['rite'] = {}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Rage'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Gnosis'] = {'perm': 1, 'temp': 1}
+            base_stats['advantages']['renown'] = {}
+            # Note: The actual values for Rage, Gnosis, and Willpower will be set 
+            # by apply_shifter_stats after the breed/auspice/tribe are chosen
+
+        elif splat.lower() == 'vampire':
+            base_stats['powers']['discipline'] = {}
+            base_stats['pools']['dual']['Blood'] = {'perm': 10, 'temp': 10}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['moral']['Road'] = {'perm': 1, 'temp': 1}
+
+        elif splat.lower() == 'mage':
+            base_stats['powers']['sphere'] = {}
+            base_stats['pools']['dual']['Arete'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Quintessence'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+
+        elif splat.lower() == 'changeling':
+            base_stats['powers']['art'] = {}
+            base_stats['powers']['realm'] = {}
+            base_stats['pools']['dual']['Glamour'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Banality'] = {'perm': 1, 'temp': 1}
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+
+        elif splat.lower() == 'mortal+':
+            base_stats['powers'] = {
+                'numina': {},
+                'sorcery': {},
+                'faith': {},
+                'discipline': {},
+                'gift': {},
+                'arts': {},
+                'realms': {}
+            }
+            base_stats['pools']['dual']['Willpower'] = {'perm': 3, 'temp': 3}
+            
+            # Additional pools based on subtype will be set in apply_mortalplus_stats
+            
+            return base_stats
+
+        else:  # Mortal or other
+            base_stats['pools']['dual']['Willpower'] = {'perm': 1, 'temp': 1}
+
+        return base_stats
+
     def func(self):
         """Execute the command."""
         # Check if character is approved
@@ -156,28 +188,51 @@ class CmdSelfStat(default_cmds.MuxCommand):
             self.caller.msg("|rUsage: +selfstat <stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
 
-        # Get the stat definition
-        stat = Stat.objects.filter(name__iexact=self.stat_name).first()
-        if not stat:
+        # Get all matching stats
+        matching_stats = Stat.objects.filter(name__iexact=self.stat_name)
+        if not matching_stats.exists():
             # If exact match fails, try a case-insensitive contains search
             matching_stats = Stat.objects.filter(name__icontains=self.stat_name)
-            if matching_stats.count() > 1:
-                stat_names = [s.name for s in matching_stats]
-                self.caller.msg(f"Multiple stats match '{self.stat_name}': {', '.join(stat_names)}. Please be more specific.")
-                return
-            stat = matching_stats.first()
-            if not stat:
-                self.caller.msg(f"Stat '{self.stat_name}' not found.")
+            if not matching_stats.exists():
+                self.caller.msg(f"|rStat '{self.stat_name}' not found.|n")
                 return
 
-        # Check if the character can have this ability
-        if stat.stat_type == 'ability' and not self.caller.can_have_ability(stat.name):
-            self.caller.msg(f"Your character cannot have the {stat.name} ability.")
+        # If multiple stats found and no category specified, show options
+        if matching_stats.count() > 1 and not self.category:
+            # Group stats by category and stat_type
+            stat_options = []
+            for s in matching_stats:
+                stat_options.append(f"{s.name}/{s.stat_type}")
+            
+            options_str = ", or ".join([", ".join(stat_options[:-1]), stat_options[-1]] if len(stat_options) > 2 else stat_options)
+            self.caller.msg(f"|rMultiple versions of this stat exist. Did you mean {options_str}?|n")
             return
+
+        # If category is specified, find the matching stat
+        if self.category:
+            stat = matching_stats.filter(stat_type__iexact=self.category).first()
+            if not stat:
+                self.caller.msg(f"|rNo stat '{self.stat_name}' found with category '{self.category}'.|n")
+                return
+        else:
+            # If only one stat found, use it
+            stat = matching_stats.first()
 
         # Use the canonical name from the database
         self.stat_name = stat.name
-        
+
+        # Special handling for Shifter Rank
+        if stat.name == 'Rank':
+            splat = self.caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            if splat and splat == 'Shifter':
+                stat.category = 'identity'
+                stat.stat_type = 'lineage'
+
+        # Check if the character can have this ability
+        if stat.stat_type == 'ability' and not self.caller.can_have_ability(stat.name):
+            self.caller.msg(f"|rYour character cannot have the {stat.name} ability.|n")
+            return
+
         # Handle instances for background stats
         if stat.instanced:
             if not self.instance:
@@ -194,7 +249,13 @@ class CmdSelfStat(default_cmds.MuxCommand):
         if self.value_change == '':
             if stat.category in self.caller.db.stats and stat.stat_type in self.caller.db.stats[stat.category]:
                 if full_stat_name in self.caller.db.stats[stat.category][stat.stat_type]:
-                    del self.caller.db.stats[stat.category][stat.stat_type][full_stat_name]
+                    # For language-related stats, pass 0 instead of removing directly
+                    if (full_stat_name == 'Language' or 
+                        full_stat_name.startswith('Language(') or 
+                        full_stat_name == 'Natural Linguist'):
+                        self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, 0)
+                    else:
+                        del self.caller.db.stats[stat.category][stat.stat_type][full_stat_name]
                     self.caller.msg(f"|gRemoved stat '{full_stat_name}'.|n")
                     return
                 else:
@@ -206,11 +267,11 @@ class CmdSelfStat(default_cmds.MuxCommand):
             splat = self.caller.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
             clan = self.caller.db.stats.get('identity', {}).get('lineage', {}).get('Clan', {}).get('perm', '')
             
-            if splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
+            if splat and splat == 'Vampire' and clan in ['Nosferatu', 'Samedi']:
                 self.caller.msg("Nosferatu and Samedi vampires always have Appearance 0.")
                 return
             
-            if splat == 'Shifter':
+            if splat and splat == 'Shifter':
                 form = self.caller.db.stats.get('other', {}).get('form', {}).get('Form', {}).get('temp', '')
                 if form == 'Crinos':
                     self.caller.msg("Characters in Crinos form always have Appearance 0.")
@@ -230,36 +291,6 @@ class CmdSelfStat(default_cmds.MuxCommand):
 
         # Update the stat
         try:
-<<<<<<< Updated upstream
-            self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=False)
-            
-            # During character generation (when character is not approved), 
-            # always set temp value equal to permanent value
-            if not self.caller.db.approved:
-                self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
-                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
-            # If already approved, only update temp for pools and dual stats
-            elif stat.category == 'pools' or stat.stat_type == 'dual':
-                self.caller.set_stat(stat.category, stat.stat_type, full_stat_name, new_value, temp=True)
-                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value} (both permanent and temporary).|n")
-            else:
-                self.caller.msg(f"|gUpdated {full_stat_name} to {new_value}.|n")
-
-            # After setting a stat, recalculate Willpower and Road
-            if full_stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
-                new_willpower = calculate_willpower(self.caller)
-                # Set both permanent and temporary values for Willpower
-                self.caller.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=False)
-                self.caller.set_stat('pools', 'dual', 'Willpower', new_willpower, temp=True)
-                self.caller.msg(f"|gRecalculated Willpower to {new_willpower}.|n")
-
-                new_road = calculate_road(self.caller)
-                self.caller.set_stat('pools', 'moral', 'Road', new_road, temp=False)
-                self.caller.msg(f"|gRecalculated Road to {new_road}.|n")
-
-        except ValueError as e:
-            self.caller.msg(str(e))
-=======
             # When setting splat for the first time
             if self.stat_name.lower() == 'splat':
                 if not self.value_change:
@@ -725,4 +756,3 @@ class CmdSelfStat(default_cmds.MuxCommand):
         # Set base Willpower for all types
         character.set_stat('pools', 'dual', 'Willpower', 3, temp=False)
         character.set_stat('pools', 'dual', 'Willpower', 3, temp=True)
->>>>>>> Stashed changes

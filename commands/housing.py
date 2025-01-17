@@ -14,10 +14,12 @@ class CmdRent(MuxCommand):
     
     Usage:
         +rent               - List available residence types
+        +rent/type         - Show detailed information about available types
         +rent <type>       - Rent specific residence type
         
     Example:
         +rent
+        +rent/type         - Shows detailed info about available types
         +rent Studio
         +rent "Two-Bedroom"
         +rent House
@@ -43,6 +45,46 @@ class CmdRent(MuxCommand):
             "desc": "A spacious two-bedroom apartment with a full living room.",
             "rooms": 3,
             "resource_modifier": 2
+        },
+        "Luxury Studio": {
+            "desc": "An upscale studio apartment with premium finishes and city views.",
+            "rooms": 1,
+            "resource_modifier": 2
+        },
+        "Luxury One-Bedroom": {
+            "desc": "A high-end one-bedroom apartment with designer fixtures and an open concept layout.",
+            "rooms": 2,
+            "resource_modifier": 3
+        },
+        "Luxury Two-Bedroom": {
+            "desc": "An elegant two-bedroom apartment with premium amenities and panoramic views.",
+            "rooms": 3,
+            "resource_modifier": 4
+        },
+        "Penthouse": {
+            "desc": "A luxurious penthouse suite with wraparound views and exclusive amenities.",
+            "rooms": 4,
+            "resource_modifier": 5
+        },
+        "Motel Room": {
+            "desc": "A rundown motel room with a bed and a small desk.",
+            "rooms": 1,
+            "resource_modifier": -1
+        },
+        "Hotel Room": {
+            "desc": "A well-appointed hotel room with daily housekeeping service.",
+            "rooms": 1,
+            "resource_modifier": 0
+        },
+        "Hotel Suite": {
+            "desc": "A well-appointed hotel suite with daily housekeeping service.",
+            "rooms": 1,
+            "resource_modifier": 2
+        },
+        "Executive Suite": {
+            "desc": "A premium hotel suite with separate living and sleeping areas.",
+            "rooms": 2,
+            "resource_modifier": 3
         }
     }
     
@@ -61,8 +103,62 @@ class CmdRent(MuxCommand):
             "desc": "A charming cottage with a private garden.",
             "rooms": 2,
             "resource_modifier": 0
+        },
+        "Manor": {
+            "desc": "A stately manor house with extensive grounds and luxury amenities.",
+            "rooms": 6,
+            "resource_modifier": 4
+        },
+        "Villa": {
+            "desc": "An elegant villa with a private pool and landscaped gardens.",
+            "rooms": 5,
+            "resource_modifier": 3
+        },
+        "Estate": {
+            "desc": "A grand estate with multiple buildings and extensive security.",
+            "rooms": 8,
+            "resource_modifier": 5
         }
     }
+
+    def show_type_details(self, location):
+        """Show detailed information about available residence types."""
+        if not location.is_housing_area():
+            self.caller.msg("This is not a residential area.")
+            return
+            
+        available_types = location.get_available_housing_types()
+        if not available_types:
+            self.caller.msg("No housing types available in this area.")
+            return
+            
+        from evennia.utils.evtable import EvTable
+        table = EvTable(
+            "|wType|n",
+            "|wRooms|n",
+            "|wCost|n",
+            "|wDescription|n",
+            border="table",
+            table_width=78
+        )
+        
+        # Configure column widths
+        table.reformat_column(0, width=20)  # Type (increased width for longer names)
+        table.reformat_column(1, width=7)   # Rooms
+        table.reformat_column(2, width=6)   # Cost
+        table.reformat_column(3, width=43)  # Description
+        
+        for rtype, data in available_types.items():
+            cost = location.get_housing_cost(rtype)
+            table.add_row(
+                rtype,
+                str(data['rooms']),
+                str(cost),
+                data['desc']
+            )
+            
+        header = f"\n|wAvailable Housing Types in {location.get_display_name(self.caller)}:|n\n"
+        self.caller.msg(header + str(table))
 
     def get_type_case_insensitive(self, type_str):
         """Helper method to find housing type case-insensitively"""
@@ -104,6 +200,56 @@ class CmdRent(MuxCommand):
     def func(self):
         location = self.caller.location
         
+        # Handle staff commands for managing available types
+        if "addtype" in self.switches and self.caller.check_permstring("builders"):
+            if not self.args:
+                self.caller.msg("Usage: +rent/addtype <type>")
+                return
+                
+            apt_type = self.get_type_case_insensitive(self.args)
+            if not apt_type:
+                all_types = list(self.APARTMENT_TYPES.keys()) + list(self.RESIDENTIAL_TYPES.keys())
+                self.caller.msg(f"Invalid type. Available types: {', '.join(all_types)}")
+                return
+                
+            housing_data = location.ensure_housing_data()
+            if 'available_types' not in housing_data:
+                housing_data['available_types'] = []
+                
+            if apt_type in housing_data['available_types']:
+                self.caller.msg(f"{apt_type} is already available in this building.")
+                return
+                
+            housing_data['available_types'].append(apt_type)
+            self.caller.msg(f"Added {apt_type} to available types in {location.get_display_name(self.caller)}.")
+            return
+            
+        elif "remtype" in self.switches and self.caller.check_permstring("builders"):
+            if not self.args:
+                self.caller.msg("Usage: +rent/remtype <type>")
+                return
+                
+            apt_type = self.get_type_case_insensitive(self.args)
+            housing_data = location.ensure_housing_data()
+            
+            if apt_type in housing_data.get('available_types', []):
+                housing_data['available_types'].remove(apt_type)
+                self.caller.msg(f"Removed {apt_type} from available types in {location.get_display_name(self.caller)}.")
+            else:
+                self.caller.msg(f"{apt_type} is not available in this building.")
+            return
+            
+        elif "cleartype" in self.switches and self.caller.check_permstring("builders"):
+            housing_data = location.ensure_housing_data()
+            housing_data['available_types'] = []
+            self.caller.msg(f"Cleared all available types from {location.get_display_name(self.caller)}.")
+            return
+            
+        # Handle /type switch
+        if "type" in self.switches:
+            self.show_type_details(location)
+            return
+            
         if not location.is_housing_area():
             self.caller.msg("This is not a residential area.")
             return
@@ -161,7 +307,11 @@ class CmdRent(MuxCommand):
                                key=residence_name,
                                location=None)
         residence.db.desc = available_types[apt_type]['desc']
-        residence.db.roomtype = room_type
+        # Set specific room type based on apartment/house type
+        if is_apartment:
+            residence.db.roomtype = f"{apt_type} Apartment"
+        else:
+            residence.db.roomtype = apt_type
         residence.db.owner = self.caller
         # Inherit resources from lobby
         residence.db.resources = location.db.resources

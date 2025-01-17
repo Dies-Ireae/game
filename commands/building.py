@@ -233,6 +233,7 @@ class CmdSetHousing(MuxCommand):
                     'is_lobby': False
                 }
             location.db.roomtype = "Room"
+            location.db.resources = 0
             self.caller.msg("Housing settings cleared.")
             return
             
@@ -263,16 +264,19 @@ class CmdSetHousing(MuxCommand):
         if "apartment" in self.switches:
             location.setup_housing("Apartment Building", max_units)
             location.db.resources = resources
+            location.db.housing_data['max_apartments'] = max_units  # Explicitly set max_apartments
             self.caller.msg(f"Set up room as apartment building with {resources} resources and {max_units} maximum units.")
             
         elif "condo" in self.switches:
             location.setup_housing("Condominiums", max_units)
             location.db.resources = resources
+            location.db.housing_data['max_apartments'] = max_units  # Explicitly set max_apartments
             self.caller.msg(f"Set up room as condominium with {resources} resources and {max_units} maximum units.")
             
         elif "residential" in self.switches:
             location.setup_housing("Residential Area", max_units)
             location.db.resources = resources
+            location.db.housing_data['max_apartments'] = max_units  # Explicitly set max_apartments
             self.caller.msg(f"Set up room as residential area with {resources} resources and {max_units} maximum units.")
 
 class CmdManageBuilding(MuxCommand):
@@ -313,6 +317,54 @@ class CmdManageBuilding(MuxCommand):
                 'is_lobby': False,
                 'available_types': []
             }
+        return location.db.housing_data
+
+    def find_lobby(self, location):
+        """Helper method to find the connected lobby"""
+        # First check if this room is a lobby
+        if location.db.housing_data and location.db.housing_data.get('is_lobby'):
+            return location
+            
+        # Then check all connected exits
+        for exit in location.exits:
+            if not exit.destination:
+                continue
+                
+            # Check if this exit leads to lobby (by name or alias)
+            exit_names = [exit.key.lower()]
+            if exit.aliases:
+                exit_names.extend([alias.lower() for alias in exit.aliases.all()])
+            
+            if any(name in ['lobby', 'l'] for name in exit_names):
+                dest = exit.destination
+                if (hasattr(dest, 'db') and 
+                    hasattr(dest.db, 'housing_data') and 
+                    dest.db.housing_data and 
+                    dest.db.housing_data.get('is_lobby')):
+                    return dest
+                    
+            # Check the destination directly
+            dest = exit.destination
+            if (hasattr(dest, 'db') and 
+                hasattr(dest.db, 'housing_data') and 
+                dest.db.housing_data and 
+                dest.db.housing_data.get('is_lobby')):
+                return dest
+                
+            # Also check if the destination has exits leading to a lobby
+            if hasattr(dest, 'exits'):
+                for other_exit in dest.exits:
+                    if not other_exit.destination:
+                        continue
+                    
+                    other_dest = other_exit.destination
+                    if (hasattr(other_dest, 'db') and 
+                        hasattr(other_dest.db, 'housing_data') and 
+                        other_dest.db.housing_data and 
+                        other_dest.db.housing_data.get('is_lobby')):
+                        return other_dest
+        
+        return None
 
     def check_lobby_required(self, location, switch):
         """Check if command requires an active lobby setup"""
@@ -324,10 +376,10 @@ class CmdManageBuilding(MuxCommand):
         if location.db.housing_data.get('is_lobby'):
             return True
             
-        if location.db.housing_data.get('building_zone'):
-            lobby = self.caller.search(location.db.housing_data['building_zone'])
-            if lobby and lobby.db.housing_data.get('is_lobby'):
-                return True
+        # Try to find a connected lobby
+        lobby = self.find_lobby(location)
+        if lobby:
+            return True
                 
         self.caller.msg("You must set up this room as a lobby first using +building/setlobby")
         return False
@@ -427,16 +479,21 @@ class CmdManageBuilding(MuxCommand):
             if 'connected_rooms' not in location.db.housing_data:
                 location.db.housing_data['connected_rooms'] = set()
             location.db.housing_data['connected_rooms'].add(location.dbref)
+            
+            # Ensure room type and max_apartments are set
+            if not location.db.roomtype or location.db.roomtype == "Unknown":
+                location.db.roomtype = "Apartment Building"
+                location.db.housing_data['max_apartments'] = 20  # Default value if not set
+            
+            # Ensure max_apartments exists
+            if 'max_apartments' not in location.db.housing_data:
+                location.db.housing_data['max_apartments'] = 20  # Default value
+            
             self.caller.msg(f"Set {location.get_display_name(self.caller)} as building lobby.")
             
         elif switch == "addroom":
             # Find the lobby this room should connect to
-            lobby = None
-            for exit in location.exits:
-                if exit.destination and hasattr(exit.destination.db, 'housing_data'):
-                    if exit.destination.db.housing_data.get('is_lobby'):
-                        lobby = exit.destination
-                        break
+            lobby = self.find_lobby(location)
                     
             if not lobby:
                 self.caller.msg("Could not find a lobby connected to this room.")
@@ -444,12 +501,24 @@ class CmdManageBuilding(MuxCommand):
             
             # Initialize housing data for this room if needed
             self.initialize_housing_data(location)
-                
+            
+            # Copy relevant data from lobby
+            location.db.roomtype = lobby.db.roomtype
+            location.db.resources = lobby.db.resources
+            
             # Add this room to the building zone
-            location.db.housing_data['building_zone'] = lobby.dbref
+            location.db.housing_data.update({
+                'building_zone': lobby.dbref,
+                'is_housing': True,
+                'max_apartments': lobby.db.housing_data.get('max_apartments', 20),
+                'available_types': lobby.db.housing_data.get('available_types', [])
+            })
+            
+            # Update lobby's connected rooms
             if 'connected_rooms' not in lobby.db.housing_data:
                 lobby.db.housing_data['connected_rooms'] = set()
             lobby.db.housing_data['connected_rooms'].add(location.dbref)
+            
             self.caller.msg(f"Added {location.get_display_name(self.caller)} to building zone.")
             
         elif switch == "removeroom":
@@ -463,7 +532,12 @@ class CmdManageBuilding(MuxCommand):
             if lobby and 'connected_rooms' in lobby.db.housing_data and location.dbref in lobby.db.housing_data['connected_rooms']:
                 lobby.db.housing_data['connected_rooms'].remove(location.dbref)
                 
+            # Reset room data
             location.db.housing_data['building_zone'] = None
+            location.db.housing_data['is_housing'] = False
+            location.db.roomtype = "Room"
+            location.db.resources = 0
+            
             self.caller.msg(f"Removed {location.get_display_name(self.caller)} from building zone.")
             
         elif switch == "info":
@@ -508,9 +582,14 @@ class CmdManageBuilding(MuxCommand):
                         room = self.caller.search(dbref)
                         if room:
                             room.db.housing_data['building_zone'] = None
+                            room.db.housing_data['is_housing'] = False
+                            room.db.roomtype = "Room"
+                            room.db.resources = 0
                             
             # Reset housing data
             self.initialize_housing_data(location)
+            location.db.roomtype = "Room"
+            location.db.resources = 0
             self.caller.msg("Cleared building zone data.")
 
 class CmdSetLock(MuxCommand):
