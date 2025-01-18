@@ -1,0 +1,492 @@
+[
+    {
+        "name": "Language",
+        "description": "You understand another form of communication.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [1],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Dark Triad",
+        "description": "A charming (and chilling) blend of narcissism, Machiavellianism, and sociopathy makes you a smooth-talking rule-breaker. Many people find your Fuck Authority attitude seductive, and they follow your lead even when it's not in their best interests to do so.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits", 
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Stormwarden",
+        "description": "Despite the fury of the Avatar Storm, some people remain immune. With this Merit, you possess that precious rare immunity – the ability to reach through and travel beyond the Gauntlet without suffering the effects of the Storm.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3, 5],
+        "splat": "Mage",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Too Tough to Die",
+        "description": "You're badass enough to shrug off injuries. They still harm you, but they don't stop you. Game-wise, this Merit allows your character to soak lethal damage – NOT aggravated damage.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 p. 644"
+    },
+    {
+        "name": "Time Sense",
+        "description": "You've got an intuitive sense of what time it is in your vicinity. Much like the Rank 1 Time Effect, but without the ability to spot ripples in the time stream, this Merit provides a sort of internal clock that helps you gauge the time of day and the passing of time even when you don't have access to windows, clocks, or other information about time.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 44"
+    },
+    {
+        "name": "Scientific Mystic",
+        "description": "Certain unorthodox technomancers understand that 'mysticism' is just another form of science whose principles may be understood by a properly Enlightened mind. Although you pursue a technological practice and employ tech-based instruments, you can employ instruments that are traditionally considered to be 'magic' once you've had an opportunity to study them and fit those tools into your scientific paradigm.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 45"
+    },
+    {
+        "name": "Judge's Wisdom",
+        "description": "Through firm self-discipline, you have mastered your emotions to Vulcan perfection. No passion-based assault can rattle your judgment, and the base attacks of heart-twisting fiends have little hold on you.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 46"
+    },
+    {
+        "name": "Family Support",
+        "description": "Your family accepts and supports your supernatural nature.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [1, 2, 3],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Favor",
+        "description": "Someone owes you a significant favor.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [1, 2, 3],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Prestigious Mentor",
+        "description": "Your Mentor (as in the Background Trait of that name) has a reputation that benefits you as well. When you're making social rolls to invoke your influential teacher, reduce the difficulty by -2.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 54"
+    },
+    {
+        "name": "Hideaway",
+        "description": "When you need time to yourself, there's a place you can go to that no one knows about except you. It's small, yeah, and remote enough that your friends and enemies can't find you there.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [2, 4, 6],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 55"
+    },
+    {
+        "name": "Natural Leader",
+        "description": "You have a natural talent for leadership and command.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Officially Dead",
+        "description": "According to the authorities, you're no longer among the living. Perhaps you've successfully faked your own death, or had it faked for you when you assumed a new identity.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 56"
+    },
+    {
+        "name": "Prestige",
+        "description": "Also known as Reputation, this Merit reveals you as an honored personage within your Tradition, Convention, Craft, or another sort of sect. Among your peers, you add three extra dice to all social rolls used to influence folks within that group.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 56"
+    },
+    {
+        "name": "Noted Messenger",
+        "description": "You are known and respected as a messenger between groups.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Rising Star",
+        "description": "Within your group, you're an up-and-coming luminary. Your superiors favor you, your peers respect you, handfuls of haters despise you (of course!), and folks who pay attention to the group's activities have noticed your progress, and they approve.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 58"
+    },
+    {
+        "name": "Master of Red Tape",
+        "description": "A savant of bureaucracy, you slash your way through official obstructionism. When red tape unspools across your path, you know who to talk to, which forms to fill out, and where the loopholes are.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "social",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 58"
+    },
+    {
+        "name": "Burning Aura",
+        "description": "To those who can sense it, your aura burns with amazing brilliance and clarity. Even folks who can't actually perceive this bright corona of energy realize that you're 'different.'",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 68"
+    },
+    {
+        "name": "Green Thumb",
+        "description": "Plants flourish from your touch. Although they don't bloom and grow on contact, they do attain a healthy boost when you work with them.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 69"
+    },
+    {
+        "name": "Bardic Gift",
+        "description": "Blessed with uncanny inspiration, you create profoundly evocative artwork. Truth echoes through your words, blazes from your canvas, resonates in song, speaks silently in dance.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 69"
+    },
+    {
+        "name": "Circumspect Avatar",
+        "description": "You've never seen your Avatar, and probably doubt that such a thing exists. Sure, you have a shadow, and a reflection, or maybe a little dog who's followed you around since you were a kid and seems no older even though he should have died of old age years ago, but an Avatar? Nah – that's a buncha New Age hippie crap!",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 69"
+    },
+    {
+        "name": "Unaging",
+        "description": "The years seem to pass you by. Time moves on, but you remain essentially the same physical age as you were when this Merit stopped your aging process.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 69"
+    },
+    {
+        "name": "Celestial Affinity",
+        "description": "You get along especially well with a certain type of spirit entity. Depending upon your practice, you might relate well with nature spirits, High Umbral Courtiers, Digital Web entities, the Restless Dead, the Loa, angelic or demonic beings, and so forth.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 70"
+    },
+    {
+        "name": "Cloak of the Seasons",
+        "description": "Adverse weather does not bother you. Regardless of your clothing or lack thereof, you're essentially immune to the effects of exposure to harsh climates.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 70"
+    },
+    {
+        "name": "Cyclic Magick",
+        "description": "The strength or weakness of your Arts is tied to some periodic cycle – the phases of the moon, night or day, your menstrual periods, the rise and fall of the stock market, and so forth.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 70"
+    },
+    {
+        "name": "Hands of Daedalus",
+        "description": "You've got an innate gift for crafting machines and technology. Such devices seem to come to life in your hands, fitting easily into place and functioning with incredible precision once you've worked with 'em.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 71"
+    },
+    {
+        "name": "Manifest Avatar",
+        "description": "For most mages, the Avatar remains a mysterious figure, goading them from the sidelines and appearing primarily within a Seeking or during other moments of intense stress. For you, however, the Avatar is a vibrant presence in your life, as real to you as anyone else.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 71"
+    },
+    {
+        "name": "Mark of Favor",
+        "description": "A godlike entity has claimed you as its own, and has stamped your features with evidence of that claim. You might have the bushy red hair and sly eyes of Reynard the Fox, the hearty temper and brawny build of Thor, the compassionate fury of the Christ in your eyes, or Legba's lame leg and penchant for corncob pipes and tobacco.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 71"
+    },
+    {
+        "name": "Natural Channel",
+        "description": "You have an innate connection to the spirit world.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Natural Shapeshifter",
+        "description": "Guided by an innate affinity for metamorphosis, you can change your shape more easily than most mages do. Such changes still demand the usual Life Sphere Ranks and Effects, but your difficulty for such rolls is reduced by -2.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 72"
+    },
+    {
+        "name": "Oracular Ability",
+        "description": "Everything, to you, has a richer significance than it might otherwise appear. The flight of birds, the fall of cards, the patterns of sand after a wave, a spatter of sacrificial blood... in your eyes, they're all clues to the Universal Mystery.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 72"
+    },
+    {
+        "name": "Parlor Trick",
+        "description": "You've honed a special trick – a simple, specific, non-combat application of your Arts – which you can perform without making a casting roll.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 73"
+    },
+    {
+        "name": "Spirit Magnet",
+        "description": "Ephemeral entities flock to your presence. The essence of who you are – benign or malignant – draws spirits to you, and they, in turn, affect the essence of who you are.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3, 4, 5, 6, 7],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 73"
+    },
+    {
+        "name": "Spirit Mentor",
+        "description": "A ghost, Loa, or other ephemeral entity has taken a special interest in you. As an expression of favor, this entity teaches you things few mortals ever have the opportunity to learn.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 74"
+    },
+    {
+        "name": "Deathwalker",
+        "description": "The Underworld welcomes you. While most Umbral travelers are more or less barred from the Shadowlands and Low Umbra unless they possess special magicks (or have died), you can step sideways into the Dead Lands with a simple application of Spirit 3.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 74"
+    },
+    {
+        "name": "Fae Blood",
+        "description": "Your veins pulse with the enigmatic blood of the fae. Although not a full changeling, you possess a distant tie to the Dreaming by way of your strange heritage.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 74"
+    },
+    {
+        "name": "Shapechanger Kin",
+        "description": "Through a distant but noticeable quirk of lineage, you share a touch of the Changing Blood. In plain English, you're related to one of the were-breeds: werewolves, werecats, werecrows, and so forth.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 74"
+    },
+    {
+        "name": "Twin Souls",
+        "description": "To you, the term soulmate is literally true. Your Avatar has a twin that has been embodied within another mortal body. That other person (typically a human being, but potentially an animal) shares your Nature and Essence, and possibly your Demeanor as well.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 75"
+    },
+    {
+        "name": "Unbondable",
+        "description": "You cannot be bound by supernatural means.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Ghoul",
+        "description": "The blood of vampiric Kindred has made you something more than human. Willingly or otherwise, you have supped on a vampire's blood, and although you're probably not bloodbound to her service any longer (unless you are), that creature's unnatural vitality has become your own.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 75"
+    },
+    {
+        "name": "Clear Sighted",
+        "description": "Even without employing your Arts, you have a preternatural gift for seeing things as they are, not as they appear to be. Illusions, disguises, cloaking spells, and other forms of trickery rarely deceive your eyes.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 75"
+    },
+    {
+        "name": "Immortal",
+        "description": "Thanks to some uncanny gift, you age slowly (if at all) and are extremely hard to kill. This gift comes not from Sphere magick but from a metaphysical legacy or curse that transcends the fleeting nature of the flesh.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5, 7],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 76"
+    },
+    {
+        "name": "Inner Knight",
+        "description": "In your heart of hearts, you're a hero. While your companions work toward their own selfish ends, you embody a higher purpose. This purpose guides you in uncanny ways that feel, at times, as if you're being moved by a force greater than yourself – a noble force, naturally, but one that transcends even your personal Enlightenment.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 77"
+    },
+    {
+        "name": "Legendary Attributes",
+        "description": "Gifted with the strength of Shango or the beauty of Lucifer, you may exceed the human capacity for one Attribute Trait. That Trait is not automatically higher than usual (you still need to spend points to raise the favored Attribute), but you may purchase up to six dots in a given Attribute for your character, exceeding the usual limit of five dots.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 77"
+    },
+    {
+        "name": "Spark of Life",
+        "description": "Blessed with great vitality, you heal injuries with heroic speed and ease. Your own injuries from lethal damage heal as if they were bashing damage, and aggravated damage heals as if it were one level higher than it is.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 78"
+    },
+    {
+        "name": "Nine Lives",
+        "description": "You have an uncanny ability to survive deadly situations.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [6],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Quantum Voyager",
+        "description": "You can travel through the Digital Web without the usual need for a computer interface. Your consciousness simply slides into the virtual realm as if you were stepping sideways into any other Otherworld.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [7],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets p. 79"
+    },
+    {
+        "name": "True Faith",
+        "description": "You possess an unwavering faith that grants supernatural protection.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [7],
+        "splat": "Various",
+        "source": "M20 p. 643"
+    },
+    {
+        "name": "Natural Linguist",
+        "description": "You have a natural talent for languages. Each purchase of the Language Merit gives you two languages instead of just one.",
+        "game_line": "Mage: The Ascension",
+        "category": "merits",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Various",
+        "source": "M20 Book of Secrets p. 44"
+    }
+]

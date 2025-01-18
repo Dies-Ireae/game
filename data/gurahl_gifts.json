@@ -8,8 +8,8 @@
         "values": [
             1
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Healing Tongue",
@@ -20,8 +20,8 @@
         "values": [
             1
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Herb Call",
@@ -32,8 +32,8 @@
         "values": [
             1
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Mask of the Bear Spirit",
@@ -44,20 +44,8 @@
         "values": [
             1
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
-    },
-    {
-        "name": "Resist Pain",
-        "description": "Through force of will, the Gurahl is able to ignore the pain of her wounds and continue acting normally. A bear-spirit teaches this Gift.",
-        "game_line": "Werewolf: The Apocalypse",
-        "category": "powers",
-        "stat_type": "gift",
-        "values": [
-            1
-        ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Salmon Leap",
@@ -68,20 +56,8 @@
         "values": [
             1
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
-    },
-    {
-        "name": "Scent of the True Form",
-        "description": "The Gurahl can detect the true nature of shapeshifters and other supernatural beings through scent. A bear-spirit teaches this Gift.",
-        "game_line": "Werewolf: The Apocalypse",
-        "category": "powers",
-        "stat_type": "gift",
-        "values": [
-            1
-        ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Strength of Purpose",
@@ -92,20 +68,8 @@
         "values": [
             1
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
-    },
-    {
-        "name": "Beast Life",
-        "description": "The Gurahl can communicate with natural animals. Any animal spirit can teach this Gift.",
-        "game_line": "Werewolf: The Apocalypse",
-        "category": "powers",
-        "stat_type": "gift",
-        "values": [
-            2
-        ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Beneath the Surface",
@@ -116,8 +80,8 @@
         "values": [
             2
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Burning Blood",
@@ -128,8 +92,8 @@
         "values": [
             2
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Hibernation",
@@ -140,8 +104,8 @@
         "values": [
             2
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Mother's Touch",
@@ -152,8 +116,8 @@
         "values": [
             2
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Slumber",
@@ -164,8 +128,8 @@
         "values": [
             2
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Territory",
@@ -176,8 +140,8 @@
         "values": [
             2
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Attunement",
@@ -188,8 +152,8 @@
         "values": [
             3
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Curse of the Bear",
@@ -200,8 +164,8 @@
         "values": [
             3
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Healing Sleep",
@@ -212,8 +176,8 @@
         "values": [
             3
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Rage of the Bear",
@@ -224,8 +188,8 @@
         "values": [
             3
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Restore the Land",
@@ -236,8 +200,8 @@
         "values": [
             3
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Ancestral Incarnation",
@@ -248,8 +212,8 @@
         "values": [
             4
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Gift of the Bear Mother",
@@ -260,8 +224,8 @@
         "values": [
             4
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Strength of the Bear",
@@ -272,8 +236,8 @@
         "values": [
             4
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Gaia's Vengeance",
@@ -284,8 +248,8 @@
         "values": [
             5
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Gift of the Spirit Bear",
@@ -296,8 +260,8 @@
         "values": [
             5
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     },
     {
         "name": "Revival",
@@ -308,7 +272,7 @@
         "values": [
             5
         ],
-        "shifter_type": "gurahl",
-        "splat": "Fera"
+        "shifter_type": "Gurahl",
+        "splat": "Shifter"
     }
 ]

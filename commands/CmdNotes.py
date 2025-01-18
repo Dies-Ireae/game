@@ -36,6 +36,8 @@ class CmdNotes(MuxCommand):
       +note/prove <note>=<target(s)> - show any note to a list of targets
       +note/approve[/<category>] <target>/<note> - approve a note (staff only)
       +note/unapprove[/<category>] <target>/<note> - unapprove a note (staff only)
+      +note/delete <note>         - delete one of your notes
+      +note/delete <target>=<note> - delete someone else's note (staff only)
 
       Sample categories: General, Story, Merit, Flaw, Rote, Magick, NPC, Background
       Combo Discipline, Ritual (use for Sabbat or Shifter)
@@ -90,6 +92,8 @@ class CmdNotes(MuxCommand):
                 self.approve_note()
             elif switch == "unapprove":
                 self.unapprove_note()
+            elif switch in ["delete", "del"]:
+                self.delete_note()
             else:
                 self.caller.msg(f"Unknown switch: {switch}")
         else:
@@ -193,7 +197,8 @@ class CmdNotes(MuxCommand):
 
         name, text = self.args.split("=", 1)
         name = name.strip()
-        text = text.strip()
+        # Convert %r markers to newlines, properly handling double %r
+        text = text.strip().replace("%r%r", "\n\n").replace("%r", "\n")
 
         # Handle category in name
         if "/" in name:
@@ -215,7 +220,8 @@ class CmdNotes(MuxCommand):
 
         note_id, text = self.args.split("=", 1)
         note_id = note_id.strip()
-        text = text.strip()
+        # Convert %r markers to newlines, properly handling double %r
+        text = text.strip().replace("%r%r", "\n\n").replace("%r", "\n")
 
         if self.caller.update_note(note_id, text=text):
             self.caller.msg(f"Note '{note_id}' updated.")
@@ -608,14 +614,57 @@ class CmdNotes(MuxCommand):
 
         output += divider("", width=width, fillchar="-", color="|r") + "\n"
         
-        # Note content
-        content_lines = note.text.replace('|/', '\n').split('\n')
+        # Note content - properly handle line breaks
+        text = note.text.strip()
+        # Split on actual newlines, preserving empty lines for spacing
+        content_lines = text.split('\n')
         wrapped_lines = []
         for line in content_lines:
             if line.strip():
-                wrapped_lines.append(wrap_ansi(line.strip(), width=width-2))
-        output += '\n'.join(wrapped_lines) + "\n"
+                # Add a space before each non-empty line for better readability
+                wrapped_lines.extend([' ' + l for l in wrap_ansi(line.strip(), width=width-2).split('\n')])
+            else:
+                wrapped_lines.append('')  # Preserve empty lines
 
+        output += '\n'.join(wrapped_lines) + "\n"
         output += footer(width=width, fillchar="|r=|n")
         self.caller.msg(output)
+
+    def delete_note(self):
+        """Delete a note."""
+        if not self.args:
+            self.caller.msg("Usage: +note/delete <note> or +note/delete <target>=<note>")
+            return
+
+        # Handle staff deleting other player's notes
+        if "=" in self.args and self.caller.check_permstring("Builders"):
+            target_name, note_id = self.args.split("=", 1)
+            target = self.search_for_character(target_name)
+            if not target:
+                return
+        else:
+            target = self.caller
+            note_id = self.args
+
+        # Get the note to verify it exists
+        notes_dict = target.attributes.get('notes', {})
+        note_data = notes_dict.get(str(note_id))
+
+        if not note_data:
+            self.caller.msg("No note with that ID exists.")
+            return
+
+        # Check permissions
+        if target != self.caller and not self.caller.check_permstring("Builders"):
+            self.caller.msg("You don't have permission to delete notes from other characters.")
+            return
+
+        # Delete the note
+        notes_dict.pop(str(note_id))
+        target.attributes.add('notes', notes_dict)
+
+        # Notify both parties
+        self.caller.msg(f"Note #{note_id} has been deleted.")
+        if target != self.caller:
+            target.msg(f"Your note #{note_id} has been deleted by {self.caller.name}.")
 

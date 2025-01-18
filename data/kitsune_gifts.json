@@ -200,16 +200,6 @@
         "splat": "Shifter"
     },
     {
-        "name": "Blur of the Milky Eye",
-        "description": "As the Ragabash Gift. The Garou's form becomes a shimmering blur, allowing him to pass unnoticed among others. Once the Garou has been seen, however, this Gift is negated until the viewer has again been distracted.",
-        "game_line": "Werewolf: The Apocalypse",
-        "category": "powers",
-        "stat_type": "gift",
-        "values": [1],
-        "shifter_type": "Kitsune",
-        "splat": "Shifter"
-    },
-    {
         "name": "Clear the Mind",
         "description": "As the Children of Gaia Gift: Calm. This Gift imparts the secret of quelling the anger in others.",
         "game_line": "Werewolf: The Apocalypse",

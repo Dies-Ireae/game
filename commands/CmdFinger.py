@@ -36,8 +36,9 @@ class CmdFinger(MuxCommand):
 
     def get_idle_time(self, target):
         """
-        Calculate idle time in seconds.
+        Calculate idle time in seconds. Returns None if offline.
         """
+        # Check if account is connected
         if not target.sessions.count():
             return None
             
@@ -104,24 +105,31 @@ class CmdFinger(MuxCommand):
         if self.args.lower().strip() == "me":
             target = self.caller
         else:
-            # First try direct name match (with quiet=True)
-            chars = self.caller.search(self.args, global_search=True, 
-                                     typeclass='typeclasses.characters.Character',
-                                     quiet=True)
+            # Clean up the search term by removing quotes
+            search_term = self.args.strip("'\"").strip()
             
-            # Handle if search returns a list
-            target = chars[0] if isinstance(chars, list) else chars
+            # First try direct name match - remove typeclass restriction to find offline characters
+            target = self.caller.search(search_term, global_search=True, quiet=True)
             
+            # If search returns a list, get first match if available
+            if isinstance(target, list):
+                target = target[0] if target else None
+                
             # If no direct match, try alias
             if not target:
-                target = Character.get_by_alias(self.args.lower())
+                target = Character.get_by_alias(search_term.lower())
 
             if not target:
-                self.caller.msg(f"Could not find character '{self.args}'.")
+                self.caller.msg(f"This character does not exist.")
                 return
 
-        # Get basic character info
-        full_name = target.db.stats.get('identity', {}).get('personal', {}).get('Full Name', {}).get('perm', target.key)
+        # Get basic character info - modified to handle None case
+        try:
+            full_name = target.db.stats.get('identity', {}).get('personal', {}).get('Full Name', {}).get('perm', target.key)
+            if full_name is None:
+                full_name = target.key
+        except AttributeError:
+            full_name = target.key
         
         # Calculate idle time
         idle_seconds = self.get_idle_time(target)

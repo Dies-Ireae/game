@@ -1,0 +1,392 @@
+[
+    {
+        "name": "Asthma",
+        "description": "You have difficulty performing strenuous tasks because you cannot breathe properly. With asthma, your lungs only pull in a fraction of the air lungs require. Any time you exert yourself, you must make a Stamina roll or be unable to perform any action on the next round while you catch your breath. You may not take this flaw with the merit \"Strong Lungs\" (Blood Dimmed Tides p.127)",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Bard's Tongue",
+        "description": "You speak the truth, uncannily so. Things you say tend to come true. This is not a facility for blessing or cursing, or an effect that can be ruled by any conscious control. At least once per story, an uncomfortable truth regarding any current situation will appear in your head and through your lips. To avoid speaking prophecy, you must expend a Willpower point and take a Health Level (bashing) from the strain of resisting.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.187"
+    },
+    {
+        "name": "Changeling's Eyes",
+        "description": "Your eyes are a startling color, maybe emerald green, violet, or yellow. This is a sign you are a changeling, recognizable to those who know the ancient lore.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.187"
+    },
+    {
+        "name": "Dangerous Mentor",
+        "description": "Your mentor is lost to Bedlam, or engages in acts that could cause a tremendous uproar. Any wrong committed by your mentor may affect your reputation, and some of your mentor's dangerous schemes may somehow involve you.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.184"
+    },
+    {
+        "name": "Dark Secret",
+        "description": "You have a secret that, if uncovered, would be of immense embarrassment and make you a pariah among your peers. This can be anything from having murdered a noble to secretly being a member of the Shadow Court. While this secret weighs on your mind at all times, it will only surface in occasional stories. Otherwise, it begins to lose its impact.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.184"
+    },
+    {
+        "name": "Impatient",
+        "description": "Action always trumps inaction, and standing around is for grumps. Once per story, if you're forced to wait around instead of acting, make a Willpower roll (difficulty 5). Failure makes you repeatedly insist on action, to the likely annoyance of your motley. If they do not follow your advice, you likely act no matter their attempts to stop you.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.181"
+    },
+    {
+        "name": "Insubordinate",
+        "description": "Following the orders of leaders you do not respect rankles you like nothing else. Whenever such a leader makes a command or request of you, roll Willpower (difficulty 5) and on a failure, you will work against their decree.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.185"
+    },
+    {
+        "name": "Nightmares",
+        "description": "You experience dreadful nightmares whenever you sleep, your consciousness touching some forbidden part of the Dreaming. Fractured recollections haunt you during your waking hours. Upon awakening, you must make a Willpower roll (difficulty 7) or add two to the difficulty of all actions until you sleep again. A botched Willpower roll indicates that, even when awake, you believe you are locked in a nightmare.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.181"
+    },
+    {
+        "name": "Motion Sickness",
+        "description": "A character who suffers from motion sickness is easily unbalanced by the rocking of the sea. The player makes Stamina rolls for seasickness against a base difficulty of 8. A sadistic Storyteller may also require seasickness rolls from the player of such a character in other situations, such as a long car ride...",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Blood Dimmed Tides p.126"
+    },
+    {
+        "name": "Short",
+        "description": "You are well below average height, and find this world is not built for changelings of your stature. You suffer a difficulty penalty of +2 to all pursuit rolls, and you and the Storyteller should make sure your height is taken into account in all situations. In some circumstances, this will give you a concealment bonus.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Twitch",
+        "description": "You've some sort of repetitive motion that manifests in times of stress, and it's a dead giveaway as to your identity. Examples include a nervous cough, constantly wringing your hands, cracking your knuckles, and so on. It costs one Willpower point to refrain from engaging in your tic.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Bizarre Quality",
+        "description": "Mortals find something about you disturbingly fascinating. At inappropriate times, mortals stare at you and strike up conversations in the hopes of getting to know you better. Worse still, mortals of less savory natures will choose you over other potential targets for their illicit acts.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.188"
+    },
+    {
+        "name": "Curiosity",
+        "description": "You're a naturally curious person, your curiosity easily overriding your common sense. To resist temptation, make a Willpower roll. The difficult varies based on the temptation; difficulty 5 for simple things like, \"I wonder what's in the armoire,\" but difficulty 9 for things like, \"I wonder why young men keep going missing around the baron's freehold. I'll just slip in and check it out.\"",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "Intolerance",
+        "description": "You have an unreasoning dislike of a certain thing. This may be a class of person, a situation, or just about anything else. The difficulties of all dice rolls involving the subject — such as conflict, dealing with the lower classes, or having to break bread with a certain kith — are increased by two. Note that some dislikes may be too trivial for this Flaw. The Storyteller is the final arbiter on what you can pick to dislike.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.185"
+    },
+    {
+        "name": "Foul Mouth",
+        "description": "Most people swear, but your use of profanity puts nockers to shame. Your mouth spews forth a never-ending torrent of obscenities. Others know when enough is enough, but you just keep going. This Flaw precludes you from ever holding a respectable job of any kind in human society and increases the difficulty of Social rolls by two, when politeness is necessary",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.185"
+    },
+    {
+        "name": "Possessive",
+        "description": "You obsess over and jealously hoard your possessions. When others attempt to use your equipment — whether it be your car, sword, clothes, or bed — you must make a Willpower roll (difficulty 7). On a failure you vehemently refuse to allow anyone to touch your things, and will lash out if they push the subject. On a botch you immediately act violently when someone attempts to handle anything you own.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.185"
+    },
+    {
+        "name": "Short Fuse",
+        "description": "The slightest provocation against you or one of your close companions compels you to lash out with fists, feet, or whatever comes to hand. When incited, you must make a Willpower roll to compose yourself, with the difficulty decided upon by the Storyteller based on the severity of the insult.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "Soft Hearted",
+        "description": "You cannot stand watching others suffer. You object to any situation involving causing someone pain, and will leave the immediate area unless you make a Willpower roll.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "Unable to Swim",
+        "description": "The character never learned how to swim, or has been taught but reverts to helpless flailing. Consider this character's Athletics rating to be zero for purposes of the above movement rules. A character cannot take this flaw unless they have at least one dot in Athletics. This flaw may be bought off after some time spent undergoing swimming lessons.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Blood Dimmed Tides p.126"
+    },
+    {
+        "name": "Vengeful",
+        "description": "There's a score to settle with someone in your life. The thought of sweet revenge skews every plan you make whether you know it or not. Whenever you encounter the focus of your vengeance, little can stop you from taking reparations. You may temporarily resist your need by spending a Willpower point.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "Winged",
+        "description": "You have beautiful wings, be they feathered bird's wings, bat wings or colored butterfly wings. They are chimerical, but they need to be free, or they increase the difficulty of Dexterity rolls by one. You may have to explain why you have cut slits in all of your coats. If you have taken this as a Flaw, you are not able to fly.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.188"
+    },
+    {
+        "name": "Wyld Mind",
+        "description": "Your mind is extremely chaotic and unpredictable. As a result, you have difficulty concentrating on any one task. You must make a Willpower roll (difficulty 4) for every extended action roll after the second.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "Weak-Willed",
+        "description": "You're highly susceptible to mind-altering magic, hypnosis, and intimidation by others; your difficulties to resist Social abilities such as Intimidation or Leadership, as well as mindaltering spells, are increased by two. Your Willpower Trait may never rise above 4.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [3],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "Guilt Wracked",
+        "description": "You did something appalling enough to burden you with guilt in every waking hour. Whether it was murder, neglect, or destruction of something dear, you committed a crime and cannot put it right. Whenever you're presented with a situation similar to your crime, you must make a Willpower roll (difficulty 8) to remain composed. Failure results in a breakdown for the remainder of the scene, rendering most tasks impossible and increasing the difficulty of all rolls by three. Even with a success, your body reacts nervously and the difficulty of all rolls increases by one as you attempt to conceal your guilt. Few will be sympathetic should your guilt become known.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [4],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.182"
+    },
+    {
+        "name": "On Probation",
+        "description": "You defected from an enemy faction, and still have much to prove before the group you turned to accepts you. Other changelings treat you with distrust and even hostility, and your reputation will even sully those with whom you regularly associate. This does not indicate having switched from Seelie to Unseelie legacy but would certainly include someone who has had dalliances with the Shadow Court.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [4],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.185"
+    },
+    {
+        "name": "Parfum de Goat",
+        "description": "The goat musk is a unique, horrific scent that makes the eyes water. You are a walking, breathing sachet of smelly goat. This Flaw isn't restricted to satyrs, but is most common among them. Satyrs and redcaps are not bothered by your musk. Other kiths must be convinced against maintaining a distance from you, no matter the situation. This hinders your chances for romance, titles, and even simple chats. The difficulty of all social rolls involving any beings with sense of smell other than satyrs and redcaps is increased by three.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [4],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.180"
+    },
+    {
+        "name": "Chimerical Magnet",
+        "description": "Chimera notice you more often than usual. In some cases, this is beneficial, but more often than not it causes problems. Chimerical beasts on a rampage will tend to turn on you before attacking others. Nervosa find you irresistible, and sprites of all types prank you constantly.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.189"
+    },
+    {
+        "name": "Addiction",
+        "description": "You suffer from an addiction to a substance or experience. If the addiction is to something sedative and a fix cannot be obtained, you should roll to avoid triggering a gain of temporary Banality, as the mists of fugue gnaw at you. If the addiction is to something stimulating and a fix cannot be obtained, the Storyteller can choose to give you a point of Nightmare or even an Imbalance. For a one-point Flaw, the addiction must be satiated weekly; for a two-point Flaw, the addiction must be satiated daily; for a three-point Flaw, the addiction must be satiated after an hour of sobriety.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [1, 2, 3],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Allergic",
+        "description": "You're allergic to a substance. For one point, you get hives, sneeze or become dizzy upon prolonged contact with your bane, for two points, you swell up uncomfortably in the affected area, increasing all difficulties by one, and for three points, your reaction actually incapacitates you, increasing all difficulties by three. If the substance is really common in your chronicle, add an additional point to this Flaw. A redcap who accidentally eats something they're allergic to is in trouble. A Stamina roll is required, otherwise they'll immediately vomit everything in their stomach. Furthermore, any time they want to do anything more strenuous than walk for the next half hour, a Willpower roll is necessary to see if another attack of nausea hits.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1, 2, 3, 4],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Bad Sight",
+        "description": "Your sight is defective. The difficulties of any die rolls involving the use of your eyesight are increased by two. As a one-point Flaw, this condition can be corrected with glasses or contacts, as a three-point Flaw, the condition is too severe to be corrected, and as a six-point Flaw, you are blind and difficulties of all Dexterity-based rolls are increased by two with Perception rolls based purely on eyesight failing automatically.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1, 3, 6],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Enemy",
+        "description": "You have an enemy, or perhaps a group of enemies, who want you harmed. The value of the Flaw determines how powerful these enemies are. The most powerful enemies (kings or impossible horrors from the Dreaming) would be five-point Flaws, while someone nearer to or below your own power would be worth only one point. You must decide who your enemy is and how you earned such enmity in the first place.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.184"
+    },
+    {
+        "name": "Geas",
+        "description": "You are under a geas at the beginning of play, most likely a Ban, but possibly a long-term quest. This geas may be a family curse or duty you inherited, or a changeling Art imposed it on you. The difficulty of the geas determines how great a Flaw it is. Something minor, such as a Ban against harming animals, would only be worth one point. More difficult geas are worth more points. A five-point geas is something that rules your entire life, like a quest that requires you to render aid to anyone in need you encounter. The Storyteller decides the exact value of whatever geas you choose.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.187"
+    },
+    {
+        "name": "Impaired Hearing",
+        "description": "You have flawed hearing. The difficulties of any die rolls involving listening are increased by two. As a one-point Flaw, this condition can be corrected with a hearing aid or ear implant, as a two-point Flaw, the condition is too severe to be corrected, and as a four-point Flaw, you are completely deaf and all hearing based rolls fail.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1, 2, 4],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Oathbound",
+        "description": "Your life depends on something you must or must not do. It may be something that has always been upon you, or a sacred oath you swore. Someone who witnessed it will always hold you to it. If you disobey, the consequences will be dire. You may have several oaths, and these may come into conflict. Most changelings keep their prohibitions and imperatives secret, lest enemies use them as weapons. Storytellers should examine each oath and assign a point value to it, as well as to the punishment for violating it. Easily avoided circumstances, such as \"Never break bread with a redhaired man,\" are worth one point, while more common, or difficult, things, such as \"Stop and pet every cat you see,\" are worth two points, and particularly drastic or dangerous circumstances, such as \"Never back down from a fight,\" are worth three (or more) points. Consequences are worth points as well. Automatically botching the next major cantrip you do is worth one point, having bad luck for the rest of your life is worth two, losing all your friends and worldly possessions is worth three, dying is worth four, and being deserted by your faerie soul five. If you accidentally violate your oath, you may attempt to atone for the crime, fixing whatever you did wrong. However, if you violate an oath willingly and with full knowledge — and survive — you become an oathbreaker, one of the foulest epithets among changelings.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.187"
+    },
+    {
+        "name": "Polluted/Defaced (Inanimae)",
+        "description": "Your Anchor has been permanently damaged, either indirectly by pollution (acid rain, industrial dumping, smog, etc.) or directly by human action (cuts in the bark, cracks made in rock with chisel). This affects you by making you sickly and weak. For each point of the flaw you have above, remove a soak die and add +1 difficulty on Social rolls involving members of your own phylum.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1, 2, 3],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.444"
+    },
+    {
+        "name": "Slipped Seeming",
+        "description": "Your fae seeming bleeds into your mortal seeming and makes you obvious to mundanes who know what to look for. A one-point Flaw would be a slight bluish cast to the skin of a troll, and a five-point would be a pair of satyr's horns. This may make it difficult to explain yourself to mortals.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.188"
+    },
+    {
+        "name": "Deformed",
+        "description": "A disfigurement makes your appearance disturbing and memorable. When in the presence of those who judge based on appearances, the difficulties of die rolls relating to social interaction are increased by two. You may not have an Appearance rating greater than 2. As a three-point Flaw your deformity also raises the difficulty by two for rolls of one chosen Physical Attribute, as your deformity afflicts your mobility.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [2, 3],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Too Human",
+        "description": "Your fae side struggles to penetrate that of your mortal seeming. As a two-point Flaw, this makes all changelings view you warily. Social rolls increase in difficulty by two until you make an action inarguably proving your fae nature. As a five-point Flaw, the wariness other changelings feel towards you becomes antipathy, as you also lose one of your kith's Birthrights. You choose which one to sacrifice.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.179"
+    },
+    {
+        "name": "Iron Allergy",
+        "description": "Most of the Kithain only suffer pain when in contact with cold iron. You suffer from actual wounds. Cold iron reacts like a hot brand when touching your skin. For each turn in contact with iron, you suffer one Health Level of chimerical damage. As a four-point Flaw, you take one Health Level of real damage for every three turns in contact with cold iron. As a five-point Flaw, you suffer this damage if you stand within a foot (30cm) of the iron and you take one Health Level of aggravated damage for every turn spent in contact with cold iron.",
+        "game_line": "Changeling: The Dreaming",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3, 4, 5],
+        "splat": "Changeling",
+        "source": "Changeling: the Dreaming p.189"
+    }
+]

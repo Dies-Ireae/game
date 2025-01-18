@@ -26,7 +26,7 @@ class CmdFaeDesc(MuxCommand):
 
         target, description = self.args.split("=", 1)
         target = target.strip().lower()
-        description = description.strip()
+        description = description.strip().replace("%r", "\n").replace("\n\n", "\n")
 
         if target == "me":
             if hasattr(caller, 'set_fae_description'):

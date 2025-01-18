@@ -639,9 +639,10 @@ class CmdSheet(MuxCommand):
                 discipline_value = values.get('perm', 0)
                 powers.append(format_stat(discipline, discipline_value, default=0, width=38))
             
-            # Combo Disciplines
-            combo_disciplines = character.db.stats.get('powers', {}).get('combodisc', {})
+            # Add Combo Disciplines section
+            combo_disciplines = character.db.stats.get('powers', {}).get('combodiscipline', {})
             if combo_disciplines:
+                powers.append(" " * 38)  # Add blank line for spacing
                 powers.append(divider("Combo Disciplines", width=38, color="|b"))
                 for combo, values in combo_disciplines.items():
                     combo_value = values.get('perm', 0)

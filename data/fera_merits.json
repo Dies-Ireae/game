@@ -1,0 +1,167 @@
+[
+    {
+        "name": "Constant Sending",
+        "description": "The character's Lorenzini's ampullae remain in all forms, allowing him to use the Sending even in Homid form.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Shifter",
+        "shifter_type": "Rokea",
+        "source": "W20 Changing Breeds, pg. 207"
+    },
+    {
+        "name": "Manshape",
+        "description": "The character's Archid form is very humanoid — a callback to the Lizard Kings with a reptilian head, the size of a Crinos Garou. The character must have the Archid characteristics: Upright Walking and Grasping Hands to buy this Merit. Manshape allows the Mokolé in Archid form to pass as human in poor light, though anyone seeing the character's scaly skin still suffers the Delirium.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Shifter",
+        "shifter_type": "Mokole",
+        "source": "W20 Changing Breeds, pg. 207"
+    },
+    {
+        "name": "Double Draught",
+        "description": "Unlike most Corax, the character can drink from both of a dead man's eyes, seeing the best and the worst of the corpse's death.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2],
+        "splat": "Shifter",
+        "shifter_type": "Corax",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Gauntlet Runner",
+        "description": "The character is able to squeeze through the Gauntlet in the presence of any manner of company — even in front of a room full of human witnesses.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [2],
+        "splat": "Shifter",
+        "shifter_type": "Ratkin",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Good-Looking",
+        "description": "Unlike most Rokea, who are rough-looking in homid form at best, the character looks completely human and may start with as high an Appearance score as the player desires. Homid Rokea do not need to purchase this Merit.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [2],
+        "splat": "Shifter",
+        "shifter_type": "Rokea",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Spitting Cobra",
+        "description": "Unlike most Nagah, the character's Vasuki form is that of a spitting cobra or other snake that can project its venom. She can spit venom in any form other than Balaram.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [2],
+        "splat": "Shifter",
+        "shifter_type": "Nagah",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Free of the Yava",
+        "description": "Perhaps the character was granted a special blessing by a powerful spirit; perhaps they are simply a strange prodigy of the world. For whatever reason, the character does not suffer the restriction of one or more Yava: 3 points grants freedom from one Yava, 4 from two Yava, and 5 from all Yava.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3, 4, 5],
+        "splat": "Shifter",
+        "shifter_type": ["Ajaba", "Bastet"],
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Early Maturation",
+        "description": "For some reason the character emerged as an auspice other than Arcas. Perhaps her First Change came late in life, or her early years contained so much strife and upheaval that her change catapulted her directly into another auspice. The character begins play as an Uzmati, Kojubat, Kieh, or a Rishi, and must choose her starting auspice Gift from Level One Gifts on that auspice's Gift list.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Shifter",
+        "shifter_type": "Gurahl",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Venomous",
+        "description": "The Ananasi retains her venom sacs even when in homid form. In homid, she may use any of her venom-based Gifts that are normally restricted to other forms.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [3],
+        "splat": "Shifter",
+        "shifter_type": "Ananasi",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Infrared Vision",
+        "description": "The character can detect heat sources out to about 50 feet in all forms other than Balaram. This Merit is most common among Nagah whose snake form comes from the Crotalinae subfamily (pit vipers, rattlesnakes, fers-del-lance and moccasins).",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [4],
+        "splat": "Shifter",
+        "shifter_type": "Nagah",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Swim Sideways",
+        "description": "The wereshark has a natural connection to Sea's Soul, and can swim there in much the same manner as a Garou steps sideways, without the requirement for a reflective object. The Rokea can only use this talent in seas and oceans; weresharks who can also Step Sideways on land should look to that Merit instead.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Shifter",
+        "shifter_type": "Rokea",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Feral Near-Man",
+        "description": "The character's near-man form (Glabro, Anthros, Sokto, etc) is unusually savage in profile; perhaps this is a result of countless hours of shapeshifting refinement, or maybe the character was just born nasty. Either way, the Changer's near-human form sports wicked claws capable of inflicting aggravated damage.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [5],
+        "splat": "Shifter",
+        "shifter_type": ["!Ananasi", "!Corax", "!Mokole", "!Ratkin"],
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Gender-Morph",
+        "description": "The character can change their human sex at will, by breaking into the Crawlerling form and reforming as a human again. This can come in handy when being chased; not only are pursuers unlikely to confuse a man for a woman, but the character's scent even changes in order to throw off Garou and other keen-nosed hunters. Aside from the sex switch, this doesn't grant a radical change in appearance — both sexes have similar features and look sufficiently alike to be siblings.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "physical",
+        "values": [6],
+        "splat": "Shifter",
+        "shifter_type": "Ananasi",
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Cat/Fox Magic",
+        "description": "In addition to the blessings of Luna and Gaia, the character has a rare aptitude for lesser human magic—she is capable of learning what mages call 'hedge magic.' The character can use this talent to mimic Gifts and rites from any Changing Breed, and can develop her own mystic rites given time and Storyteller approval. For a more in-depth treatment of hedge magic, see Sorcerer Revised.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [7],
+        "splat": "Shifter",
+        "shifter_type": ["Bastet", "Kitsune"],
+        "source": "W20 Changing Breeds, pg. 208"
+    },
+    {
+        "name": "Step Sideways",
+        "description": "Unlike normal members of her Breed, the character may step sideways in the manner of the Garou. While almost all members of her Breed can access the Umbra through Gifts or Rites, the character has an inherent connection to the spirit world. Perhaps this is a particular blessing from a powerful spirit, or perhaps it is as much a mystery to her as it is to everyone else.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "merits",
+        "stat_type": "supernatural",
+        "values": [7],
+        "splat": "Shifter",
+        "shifter_type": ["Bastet", "Gurahl", "Mokole", "Nagah", "Rokea"],
+        "source": "W20 Changing Breeds, pg. 209"
+    }
+] 
