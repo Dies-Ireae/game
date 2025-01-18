@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Spider's Grace",
+        "description": "The Ananasi can move with incredible agility and grace, defying gravity. A spider-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Ananasi",
+        "splat": "Shifter"
+    },
+    {
+        "name": "Venom's Touch",
+        "description": "The Ananasi can secrete a deadly venom through their skin. A spider-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Ananasi",
+        "splat": "Shifter"
+    },
+    {
+        "name": "Web Sense",
+        "description": "The Ananasi can sense vibrations in their webs, alerting them to intruders. A spider-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Ananasi",
+        "splat": "Shifter"
+    }
+]

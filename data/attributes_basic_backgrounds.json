@@ -1,0 +1,169 @@
+[
+    {
+        "name": "Strength",
+        "description": "Physical power and muscle.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "physical",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Dexterity",
+        "description": "Agility, reflexes, and coordination.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "physical",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Stamina",
+        "description": "Endurance, health, and resilience.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "physical",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Charisma",
+        "description": "Charm, personal magnetism, and influence.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "social",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Manipulation",
+        "description": "Ability to influence and deceive.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "social",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Appearance",
+        "description": "Physical attractiveness and ability to impress.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "social",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Perception",
+        "description": "Awareness and ability to notice details.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "mental",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Intelligence",
+        "description": "Cognitive capacity and ability to learn.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "mental",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Wits",
+        "description": "Quick thinking and mental agility.",
+        "game_line": "Various",
+        "category": "attributes",
+        "stat_type": "mental",
+        "values": [0, 1, 2, 3, 4, 5],
+        "default": 1
+    },
+    {
+        "name": "Allies",
+        "description": "Confederates, usually family or friends.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Contacts",
+        "description": "The information sources the character possesses.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Fame",
+        "description": "How well-known the character is among humans.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Generation",
+        "description": "How far removed from Caine the character is.",
+        "game_line": "Vampire: The Masquerade",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5, 6],
+        "splat": "Vampire"
+    },
+    {
+        "name": "Herd",
+        "description": "The vessels to which the character has free and safe access.",
+        "game_line": "Vampire: The Masquerade",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Vampire"
+    },
+    {
+        "name": "Influence",
+        "description": "The character's political power within human society.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Mentor",
+        "description": "A patron who advises and supports the character.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Various"
+    },
+    {
+        "name": "Resources",
+        "description": "Wealth, belongings, and income.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5]
+    },
+    {
+        "name": "Retainers",
+        "description": "Followers, guards, and servants.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Various"
+    },
+    {
+        "name": "Status",
+        "description": "A measure of the character's standing in a society, supernatural or otherwise.",
+        "game_line": "Various",
+        "category": "backgrounds",
+        "stat_type": "background",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Various"
+    }
+
+]

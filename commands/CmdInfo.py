@@ -4,6 +4,7 @@ from world.wod20th.models import Stat, STAT_TYPES, SHIFTER_IDENTITY_STATS, SHIFT
     UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road
 from evennia.utils.ansi import ANSIString
 from evennia.utils.evtable import EvTable
+from django.db.models import Q
 
 class CmdInfo(MuxCommand):
     """
@@ -28,16 +29,24 @@ class CmdInfo(MuxCommand):
       +info/type gift    - View all gifts
       +info/shifter ananasi - View all Ananasi gifts
     """
-    key = "info"
-    aliases = []
-    help_category = "Chargen & Character Info"
+    key = "+info"
+    aliases = ["info"]
+    locks = "cmd:all()"
+    help_category = "Chargen"
+    
+    valid_types = [
+        "attribute", "ability", "secondary ability", 
+        "power", "advantage", "supernatural",
+        "merit", "flaw", "identity", "other",
+        "gift", "discipline", "combodiscipline"
+    ]
     
     # Group similar stat types together
     DISPLAY_CATEGORIES = {
         'Attributes': ['physical', 'social', 'mental'],
         'Abilities': ['skill', 'knowledge', 'talent', 'ability'],
         'Secondary Abilities': ['secondary_knowledge', 'secondary_talent', 'secondary_skill', 'secondary_ability'],
-        'Powers': ['discipline', 'gift', 'art', 'sphere', 'bygone_power'],
+        'Powers': ['discipline', 'gift', 'art', 'sphere', 'bygone_power', 'combodiscipline'],
         'Advantages': ['advantage', 'background'],
         'Supernatural': ['lineage', 'enlightenment', 'path'],
         'Merits & Flaws': ['merit', 'flaw'],
@@ -80,16 +89,40 @@ class CmdInfo(MuxCommand):
             self.caller.msg(f"No matches found for '{self.args.strip()}'.")
 
     def format_header(self, text, width=78):
-        return f"|r{'=' * 5}< |w{text}|r >{'=' * (width - len(text) - 9)}|n\n"
+        """Format a header with consistent width."""
+        return "\n" + "|r=|n" * 5 + "< " + f"|w{text}|n" + " >" + "|r=|n" * (width - len(text) - 8) + "\n"
 
     def format_footer(self, width=78):
-        return f"|r{'=' * width}|n\n"
+        """Format a footer with consistent width."""
+        return f"|r=|n" * width + "\n"
+
+
 
     def match_category(self, input_str):
         """Match category and return tuple of (key, display_name)."""
         input_str_lower = input_str.lower()
         
-        # Check display categories first
+
+        # Handle common singular/plural forms
+        category_mappings = {
+            'merit': ('merit', 'Merits & Flaws'),
+            'merits': ('merit', 'Merits & Flaws'),
+            'flaw': ('flaw', 'Merits & Flaws'),
+            'flaws': ('flaw', 'Merits & Flaws'),
+            'discipline': ('discipline', 'Powers'),
+            'disciplines': ('discipline', 'Powers'),
+            'gift': ('gift', 'Powers'),
+            'gifts': ('gift', 'Powers'),
+            'power': ('power', 'Powers'),
+            'powers': ('power', 'Powers'),
+        }
+        
+        # Check direct mappings first
+        if input_str_lower in category_mappings:
+            return ([category_mappings[input_str_lower][0]], category_mappings[input_str_lower][1])
+        
+        # Check display categories next
+
         for display_name, stat_types in self.DISPLAY_CATEGORIES.items():
             if input_str_lower == display_name.lower():
                 return (stat_types, display_name)
@@ -100,13 +133,32 @@ class CmdInfo(MuxCommand):
         
         return None
     
-    def match_subject(self, input_str, only_splat):
-        results = Stat.objects.filter(name__iexact=input_str)
-        if (only_splat != ''):
-            results = results.filter(splat__iexact=only_splat)
-        if not results:
-            return None # Return None is no match is found
-        return results[0]
+    def match_subject(self, input_str, only_splat=''):
+        """Match a specific subject by name."""
+        input_str_lower = input_str.lower()
+        
+        # Handle special cases for combo disciplines
+        if input_str_lower in ['combo', 'combo discipline', 'combodiscipline']:
+            input_str_lower = 'combodiscipline'
+        
+        # Build query
+        query = Q(name__iexact=input_str_lower)
+        
+        # Add splat filter if specified
+        if only_splat:
+            query &= Q(splat__iexact=only_splat)
+            
+        # Try exact match first
+        result = Stat.objects.filter(query).first()
+        if result:
+            return result
+            
+        # Try partial match if no exact match found
+        query = Q(name__icontains=input_str_lower)
+        if only_splat:
+            query &= Q(splat__iexact=only_splat)
+            
+        return Stat.objects.filter(query).first()
 
     def list_categories(self):
         string = self.format_header("+Info Categories", width=78)
@@ -137,52 +189,133 @@ class CmdInfo(MuxCommand):
         stat_types, display_name = category
         string = self.format_header(f"+Info {display_name}", width=78)
         
-        # Query for stats of the specified types
-        results = Stat.objects.filter(stat_type__in=stat_types).order_by('name', 'splat')
+        # Build the base query
+        query = Q(stat_type__in=stat_types)
         
         # Apply splat filter if specified
         if only_splat:
-            results = results.filter(splat__iexact=only_splat)
+            query &= Q(splat__iexact=only_splat)
+            
+        # Get results ordered by name
+        results = Stat.objects.filter(query).order_by('name')
 
         if not results.exists():
-            string += "No results to show.\r\n"
+            string += f"No {display_name.lower()} found"
+            if only_splat:
+                string += f" for {only_splat}"
+            string += ".\r\n"
         elif display_name == "Merits & Flaws":
             # Merit/flaw table formatting
-            table = EvTable("|wName|n", "|wSplat|n", "|wShifter Type|n", "|wType|n", "|wValues|n", border="none")
+            table = EvTable("|wName|n", "|wSplat|n", "|wType|n", "|wValues|n", border="none")
             table.reformat_column(0, width=30, align="l")
             table.reformat_column(1, width=18, align="l")
-            table.reformat_column(2, width=16, align="l")
-            table.reformat_column(3, width=16, align="l")
+            table.reformat_column(2, width=12, align="l")
+            table.reformat_column(3, width=18, align="l")
+
             for result in results:
                 formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
-                table.add_row(result.name, result.splat, result.stat_type, formatted_values)
+                table.add_row(result.name, result.splat or "Any", result.stat_type.title(), formatted_values)
+            string += ANSIString(table)
+        elif display_name == "Powers":
+            # Powers table formatting with type-specific columns
+            table = EvTable("|wName|n", "|wSplat|n", "|wType|n", "|wDetails|n", border="none")
+            table.reformat_column(0, width=25, align="l")
+            table.reformat_column(1, width=15, align="l")
+            table.reformat_column(2, width=15, align="l")
+            table.reformat_column(3, width=23, align="l")
+            for result in results:
+                details = ""
+                if result.stat_type == 'gift':
+                    if result.values:
+                        details = f"Rank {result.values[0]}"
+                    if result.auspice and result.auspice != 'none':
+                        details += f" ({result.auspice})"
+                elif result.stat_type in ['discipline', 'combodiscipline']:
+                    if hasattr(result, 'xp_cost'):
+                        details = f"XP: {result.xp_cost}"
+                table.add_row(
+                    result.name,
+                    result.splat or "Any",
+                    result.stat_type.title(),
+                    details
+                )
             string += ANSIString(table)
         else:
-            # Two-column format for other categories
-            for i, result in enumerate(results):
-                string += result.name.center(39)
-                if i % 2 == 1:
-                    string += "\r\n"
-            if len(results) % 2:  # Add final newline if odd number of results
-                string += "\r\n"
-        
+            # Default two-column format for other categories
+            table = EvTable("|wName|n", "|wSplat|n", border="none")
+            table.reformat_column(0, width=39, align="l")
+            table.reformat_column(1, width=39, align="l")
+            for result in results:
+                table.add_row(result.name, result.splat or "Any")
+            string += ANSIString(table)
+            
+        string += f"\r\n    Found |w{len(results)}|n entries"
+        if only_splat:
+            string += f" for {only_splat}"
+        string += ".\r\n"
+
         string += self.format_footer(width=78)
         self.caller.msg(string)
 
     def show_subject(self, subject):
-        string = self.format_header(f"+Info {subject.name}", width=78)
-        string += f"  |wName:|n {subject.name.ljust(38)}"
-        if subject.values:
-            formatted_values = "None" if not subject.values else str(subject.values[0]) if len(subject.values) == 1 else ", ".join(map(str, subject.values[:-1])) + f", or {subject.values[-1]}"
-            string += f"|wValues:|n {formatted_values}"
-        string += "\r\n"
+        """Show detailed information about a specific subject."""
+        width = 78
+        string = self.format_header(f"+Info {subject.name}", width=width)
+        
+        # Basic info section
+        string += f"  |wName:|n {subject.name}\r\n"
         if subject.splat:
             string += f"  |wSplat:|n {subject.splat}\r\n"
-        # Add shifter_type for gifts
-        if subject.stat_type == 'gift' and subject.shifter_type:
-            string += f"  |wShifter Type:|n {subject.shifter_type.title()}\r\n"
+        if subject.game_line:
+            string += f"  |wGame Line:|n {subject.game_line}\r\n"
+        if subject.values:
+            formatted_values = "None" if not subject.values else str(subject.values[0]) if len(subject.values) == 1 else ", ".join(map(str, subject.values[:-1])) + f", or {subject.values[-1]}"
+            string += f"  |wValue(s):|n {formatted_values}\r\n"
+            
+        # Power-specific info
+        if subject.stat_type == 'gift':
+            if subject.shifter_type:
+                if isinstance(subject.shifter_type, list):
+                    shifter_types = ", ".join(stype for stype in subject.shifter_type)
+                else:
+                    shifter_types = subject.shifter_type
+                string += f"  |wShifter Type(s):|n {shifter_types}\r\n"
+            if subject.auspice and subject.auspice != 'none':
+                if isinstance(subject.auspice, list):
+                    auspices = ", ".join(auspice for auspice in subject.auspice)
+                    string += f"  |wAuspices:|n {auspices}\r\n"
+                else:
+                    string += f"  |wAuspice:|n {subject.auspice}\r\n"
+            if subject.breed and subject.breed != 'none':
+                string += f"  |wBreed:|n {subject.breed}\r\n"
+            if subject.tribe:
+                if isinstance(subject.tribe, list):
+                    tribes = ", ".join(tribe for tribe in subject.tribe)
+                else:
+                    tribes = subject.tribe
+                string += f"  |wTribe:|n {tribes}\r\n"
+            if subject.camp:
+                string += f"  |wCamp:|n {subject.camp}\r\n"
+            if subject.source:
+                string += f"  |wSource:|n {subject.source}\r\n"
+        elif subject.stat_type in ['discipline', 'combodiscipline']:
+            if hasattr(subject, 'xp_cost') and subject.xp_cost is not None:
+                string += f"  |wXP Cost:|n {subject.xp_cost}\r\n"
+            if hasattr(subject, 'prerequisites'):
+                if isinstance(subject.prerequisites, (list, tuple)):
+                    prereqs = ", ".join(subject.prerequisites)
+                else:
+                    prereqs = str(subject.prerequisites)
+                string += f"  |wPrerequisites:|n {prereqs}\r\n"
+        
+        # Description and system
+
         string += "\r\n"
-        string += subject.description + "\r\n"
+        if subject.description:
+            string += f"{subject.description}\r\n"
+        if hasattr(subject, 'system') and subject.system:
+            string += f"\n|wSystem:|n {subject.system}\r\n"
+            
         string += self.format_footer(width=78)
         self.caller.msg(string)
     
@@ -194,106 +327,80 @@ class CmdInfo(MuxCommand):
         
         # Remove ignored categories
         valid_stat_types = [st for st in valid_stat_types if st not in self.ignore_categories]
+
         
-        # Perform a case-insensitive search by name
-        matches = Stat.objects.filter(
-            name__icontains=input_str,
+        # First try exact name match
+        exact_matches = Stat.objects.filter(
+            name__iexact=input_str,
             stat_type__in=valid_stat_types
         )
         
-        if not matches.exists():
-            # If no name matches, search by description
-            matches = Stat.objects.filter(
-                description__icontains=input_str,
+        if exact_matches.exists():
+            if len(exact_matches) == 1:
+                return self.show_subject(exact_matches[0])
+            matches = exact_matches
+        else:
+            # Try partial name match
+            name_matches = Stat.objects.filter(
+                name__icontains=input_str,
                 stat_type__in=valid_stat_types
             )
-            if not matches.exists():
-                return self.caller.msg(f"No matches found containing the text '{input_str}'.")
-        
-        if len(matches) == 1:
-            return self.show_subject(matches[0])
+            
+            if name_matches.exists():
+                matches = name_matches
+            else:
+                # If no name matches, search by description
+                matches = Stat.objects.filter(
+                    description__icontains=input_str,
+                    stat_type__in=valid_stat_types
+                )
+                
+        if not matches.exists():
+            return self.caller.msg(f"No matches found containing the text '{input_str}'.")
             
         string = self.format_header(f"+Info Search: {input_str}", width=78)
-        table = EvTable("|wName|n", "|wSplat|n", "|wShifter Type|n", "|wType|n", border="none")
-        table.reformat_column(0, width=30, align="l")
-        table.reformat_column(1, width=22, align="l")
-        table.reformat_column(2, width=16, align="l")
-        table.reformat_column(3, width=16, align="l")
+        table = EvTable("|wName|n", "|wSplat|n", "|wType|n", "|wDescription|n", border="none")
+        table.reformat_column(0, width=25, align="l")
+        table.reformat_column(1, width=15, align="l")
+        table.reformat_column(2, width=15, align="l")
+        table.reformat_column(3, width=23, align="l")
         
         for result in matches[:10]:
-            table.add_row(result.name, result.splat, result.shifter_type, result.stat_type)
+            desc = result.description[:20] + "..." if result.description and len(result.description) > 20 else ""
+            table.add_row(
+                result.name,
+                result.splat or "Any",
+                result.stat_type.title(),
+                desc
+            )
             
         string += ANSIString(table)
-        matches_string = f"\r\n    There were |w{len(matches)}|n matches"
+        matches_string = f"\r\n    Found |w{len(matches)}|n matches"
         if len(matches) > 10:
-            matches_string += ", and some were truncated."
+            matches_string += " (showing first 10)"
         string += matches_string + "\r\n"
+
         string += self.format_footer(width=78)
         self.caller.msg(string)
                     
-    def show_type(self, type_name):
-        """Show all entries of a specific stat type."""
-        # Get all valid stat types from our DISPLAY_CATEGORIES
-        valid_stat_types = []
-        for stat_types in self.DISPLAY_CATEGORIES.values():
-            valid_stat_types.extend(stat_types)
-        
-        # Try to match the input to a valid stat type
-        type_name_lower = type_name.lower()
-        matched_type = None
-        
-        # First try exact match
-        for stat_type in valid_stat_types:
-            if stat_type.lower() == type_name_lower:
-                matched_type = stat_type
-                break
-        
-        # If no exact match, try partial match
-        if not matched_type:
-            for stat_type in valid_stat_types:
-                if type_name_lower in stat_type.lower().replace('_', ' '):
-                    matched_type = stat_type
-                    break
-        
-        if not matched_type:
-            return self.caller.msg(f"No stat type found matching '{type_name}'.")
-        
-        # Get all matches for the type
-        results = Stat.objects.filter(stat_type__iexact=matched_type).order_by('name')
-        
-        if not results.exists():
-            return self.caller.msg(f"No entries found for type '{matched_type}'.")
-        
-        string = self.format_header(f"+Info Type: {matched_type.title()}", width=78)
-        
-        # Use table format for better organization
-        if matched_type == 'gift':
-            table = EvTable("|wName|n", "|wSplat|n", "|wShifter Type|n", "|wValues|n", border="none")
-            table.reformat_column(0, width=30, align="l")
-            table.reformat_column(1, width=15, align="l")
-            table.reformat_column(2, width=15, align="l")
-            table.reformat_column(3, width=10, align="l")
-        else:
-            table = EvTable("|wName|n", "|wSplat|n", "|wValues|n", border="none")
-            table.reformat_column(0, width=30, align="l")
-            table.reformat_column(1, width=20, align="l")
-            table.reformat_column(2, width=20, align="l")
-        
-        for result in results:
-            formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
-            if matched_type == 'gift':
-                table.add_row(
-                    result.name, 
-                    result.splat or "Any", 
-                    result.shifter_type.title() if result.shifter_type else "None",
-                    formatted_values
-                )
-            else:
-                table.add_row(result.name, result.splat or "Any", formatted_values)
+    def show_type(self, stat_type):
+        """Show all entries of a specific type."""
+        # Handle special cases for combo disciplines
+        if stat_type.lower() in ['combo', 'combo discipline', 'combodiscipline']:
+            stat_type = 'combodiscipline'
             
-        string += ANSIString(table)
-        string += f"\r\n    There were |w{len(results)}|n entries of type '{matched_type}'.\r\n"
-        string += self.format_footer(width=78)
+        if stat_type not in self.valid_types:
+            self.caller.msg(f"No stat type found matching '{stat_type}'.")
+            return
+            
+        results = Stat.objects.filter(stat_type__iexact=stat_type).order_by('name')
+        if not results.exists():
+            self.caller.msg(f"No entries found of type '{stat_type}'.")
+            return
+            
+        string = self.format_header(f"+Info Type: {stat_type.title()}")
+        string += self.format_stat_list(results)
+        string += self.format_footer()
         self.caller.msg(string)
                     
     def show_shifter_gifts(self, shifter_type):
@@ -326,3 +433,34 @@ class CmdInfo(MuxCommand):
         string += self.format_footer(width=78)
         self.caller.msg(string)
                     
+    def format_stat_list(self, stats, width=78):
+        string = ""
+        if not stats:
+            return string
+            
+        # Format header based on stat type
+        if stats[0].stat_type == "combodiscipline":
+            string += f" {'Name'.ljust(30)}{'XP Cost'.ljust(10)}{'Prerequisites'.ljust(38)}\n"
+            for stat in stats:
+                # Handle prerequisites that could be string or list
+                if hasattr(stat, "prerequisites"):
+                    if isinstance(stat.prerequisites, (list, tuple)):
+                        prereqs = ", ".join(stat.prerequisites)
+                    else:
+                        prereqs = str(stat.prerequisites)
+                else:
+                    prereqs = ""
+                    
+                xp = str(stat.xp_cost) if hasattr(stat, "xp_cost") else ""
+                string += f" {stat.name.ljust(30)}{xp.ljust(10)}{prereqs.ljust(38)}\n"
+        else:
+            # Original formatting for other stat types
+            string += f" {'Name'.ljust(30)}{'Splat'.ljust(20)}{'Values'.ljust(20)}\n"
+            for stat in stats:
+                values = str(stat.values[0]) if len(stat.values) == 1 else ", ".join(map(str, stat.values[:-1])) + f", or {stat.values[-1]}" if stat.values else ""
+                string += f" {stat.name.ljust(30)}{(stat.splat or '').ljust(20)}{values.ljust(20)}\n"
+        
+        count = len(stats)
+        if count > 0:
+            string += f"    There were {count} entries of type '{stats[0].stat_type}'.\n"
+        return string

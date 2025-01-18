@@ -289,22 +289,6 @@ class CmdXP(default_cmds.MuxCommand):
                         
                     self.caller.msg(message)
 
-                    # spend with stat info
-                    spend_entry = {
-                        'type': 'spend',
-                        'amount': cost,
-                        'timestamp': datetime.now().isoformat(),
-                        'stat_name': stat_name,
-                        'previous_rating': current_rating,
-                        'new_rating': new_rating,
-                        'reason': reason
-                    }
-                    
-                    # add the spend to hx
-                    if 'spends' not in self.caller.db.xp:
-                        self.caller.db.xp['spends'] = []
-                    self.caller.db.xp['spends'].insert(0, spend_entry)
-                    
                     self._display_xp(self.caller)
 
                 except ValueError as e:

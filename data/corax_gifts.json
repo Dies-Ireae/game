@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Carrion's Price",
+        "description": "The Corax can determine the cause of death of any corpse they examine. A raven-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Corax",
+        "splat": "Shifter"
+    },
+    {
+        "name": "Detect the Broken",
+        "description": "The Corax can sense when something is damaged, broken, or otherwise not functioning properly. A raven-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Corax",
+        "splat": "Shifter"
+    },
+    {
+        "name": "Raven's Gleaning",
+        "description": "The Corax can quickly scan an area for anything unusual or out of place. A raven-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Corax",
+        "splat": "Shifter"
+    },
+    {
+        "name": "Shadow's Caress",
+        "description": "The Corax can blend into shadows, becoming nearly invisible. A shadow-spirit teaches this Gift.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "powers",
+        "stat_type": "gift",
+        "values": [1],
+        "shifter_type": "Corax",
+        "splat": "Shifter"
+    }
+]

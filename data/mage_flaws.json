@@ -1,0 +1,692 @@
+[
+    {
+        "name": "Cursed",
+        "description": "Misfortune of apparently supernatural origins makes your character's life difficult; the more points the Flaw gives you, the greater the character's misfortune. • (1 point) Minor quirks of fate. Examples: You have a hard time keeping secrets; tech suffers tiny malfunctions in your presence; people tend to think ill of you. • (2 points) Small but annoying problems. Examples: You stutter at inopportune moments; tires go flat and warning lights go on when you depend upon your car; expensive clothes wind up ruined by stupid accidents. • (3 points) Chronic misfortune. Examples: Tools break when you use them; children fear you; red lights slow you down whenever you absolutely, positively need to be somewhere on time. • (4 points) Major problems arise. Examples: People dislike you on principle; your greatest plans collapse for no predictable reason; your bank account keeps suffering unexpected withdrawals from sources that aren't you. • (5 points) Pervasive bad luck. Examples: Your endeavors inevitably fail; tech never works the way it's supposed to function; chronic pain or poor health sap whatever vitality you possess. The Storyteller determines the eventual effects of your curse, as well as the methods you might use to lift it. In any case, the curse becomes a major part of your character's story and cannot be dispelled without some major effort on his part.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Various",
+        "source": "M20 p. 646"
+    },
+    {
+        "name": "Echoes",
+        "description": "You display some of the weird phenomena associated with sorcery. Maybe the air quivers with strange vibrations, or music plays without a visible source, or shadows gather in your presence. It could be that Resonance has marked you in noticeable ways... or perhaps your own beliefs send out vibrations too strong to ignore. Some curse or blessing might have marked you for favor or damnation. This Flaw fits in well with certain Backgrounds (Blessing, Destiny, Influence, Totem), and can be used as a simple rule system for Resonance if your group doesn't want to employ the optional rules associated with that phenomenon. • (1 point) Slight manifestations of no real consequence: perhaps your shadow flickers, milk sours in your presence, or a vague scent that's appropriate to your nature follows in your wake. • (2 points) Mild echoes cause noticeable effects: animals shy away from you or follow you around; you send out vibes that a sensitive person can notice; you feel profoundly uncomfortable around energies, symbols, locations, or people who're opposed to your kind. • (3 points) People who know what to look for recognize you on sight... not simply as a mage, but as the sort of mage you are: plants bloom or wither in your presence; sounds or music echo through the air; holy or unholy symbols repulse you. • (4 points) You stand out in ways that even Sleepers notice: your shadow moves of its own accord; you don't cast reflections in mirrors or liquid; cold winds blow even in a still room. • (5 points) Reality shifts when you're around, rippling with paranormal energies: animals adore you or run away when you approach; people feel sick or energized when you stand near; environmental shifts – rain, cold, shadows, warmth, etc. – radiate outward from you.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 p. 646"
+    },
+    {
+        "name": "Construct",
+        "description": "You came from a lab, not from a womb. Perhaps you were grown in a Progenitor facility, woven from plants, shaped from the elements, or crafted from parts of dead bodies in some flesh-tinkerer's workshop. Whatever your origins, you don't truly fit in with natural-born humans. A combination of self-doubt and social alienation – or perhaps a sense that you're far better than your so-called peers – keeps you at arm's length from the human social realm. In game terms, this Flaw inflicts penalties on social rolls in many situations; the specifics depend upon your origins, attitude, and company, but they'll impede your character in significant ways.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 p. 647"
+    },
+    {
+        "name": "Deranged",
+        "description": "You suffer from a lasting form of mental illness. Although a successful Willpower roll (Storyteller's option) might allow you to cope with the effects for a short time, this insanity lingers until and unless it can be cured... which also involves buying off the Flaw. An essential Flaw for Marauder characters (though it's not exclusive to the Mad), this Trait gives you one of the Derangements described in the sidebar of that name. This madness might also affect someone with a Genetic Flaw, or who's been subjected to Room 101 or Things Man Was Not Meant to Know.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [3, 5],
+        "splat": "Mage",
+        "source": "M20 p. 648"
+    },
+    {
+        "name": "Impediment",
+        "description": "Due to some physical condition, you're less able to deal with certain situations than most other people seem to be able to do. • (1 point) Like chronic headaches, impaired vision, minor arthritis or a few missing teeth, the Impediment presents occasional inconveniences but is not a major hassle in your life unless something worsens the condition or removes the things (glasses, dentures, pain reliever) that you use to compensate for it. • (2 points) As with dyslexia, high-functioning Asperger's syndrome, chronic fatigue or pain, poor or deteriorating eyesight, or other internal obstacles, your Impediment presents constant but not insurmountable problems. In certain situations, you may suffer a +1 to difficulties that deal with that element of your life. • (3 points) Your Impediment – severe migraines, significant autism, allergies or asthma, missing fingers or an eye, near-deafness, palsy, Tourette's syndrome, deteriorating limb(s), and so forth – significantly impairs several elements of your everyday life. System-wise, you add +1 to difficulties related to your Impediment. • (4 points) An inescapable Impediment – missing limb, profound deafness or autism, near-blindness, malformed bones or connective tissues, severe arthritis, gnarled hands or feet, and similar obstacles – forces you to try working around that condition on a daily basis. Under most circumstances, you add +2 to difficulties related to that Impediment, and certain situations might damage your health and endanger your life. • (5 points) Thanks to a profound physical condition – partial paralysis, constant and severe pain, advanced cancer, the inability to hear or speak, muscular-skeletal deterioration, major sight-loss, and other maladies – you're unable to function in most ways that people take for granted. Add +2 to physical difficulties unless you've got a reliable way to compensate for that handicap, and assume that you simply cannot do certain things at all. • (6 points) For whatever reasons, your condition is so advanced and severe that you need major work-arounds in order to function in the everyday world. Many physical feats are beyond you, and you add +2 or even +3 to difficulties of things you can do but only with a major effort.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1, 2, 3, 4, 5, 6],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 39"
+    },
+    {
+        "name": "Aging",
+        "description": "You ain't as young as you used to be... or perhaps you're a little too young. The years have taken their toll on your physical capacities, and while the spirit may be willing, the body most certainly is not. For every two points in this Flaw, the character loses one dot from a Physical Attribute (Strength, Dexterity or Stamina), either because his body is aging past its prime, or because it has not yet developed to mature capacity.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [2, 4, 6, 8, 10],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 40"
+    },
+    {
+        "name": "Degeneration",
+        "description": "Your body is falling apart. A curse, disease, flawed biotech, corrupting magicks, or some other affliction is rotting your physical form, and although Life magick can repair the damage to some degree, this degeneration remains permanent unless the Flaw is somehow removed. In its three-point variation, this Flaw reflects an inability to heal injuries without the aid of magick or medical technology. At the six-point level, the character suffers a constant stream of injuries even without outside trauma. At the nine-point level, that Health loss is essentially aggravated damage, and cannot be healed except through vulgar Life-Sphere Effects.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [3, 6, 9],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 41"
+    },
+    {
+        "name": "Permanent Wound",
+        "description": "Due to lasting injury, Pattern leakage, a Paradox Flaw, or some other physiological deficit, you suffer from a chronic injury that never heals. This might be an incurable tumor, endless bleeding, debilitating pain, brittle bones... the specifics are not important. Regardless of the cause, your character is always at the Wounded health level; even with magickal healing, the injury returns to its normal state at either sunrise or sunset every day.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 41"
+    },
+    {
+        "name": "Horrific",
+        "description": "Well past Monstrous, you're hideous to the point of inspiring nightmares. Unless you mask your true form with serious magick, people and animals run screaming from your presence. Physically, you're not merely misshapen but repulsive on a primal level – the sort of terror that sent Lovecraft's heroes over the edge. System-wise, this Flaw inflicts a +3 difficulty modifier to any social roll that involves not scaring the shit out of people, and lowers the difficulty by -3 if you are. Your Appearance Trait is stuck below zero.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 41"
+    },
+    {
+        "name": "Mayfly Curse",
+        "description": "Your lifespan burns bright and fast. Due, perhaps, to biotech, cloning, or some other inhuman heritage or modification, you age far more quickly than normal human beings do. At the five-point level of this Flaw, your character ages one year for every two months of earthly time (six years of age for each passing year). At the 10-point level, he ages one year per week (or 52 years of age in a single 12-month period).",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [5, 10],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 42"
+    },
+    {
+        "name": "Amnesia",
+        "description": "Life before Awakening remains a mystery to you. Friends? Family? Mundane existence? Whoever and whatever they were, you cannot recall. This amnesia might be related to PTSD, fugue-state dissociative Derangement, brain-trauma, Quiet, Social Processing, psychic assault, Things Man Was Not Meant to Know, or other forms of identity disruption. Regardless of the reason, being a mage is all you can remember.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 48"
+    },
+    {
+        "name": "Phobia",
+        "description": "Irrational terror grips you whenever you face the subject of your Phobia: crowds, heights, Black Suits, and so forth. Such terror probably stems from psychic trauma, Social Processing, or some other incident that carved its niche within your mind. Although mages pride themselves upon their strength of will, everybody's got their weaknesses; this primal fear is one of yours. Anytime you're confronted with that situation, make a Willpower roll or else flee that fearsome situation. Even if you do succeed, you'll need to roll at least three successes in order to approach the object of your fears and deal with it head-on.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [2, 3],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 50"
+    },
+    {
+        "name": "Absent-Minded",
+        "description": "Um... what was that thing you were trying to remember, again? Damn... This Flaw reflects a scatterbrained sense of memory and connection – nothing quite as dangerous as full Derangement, but a distressing and occasionally hazardous disconnection nonetheless. System-wise, your Storyteller will often have you make Intelligence rolls to recall things like names, faces, mission details, and so forth. Story-wise, you're forever drawing blanks, mistaking people for other folks, scrambling data, leaving projects half-finished (or totally abandoned), forgetting to feed your familiar, and making potentially hazardous errors in judgment.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 50"
+    },
+    {
+        "name": "Driving Goal",
+        "description": "Even by Awakened standards, you possess (or are possessed by) a cause so intense that it drives every aspect of your life, up to and including your beliefs about, and approach to, magick and Ascension. This goal, sadly, is almost impossible to achieve on an individual basis: the collapse of the Technocracy, the return of the Old Ways, the fall of the industrialized era, and so forth. As a mage, you actually could gather enough influence to lead a larger movement that shifts Reality toward your goal. More likely, you will break yourself against that goal, as so many other mages have done before you... but hey, if a cause is as worth fighting for as yours is, then it's worth whatever cost you must pay.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "mental",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 51"
+    },
+    {
+        "name": "Discredited",
+        "description": "In your chosen field, your name is mud. Perhaps you're a scientist whose bizarre theories have cost him the respect of his peers... or an academic who wound up on the wrong side of departmental politics... or a journalist who stepped too far over the line of credibility. Whatever it is you did (or are reputed to have done), your professional associates look down on you. Add +2 to the difficulty of your social and Background-based rolls when you're trying to get those associates to take you seriously.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 62"
+    },
+    {
+        "name": "Esoteric Discourse",
+        "description": "Your obsessive love of a specialized field inspires you to fill every waking hour with obscure jargon and obtuse metaphraseology. Most folks can't understand half of what you say, and their incomprehension of such elementary terminology impels you to facilitate obligatory (if remedial) pedagogy. In game terms, this Flaw imposes difficulty modifiers (+1 or +2) on social rolls, thanks to the character's compulsive jargonization, hyperinitiated nomenclature, and condescending pedanticism.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 62"
+    },
+    {
+        "name": "Family Issues",
+        "description": "Many mages leave their families behind. You didn't do that, although you may often wish you could. A flipside of the Merit: Family Support, this Flaw saddles you with a basket of goodies from Dysfunction Junction, family-style. You might have a meddling uncle, an abusive sibling, an alcoholic parent, or 'simply' the leftovers from dealing with such people. You might have tried to escape them, but if so, someone in your family is still looking for you.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1, 2, 3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 62"
+    },
+    {
+        "name": "Insane Mentor",
+        "description": "The mage who taught you the ropes is dangerously tangled up in them. Maybe she's out of her head (though probably not a Marauder... yet); or he's got an awful rep that has splattered all over you. That person could be angry at you for some reason (good or otherwise), or live downstream on Shit Creek, with a nasty habit of dragging you along for the ride.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 63"
+    },
+    {
+        "name": "Rival House",
+        "description": "You belong to a Chantry (or Construct, or whatever) that has a longstanding animosity with another such organization. This could be a rival Hermetic Chantry, a temple whose members consider you to be heretics, a hostile street gang, an opposing martial arts order, a coven that has declared a witchwar against your group, a Construct that has marked you all for death, and so on. This antagonism is mutual, too, and you're expected to act accordingly.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 63"
+    },
+    {
+        "name": "Sect Enmity",
+        "description": "Mage groups tend to have issues with each other by their very nature. You, however, have managed to piss off an entire sect of mages within your larger group. You could be a Verbena witch who hacked off the Hermetic House Flambeau, a Black Suit on the wrong side of the Friends of Courage, or a Red Spear who trash-talked the Ghost Wheel Society and lived to regret it. Although your enemies won't try to kill you – you are theoretically on the same side, after all – they really don't like your face, or much else about you.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Special Responsibility",
+        "description": "You and your big mouth! Shortly after you joined your current group, you stepped up and assumed a duty to that group. Doing so earned you some points with the leadership, but that duty comes at great cost to you. This responsibility weighs on you to a significant degree, consuming time, energy, and social, emotional and perhaps monetary resources you'd rather devote to other things.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Sympathizer",
+        "description": "Hey, they're okay once you get to know them! You've expressed some degree of sympathy for an enemy faction, and that sympathy does not make you terribly popular! Maybe you're a Technocrat who sees validity in the Traditions, a Trad mage who shares some part of the Technocratic vision, a Disparate mage with secret ties to one of the other factions, or even – gods help you! – a mage from pretty much any group, who dares to view the Mad and Fallen as something other than walking targets for instant execution.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Twisted Apprenticeship",
+        "description": "Someone taught you all the wrong things. For whatever reason, the mentor who introduced you to the Awakened realm did a terrible job, and now you reap the benefits. They may have told you lies about other groups, filled your head with nonsense about the nature of magick (though in all honesty, pretty much everyone does that), or simply behaved like a raging shmuck and left you with the payoff.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Catspaw",
+        "description": "You trusted the wrong person, did the wrong thing on their say-so, and have now become a liability to others and to yourself. A dupe for someone vastly superior in power, you need to watch your back now while hoping for an opportunity to extract yourself from this position. For the moment, you have to follow orders, and your 'cat' needs to keep you safe. Not long from now, however, one or both of you will change your priorities, and then things will truly become interesting for everyone concerned.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Diabolical Mentor",
+        "description": "Your mentor wasn't merely bad at his job – he turned out to be actively malevolent. That person could be an actual Nephandus, a demented Marauder, a ruthless wizard, a diehard 'black hats and mirrorshades' type of Technocrat, an Infernalist sellsoul... maybe you don't even know what your mentor really is, but it's just plain bad. Obviously, this personage has fucked you up. Additionally, if you've uncovered things he would rather keep secret, that could lead to other Flaws as well: Enemy, Cursed, and worse...",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Dogmatic",
+        "description": "Look, it's great that you've got such strong spiritual convictions... but do you have to be such a dick about them? This Flaw represents a religious, spiritual, and /or philosophical approach that defines your moral and magickal beliefs. Trouble is, your beliefs don't play well with others; rules-wise, you add +2 to the difficulty of all social rolls which involve dealing with people of differing beliefs. Even when you're trying, dammit, to get along with those misguided heretics, folks can tell that you don't approve.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 64"
+    },
+    {
+        "name": "Expendable",
+        "description": "An upper-level member of your group wants you dead, and sticks you with missions that will probably get the job done sooner rather than later. You could be the lab assistant who keeps being told to send those big metal kites up into the thunderstorm, the apprentice who keeps getting sent off to obtain forbidden artifacts, or the Black Suit who keeps facing off against yet another goddamned werewolf pack while his dispatcher makes excuses for the lack of timely backup. Either way, you're pretty screwed.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 65"
+    },
+    {
+        "name": "Narc",
+        "description": "Cursed with the rep of an informer, you're on the outs with your would-be associates. As with other reputation-based Flaws, this shunning may be based on mistakes and rumors; in this case, though, it's probably at least somewhat accurate. Known spies and spymasters, intelligence officers, witnesses against their fellow mages, members of groups that are assigned to investigation and justice (like House Quaesitor or the Ivory Tower), and other real or assumed snitches generally catch such reputations by default.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 65"
+    },
+    {
+        "name": "Notoriety",
+        "description": "Thanks to this inverse of the Merit: Prestige, you're saddled with a bad reputation among your fellow mages. System-wise, this Flaw adds +2 to the difficulties of all social rolls within your faction (Traditions, Crafts, Technocracy, etc.), and predisposes pretty much everyone outside your closest friends to think the worst of you. Rumors dog your steps, and whispers precede your appearance. Whether or not the stories are true, you've been linked to some disgrace, and will be shunned and probably punished accordingly if you haven't been punished already.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 65"
+    },
+    {
+        "name": "Rivalry",
+        "description": "An associate of yours has it out for you, and while this rival cannot openly move against you (probably because of an external authority she doesn't want to risk annoying, or social pressures that she can't avoid), she'll make your life as difficult as she can under the circumstances. Rumors, sabotage, exposed scandals, and perennial traps are just a few of your rival's weapons against you. And while you can dance around most of them, a few still manage to hit their mark.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 66"
+    },
+    {
+        "name": "Sleeping with the Enemy",
+        "description": "A paramour of yours belongs to an enemy group – Awakened antagonists, perhaps, or maybe one of the Night-Folk. This isn't simply a matter of rivalry; if you're discovered, you're both probably gonna die. Still, love (or lust) is a powerful force, and so you and your loved one live out one of those Romeo and Juliet situations. Just remember, though: Romeo and Juliet is a tragedy, not a romance, and things are likely to go the same way for you.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 66"
+    },
+    {
+        "name": "Ward",
+        "description": "Mages rarely move through life alone. And when certain companions – lovers, children, partners, parents, close friends, even employers – depend upon you, that lack of loneliness can become a liability. This Flaw represents a character, or a group of characters, who require constant attention on your part. Your life is a hazard to them, and their needs often provide hazards for you as well. Wards tend to get in trouble, require rescuing, and go digging into aspects of your life you'd prefer they left alone.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 66"
+    },
+    {
+        "name": "Hit List",
+        "description": "A rival group wants you dead. You might be a Templar who's made enemies among the Etherites, an Etherite who crossed the line with the New World Order, and so forth. Whatever happened, it's personal and extends to the entire group. As with the Vampire 20 Flaw: Clan Enmity, this is a deadly business, far worse than the one-point Sect Enmity. Social rolls when dealing with members of this group add +2 to their difficulty – if you get a chance to make such rolls at all.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 67"
+    },
+    {
+        "name": "Probationary Member",
+        "description": "Having recently defected from a rival group or faction, you're on probation with the current group. Peers expect you to turn on them, and certain folks have probably decided to throw you under the bus on general principle. Your continued membership (possibly even your survival) depends upon doing everything right and nothing wrong... and just how often do things really go that well in the real world, anyway?",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 68"
+    },
+    {
+        "name": "Rogue",
+        "description": "The loosest of cannons, you're gonna do whatever you damn well please, and to hell with any and all consequences! You might still belong to a group, but your membership is more a matter of habit or convenience than of loyalty. Alternately, you may have gone your way and now exist in a nebulous state between fondly remembered comrade and total outlaw. Certain Backgrounds (Requisitions and Secret Weapon) are forbidden to you now, and others (Allies, Backup, Chantry, Resources, and potentially many more) are hard to access – perhaps even impossible to access – if their connection to you depends upon your allegiance to a group.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 68"
+    },
+    {
+        "name": "Witch-Hunted",
+        "description": "The Masses want you dead. You've been exposed for what you are and can do, and so various unAwakened parties have decided to take you out like the abomination you've become. These hunters could be law-enforcement authorities, religious groups, fanatical sects, furious mobs, imbued hunters, pawns of the Night-Folk... whoever they might be, these people offer a significant threat to your existence, possessing the power to end you and the dedication to back it up. Your Arts alone cannot stop them, and a painful showdown (or three) is sadly inevitable.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [4],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 68"
+    },
+    {
+        "name": "Fifth Degree",
+        "description": "Whether you know it or not, you have outlived your usefulness to the Technocratic Union. Your superiors have set you up to fall, and your date with Room 101 or a suicide mission waits right around the corner. Combine all the deficits of the Flaw: Rogue with the assurance that you're only alive because someone would rather have you take out the bad guys when you go down in a blaze of glory than spend the resources necessary to take you down themselves. You have one more chance to make good and stay alive. Step out of line again, and your fate will be the sort of thing that makes cyborgs cringe.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 68"
+    },
+    {
+        "name": "Apprentice",
+        "description": "Most metaphysical societies, the Technocracy included, employ a mentor /apprentice system. During a members' early years, an elder member is assigned to, or chooses to, teach a new and inexperienced member. During the later days of membership, an elder is expected to pass on their experience to the younger generation. In addition to the usual training programs a given group may purse, a new recruit often winds up in the care of a seasoned member of that group. And in the case of this Flaw, you've got a real winner on your hands. When you mentor an apprentice a mentor, you're responsible for someone (whatever his formal title might be) who makes your life difficult.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 81"
+    },
+    {
+        "name": "Cast No Shadow or Reflection",
+        "description": "According to certain legends, witches cast no shadow. And while that isn't true of most mages, it's somehow true for you. Maybe you suffer from a lingering Paradox Flaw, manifest your own cultural fears, or made a bargain that cost you your shadow or reflection. In any case, your shadow and /or reflection are absent from your presence. For one point, you're missing one of those things, for two points you lack them both, and although most folks won't notice this consciously, they do tend to feel uneasy in your presence even if they're not sure why.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 82"
+    },
+    {
+        "name": "Devil's Mark",
+        "description": "A pact or some other metaphysical occurrence has left you with what old-school witch-hunters consider a 'devil's mark': a minor but noticeable deformation that remains insensate to pain and yet allows a creature to draw your Quintessence out through your body in physical form. Despite preconceptions, the origins of this mark might not have come from a pact with some infernal entity. That fact doesn't keep people – Sleepers and otherwise – from looking askance at you if and when this mark can be seen, especially since there's often something disconcerting about the way it appears – a third nipple, a red or black growth, a vaguely demonic face or sigil embedded in your flesh, and so forth.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 83"
+    },
+    {
+        "name": "Paranormal Prohibition or Imperative",
+        "description": "Also known as Geasa and Magical Prohibition or Imperative, this Flaw represents a thing you either must do, or are forbidden from doing, on pain of awful consequences. Generally, this imperative comes from an oath you swore, a curse that was inflicted upon you, or a legacy that follows your family lineage. Faerie grudges, infernal pacts, godly inheritances, ancient prophecies, Fortean quirks of physics... any one of them can inflict such a burden upon you. So long as you never cross that line, you should be okay – and may, in fact, possess some blessing (a Merit or Background Trait) that's linked to this Flaw.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 3, 4, 5, 6, 7, 8],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 83"
+    },
+    {
+        "name": "Gremlin",
+        "description": "There's a perverse imp running around your home. Okay, maybe it's not an actual imp – it could be a malfunctioning robot companion, a vain and selfish bioconstruct, a troublesome spirit, an obnoxious beast, that talking winged tarantula we mentioned a few entries ago... the form of the creature is unimportant. Like the above Flaw: Apprentice, this Trait reflects a companion character who, despite being supposedly on your side, remains a constant pain in your ass.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 84"
+    },
+    {
+        "name": "Locked Vidare",
+        "description": "Mages view the Otherworldly Penumbra through a metaphysical perspective called the Vidare. Most of them can alter that perspective by changing their point of view. Not you. For you, the Periphery remains 'locked' into a single perspective: the glittering clarity of the Vidare Astral, the primal luminosity of the Vidare Spiritus, or the rotting deathscape of the Vidare Mortem. Essentially, your metaphysical perspective is frozen in place. This is literally the way you view the world around you, and that view never really changes.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 85"
+    },
+    {
+        "name": "Strangeness",
+        "description": "Your metaphysical prowess occasionally warps reality in your presence, even when you don't want it to do so. Weird stuff happens when you're not expecting such phenomena, and those quirks of strangeness seem to be rooted in the sort of magick you pursue. A specialist in Entropy could suffer twists of probability and decay; a Life-attuned healer discovers odd growths and mutations in the life-forms around him, while a Forces-gifted mage bends the physics in his general vicinity. These phenomena ebb and flow without your guidance or control.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 85"
+    },
+    {
+        "name": "Throwback",
+        "description": "Haunted by a past life (often as per the Background Trait of that name), you suffer from awful memories and act out in ways that are, shall we say, not productive to your current incarnation. Perhaps you still loathe the clergymen who tortured a former 'you' for witchcraft 400 years ago; the smell of cooking meat still sends you into panic attacks. Or you'll get vertigo and acrophobic surges from that time a previous incarnation fell off a castle wall. You may slip into archaic accents, foreign languages, or terminology that is not exactly au courant (or socially acceptable) in today's world.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 85"
+    },
+    {
+        "name": "Uncanny",
+        "description": "No matter how unobtrusive you try to be, you remain remarkably memorable to anyone who encounters you. You're the very opposite of 'arcane', which is why this Flaw was originally described as an adversarial Background for the Trait of that name; rather than moving through life with near-invisibility, you stand out like a HIT Mark at a Verbena barbeque. Why are you memorable, exactly? Is it an inhuman glow behind your eyes? An unsettling tone in your voice? A metaphysical miasma that hangs about you despite your apparently mundane appearance?",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 86"
+    },
+    {
+        "name": "Vulnerability",
+        "description": "Some perilous substance may spell your doom. Thanks to a paranormal weakness – a curse, a Paradox Flaw, a quirk of belief or cultural legends – you suffer extraordinary harm from that malignant material. Perhaps you shrivel up in sunlight, flee from the scent of roses, or melt when obnoxious farm girls throw water in your face. This substance isn't generally fatal to most folks (Awakened or otherwise), but it's potential death for you.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [1, 2, 3, 4, 5, 6, 7],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 86"
+    },
+    {
+        "name": "Bizarre Hunger",
+        "description": "You prefer – maybe even need – to eat weird shit... quite possibly in a literal sense of that expression. Perhaps you've sworn a vow, suffered a curse, been treated (or created) with unhallowed rituals or arcane hyperscience, or initiated into an occult fellowship with... interesting admission demands. In any case, you must consume substances that may be degrading, unpleasant, expensive, or downright illegal.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 87"
+    },
+    {
+        "name": "Crucial Component",
+        "description": "Your metaphysical practice demands specialized instruments. It's not simply that you need fuel for your hypermodded Porsche 911 Turbo S – you need your own specially prepared blend of fuels, or the car won't go. A simple rowan wand will not suffice – your spells demand a hand-carved branch cut from an unscarred rowan tree at high midnight on Samhain Eve. In game terms, at least one of the instruments in your magickal focus must be specifically created, harvested or modified to work with your magicks. No lesser tool will suffice.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 87"
+    },
+    {
+        "name": "Faulty Enhancements",
+        "description": "Well, crap. The warranty on your cybernetic gear has expired (assuming, of course, that it ever had such assurances in the first place), and now you're stuck with malfunctioning hardware that has literally gotten under your skin. Does your BCI keep crashing? Do your legs keep seizing up? Is your bioware constantly trying to eject your iron? Whatever the problem might be, this Flaw gets rated by the amount of misery it causes you.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 88"
+    },
+    {
+        "name": "Jinx",
+        "description": "Stormbringer. The One Ring. The Monkey's Paw. Sure, that paranormal doohickey may possess amazing powers, but it's also a sack of miseries the likes of which few humans can imagine. And you've got one. Lucky you... As with the Background: Wonder (a Trait for which this Flaw was once an adversarial Background), this Trait reflects an uncanny item or device. In this case, however, the 'treasure' is more trouble than it's worth.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 4, 6, 8, 10],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 88"
+    },
+    {
+        "name": "Permanent Paradox Flaw",
+        "description": "Following a nasty brush with Paradox, you're got a Flaw that just won't go away. System-wise, select a trivial (two points), minor (four points), or significant (six points) Paradox Flaw as described on Mage 20, p. 551. That Flaw is now part of your character's life until you buy off this Flaw, preferably with experience earned through some extraordinary adventure that's related to the Paradox Flaw in question and the mishap that created that Flaw in the first place.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [2, 4, 6],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 89"
+    },
+    {
+        "name": "Branded",
+        "description": "You've been found guilty by a Traditions Tribunal, who Branded your Avatar with a sigil that indicates your crime. Folks who can see that sigil recognize that you're a criminal of some sort, and the worse the Brand, the more severe your crime and the more appropriate their reaction will be. Those reactions won't always be negative; considering the sort of people who'd be favorably inclined toward a known criminal, though, do you really want the goodwill of such people?",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3, 4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 89"
+    },
+    {
+        "name": "Demented Eidolon",
+        "description": "There's someone in your head, and it's not you. Despite your commitment to logic and reason, a mad heretic rants through the inside of your skull, insisting that what you do is magick, not science. This rough voice drives you toward Superstitionism and Reality Deviance. Not that you would ever consider such insanity. No, really – seriously, never. A Flaw for Technocratic operatives and other technomancers who refuse to view what they do as 'magic,' this Trait pits your conscious-self against an Avatar hell-bent on reclaiming the identity of mage.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 89"
+    },
+    {
+        "name": "Haunted",
+        "description": "An angry ghost – perhaps even more than one of them – has an entire skeleton to pick with you. Did you kill her yourself, or does she blame you for her death? Did you commit some awful crime against her during her living days, or were you foolish enough to attempt (and perhaps succeed at) a bitter act of necromancy against her after she had died? Whatever your sin might be (and whether or not you actually did anything wrong in the first place), this wraith is determined to make you suffer for whatever remains of your own life... and possibly your afterlife too, if she can manage that!",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 90"
+    },
+    {
+        "name": "Primal Marks",
+        "description": "You've been marked by some god, spirit, myth, or other metaphysical entity... and the mark is not a pleasant one. Maybe you share Papa Ghede's nasal voice and crude sense of humor, or Coyote's grotesquely huge cock, or Christ's bleeding stigmata. Essentially, this Flaw is the flipside of the Merit: Mark of Favor; in your case, though, the mark complicates your life, twists your body, and alerts people who understand the significance of that mark. In certain circles – say, being marked by Satan while living in a deeply religious region – a Primal Mark can be a life-threatening affair.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 90"
+    },
+    {
+        "name": "Oathbreaker",
+        "description": "Sworn oaths are powerful things, especially when magick is involved. And yet, you have broken your vow – not a simple promise, but an oath of serious significance. 'I'm sorry' won't cut it here; you need serious atonement in order to make things right, and until that point, anyone who can read auras or listen to gossip within the proper circles will know you for the faithless swine you are. A story-based Flaw, Oathbreaker marks your character out as someone who is not to be trusted.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [4],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 90"
+    },
+    {
+        "name": "Prone to Quiet",
+        "description": "In an effort to avert the inevitable stresses of Awakened life, you tend to drop into metaphysical Quiets more easily than most other mages do. The easier you fall into them, the more this Flaw is worth. At four points, Quiet is your default Paradox backlash, and so a backlash of five points or more automatically sends you into Quiet. At five points, Quiet is your default backlash, and you can fall into it even without a Paradox discharge.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [4, 5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 91"
+    },
+    {
+        "name": "Blood Magick",
+        "description": "Your Arts demand blood... specifically, your own blood. And while many practices employ small amounts of ritual cutting or bloodletting, this degree of sacrifice demands an injurious amount of vital fluid each time you cast a spell. With this Flaw (mislabeled as a Merit in the sourcebook Sorcerer, Revised Edition), you must suffer one unsoakable health level in bashing damage whenever you employ an Effect.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 92"
+    },
+    {
+        "name": "Bound",
+        "description": "Mentor always told you not to make bargains with strange entities. But did you listen? Nope. Now you're in deep to someone whose power dwarfs your own, and your prospects for getting out of bondage are laughable at best. Haunted by thoughts of the payment to come, you live on borrowed time and realize that the worst is yet to come... Sometimes known, with minor variations, as Faust's Bargain, Bound puts your character in the Faust-like position of getting something interesting in return for something significant – her life, her soul, a thousand years of servitude, or a similarly awful fate that no one in their right mind would want to risk.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 92"
+    },
+    {
+        "name": "Dark Fate",
+        "description": "You're screwed. No matter what you do, regardless of your heroic deeds (possibly because of them), there's a terrible end in your not-too-distant future. Prophecies speak of it, visions remind you of it, and other folks seem to know it too. You realize this fact, and it weighs upon you. From time to time, you must spend a Willpower point in order to shrug aside the dread of your impending damnation; otherwise, you lose one die from all rolls for the rest of that day.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 92"
+    },
+    {
+        "name": "Faithless",
+        "description": "Magick, according to your beliefs, does not come from you – it comes from your god, and you've broken faith with him. Until you can shake this crisis of faith, perhaps atoning for your perceived misdeeds, your Spheres remain stuck at Rank 1 – potent enough to perceive the presence of Divinity around you, limited enough to remind you that you have failed.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 93"
+    },
+    {
+        "name": "Immortal Enemy",
+        "description": "Oh, dear. You've pissed off someone whose concept of 'eternal grudge' could be taken literally. Essentially, you've got the Enemy Flaw with a powerful and more or less immortal entity: a vampire elder, a demon, a demigod, totem spirit, Loa, dragon, or other being who measures its existence in centuries or millennia, with resources and abilities to match. Foolish wizard, what will you do now?",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5, 6, 7, 8],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 93"
+    },
+    {
+        "name": "Psychic Vampire",
+        "description": "Also known as the Reaper's Touch, this dreadful curse makes you a life-force siphon. Your presence consumes vitality from your surroundings and the living things who happen to get too close to you. Unless you do so, however, your own life-force withers. Despite your best intentions, you're essentially a walking void into which life itself pours in order to sustain your own existence.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [5],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 93"
+    },
+    {
+        "name": "Sphere Inept",
+        "description": "A particular element of Reality eludes you. No matter how devoted you might be to mastering its complexities, this field of magick remains a challenge. Essentially, this is the reverse of the Merit: Sphere Natural; one Sphere costs 130% more (rounded up) to learn than the other Spheres cost.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [6],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 94"
+    },
+    {
+        "name": "Phylactery",
+        "description": "Your magick, perhaps your very soul, resides outside of your physical self. Maybe you've placed your soul within a ring, a jar, or a wooden doll in order to protect yourself from possession and control. Or perhaps you believe that your wand, not your Will, is the source of your mystic powers. You could have built a robot as an extension of your Genius, or crafted a jacket into which you've instilled the very essence of who you are. The receptacle itself is not important except with regards to its portability. This Flaw reflects the fact that you must have the receptacle before you can employ your Arts. Without it, you're just another Sleeper.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [7],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 94"
+    },
+    {
+        "name": "Taint of Corruption",
+        "description": "Evil has an intimate hold on you. Your spirit has been corrupted – possibly since birth, as with the reborn Nephandi known as widderslainte – and you are, as the werewolves put it, 'of the Wyrm' whether you wish to be or not. This doesn't necessarily mean you behave in an evil manner – you can choose to resist the evil inside you. On a metaphysical level, however, you bear an innate corruption which tests the ideal of Enlightened self-determination. You may, perhaps, defeat it, but it'll be a hard struggle before you do.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [7],
+        "splat": "Mage",
+        "source": "M20 Book of Secrets, p. 96"
+    },
+    {
+        "name": "Enemy",
+        "description": "You've been found guilty by a Traditions Tribunal, who Branded your Avatar with a sigil that indicates your crime. Folks who can see that sigil recognize that you're a criminal of some sort, and the worse the Brand, the more severe your crime and the more appropriate their reaction will be. Those reactions won't always be negative; considering the sort of people who'd be favorably inclined toward a known criminal, though, do you really want the goodwill of such people?",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "supernatural",
+        "values": [3, 4, 5],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 89"
+    },
+    {
+        "name": "Ward",
+        "description": "Mages rarely move through life alone. And when certain companions – lovers, children, partners, parents, close friends, even employers – depend upon you, that lack of loneliness can become a liability. This Flaw represents a character, or a group of characters, who require constant attention on your part. Your life is a hazard to them, and their needs often provide hazards for you as well. Wards tend to get in trouble, require rescuing, and go digging into aspects of your life you'd prefer they left alone.",
+        "game_line": "Mage: The Ascension",
+        "category": "flaws",
+        "stat_type": "social",
+        "values": [3],
+        "splat": "Various",
+        "source": "M20 Book of Secrets, p. 66"
+    }
+]

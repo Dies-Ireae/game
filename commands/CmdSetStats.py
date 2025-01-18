@@ -4,6 +4,34 @@ from evennia.utils import search
 from evennia.utils.search import search_object
 from typeclasses.characters import Character
 
+PATH_VIRTUES = {
+    'Humanity': ('Conscience', 'Self-Control'),
+    'Night': ('Conviction', 'Instinct'),
+    'Beast': ('Conviction', 'Instinct'),
+    'Harmony': ('Conscience', 'Instinct'),
+    'Evil Revelations': ('Conviction', 'Self-Control'),
+    'Self-Focus': ('Conviction', 'Instinct'),
+    'Scorched Heart': ('Conviction', 'Self-Control'),
+    'Entelechy': ('Conviction', 'Self-Control'),
+    'Sharia El-Sama': ('Conscience', 'Self-Control'),
+    'Asakku': ('Conviction', 'Instinct'),
+    'Death and the Soul': ('Conviction', 'Self-Control'),
+    'Honorable Accord': ('Conscience', 'Self-Control'),
+    'Feral Heart': ('Conviction', 'Instinct'),
+    'Orion': ('Conviction', 'Instinct'),
+    'Power and the Inner Voice': ('Conviction', 'Instinct'),
+    'Lilith': ('Conviction', 'Instinct'),
+    'Caine': ('Conviction', 'Instinct'),
+    'Cathari': ('Conviction', 'Instinct'),
+    'Redemption': ('Conscience', 'Self-Control'),
+    'Metamorphosis': ('Conviction', 'Instinct'),
+    'Bones': ('Conviction', 'Self-Control'),
+    'Typhon': ('Conviction', 'Self-Control'),
+    'Paradox': ('Conviction', 'Self-Control'),
+    'Blood': ('Conviction', 'Self-Control'),
+    'Hive': ('Conviction', 'Instinct')
+}
+
 class CmdStats(default_cmds.MuxCommand):
     """
     Set character stats as staff.
@@ -154,26 +182,50 @@ class CmdStats(default_cmds.MuxCommand):
             self.caller.msg("|rUsage: +stats <character>/<stat>[(<instance>)]/[<category>]=[+-]<value>|n")
             return
 
-        # Get the stat definition from the database
-        try:
-            stat = Stat.objects.filter(name__iexact=self.stat_name).first()
-            if not stat:
-                # If exact match fails, try a case-insensitive contains search
-                matching_stats = Stat.objects.filter(name__icontains=self.stat_name)
-                if matching_stats.count() > 1:
-                    stat_names = [s.name for s in matching_stats]
-                    self.caller.msg(f"|rMultiple stats matching '{self.stat_name}' found: {', '.join(stat_names)}. Please be more specific.|n")
-                    return
-                stat = matching_stats.first()
-                if not stat:
-                    self.caller.msg(f"|rNo stats matching '{self.stat_name}' found in the database.|n")
-                    return
-        except Exception as e:
-            self.caller.msg(f"|rError fetching stats: {e}|n")
+        # Get all matching stats
+        matching_stats = Stat.objects.filter(name__iexact=self.stat_name)
+        if not matching_stats.exists():
+            # If exact match fails, try a case-insensitive contains search
+            matching_stats = Stat.objects.filter(name__icontains=self.stat_name)
+            if not matching_stats.exists():
+                self.caller.msg(f"|rStat '{self.stat_name}' not found.|n")
+                return
+
+        # If multiple stats found and no category specified, show options
+        if matching_stats.count() > 1 and not self.category:
+            # Group stats by category and stat_type
+            stat_options = []
+            for s in matching_stats:
+                stat_options.append(f"{s.name}/{s.stat_type}")
+            
+            options_str = ", or ".join([", ".join(stat_options[:-1]), stat_options[-1]] if len(stat_options) > 2 else stat_options)
+            self.caller.msg(f"|rMultiple versions of this stat exist. Did you mean {options_str}?|n")
             return
+
+        # If category is specified, find the matching stat
+        if self.category:
+            stat = matching_stats.filter(stat_type__iexact=self.category).first()
+            if not stat:
+                self.caller.msg(f"|rNo stat '{self.stat_name}' found with category '{self.category}'.|n")
+                return
+        else:
+            # If only one stat found, use it
+            stat = matching_stats.first()
 
         # Use the canonical name from the database
         self.stat_name = stat.name
+
+        # Special handling for Shifter Rank
+        if stat.name == 'Rank':
+            splat = character.db.stats.get('other', {}).get('splat', {}).get('Splat', {}).get('perm', '')
+            if splat and splat == 'Shifter':
+                stat.category = 'identity'
+                stat.stat_type = 'lineage'
+
+        # Check if the character can have this ability
+        if stat.stat_type == 'ability' and not character.can_have_ability(stat.name):
+            self.caller.msg(f"|rCharacter cannot have the {stat.name} ability.|n")
+            return
 
         full_stat_name = stat.name
 
@@ -469,6 +521,67 @@ class CmdStats(default_cmds.MuxCommand):
             
         except ValueError as e:
             self.caller.msg(str(e))
+
+        # Inside func() method, when handling the 'Type' stat:
+        if stat.name == 'Type':
+            splat = character.get_stat('other', 'splat', 'Splat')
+            if splat:
+                splat = splat.lower()
+                
+                if splat == 'shifter':
+                    # Set shifter type
+                    character.set_stat('identity', 'lineage', 'Type', new_value, temp=False)
+                    character.set_stat('identity', 'lineage', 'Type', new_value, temp=True)
+                    # Initialize shifter-specific stats
+                    self.apply_shifter_stats(character)
+                    
+                elif splat == 'mortal+':
+                    # Set mortal+ type
+                    character.set_stat('identity', 'lineage', 'Mortal+ Type', new_value, temp=False)
+                    character.set_stat('identity', 'lineage', 'Mortal+ Type', new_value, temp=True)
+                    # Initialize mortal+-specific stats
+                    self.apply_mortalplus_stats(character)
+                    
+                else:
+                    self.caller.msg(f"|rType setting not applicable for {splat} characters.|n")
+                    return
+
+        # After setting virtues, update Willpower and Road/Humanity
+        if self.stat_name in ['Courage', 'Self-Control', 'Conscience', 'Conviction', 'Instinct']:
+            splat = character.get_stat('other', 'splat', 'Splat', temp=False)
+            if splat and splat.lower() == 'vampire':
+                # Set Willpower equal to Courage
+                courage = character.get_stat('virtues', 'moral', 'Courage', temp=False) or 0
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=False)
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=True)
+                
+                # Calculate Road based on Path
+                enlightenment = character.get_stat('identity', 'personal', 'Enlightenment', temp=False)
+                if enlightenment in PATH_VIRTUES:
+                    virtue1, virtue2 = PATH_VIRTUES[enlightenment]
+                    value1 = character.get_stat('virtues', 'moral', virtue1, temp=False) or 0
+                    value2 = character.get_stat('virtues', 'moral', virtue2, temp=False) or 0
+                    road = value1 + value2
+                    character.set_stat('pools', 'moral', 'Road', road, temp=False)
+                    character.set_stat('pools', 'moral', 'Road', road, temp=True)
+                    self.caller.msg(f"|gRecalculated Willpower to {courage} and Road to {road}.|n")
+                    character.msg(f"|gYour Willpower has been set to {courage} and Road to {road}.|n")
+                    
+            elif splat and splat.lower() in ['mortal', 'mortal+']:
+                # Original Humanity calculation for mortals
+                courage = character.get_stat('virtues', 'moral', 'Courage', temp=False) or 0
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=False)
+                character.set_stat('pools', 'dual', 'Willpower', courage, temp=True)
+                
+                conscience = character.get_stat('virtues', 'moral', 'Conscience', temp=False) or 0
+                self_control = character.get_stat('virtues', 'moral', 'Self-Control', temp=False) or 0
+                humanity = conscience + self_control
+                character.set_stat('virtues', 'moral', 'Humanity', humanity, temp=False)
+                character.set_stat('virtues', 'moral', 'Humanity', humanity, temp=True)
+                
+                self.caller.msg(f"|gRecalculated Willpower to {courage} and Humanity to {humanity}.|n")
+                character.msg(f"|gYour Willpower has been set to {courage} and Humanity to {humanity}.|n")
+
 
     def update_virtues_for_enlightenment(self, character):
         """Update virtues based on enlightenment path"""

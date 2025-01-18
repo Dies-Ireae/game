@@ -1,0 +1,35 @@
+[
+    {
+        "name": "Shark Teeth",
+        "description": "Even in Homid form, the character's teeth remain mildly pointed. This isn't sufficient to do any extra damage, but it's very noticeable.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [1],
+        "splat": "Shifter",
+        "shifter_type": "Rokea",
+        "source": "W20 Changing Breeds, pg. 240"
+    },
+    {
+        "name": "Can't Eat Solid Foods",
+        "description": "The character's human digestive system doesn't function; she lives on a diet of blood or liquefied flesh and needs much more than the typical werespider. She loses one blood point per day, and risks frenzying if her blood pool falls below three.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [5],
+        "splat": "Shifter",
+        "shifter_type": "Ananasi",
+        "source": "W20 Changing Breeds, pg. 240"
+    },
+    {
+        "name": "Unsure Footing",
+        "description": "The character struggles to walk on two legs, often stumbling and experiencing vertigo when looking up. All rolls involving coordinated movement on land (including combat) add 2 to their difficulty.",
+        "game_line": "Werewolf: The Apocalypse",
+        "category": "flaws",
+        "stat_type": "physical",
+        "values": [5],
+        "splat": "Shifter",
+        "shifter_type": "Rokea",
+        "source": "W20 Changing Breeds, pg. 240"
+    }
+] 
