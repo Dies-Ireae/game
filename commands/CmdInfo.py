@@ -102,6 +102,7 @@ class CmdInfo(MuxCommand):
         """Match category and return tuple of (key, display_name)."""
         input_str_lower = input_str.lower()
         
+
         # Handle common singular/plural forms
         category_mappings = {
             'merit': ('merit', 'Merits & Flaws'),
@@ -121,6 +122,7 @@ class CmdInfo(MuxCommand):
             return ([category_mappings[input_str_lower][0]], category_mappings[input_str_lower][1])
         
         # Check display categories next
+
         for display_name, stat_types in self.DISPLAY_CATEGORIES.items():
             if input_str_lower == display_name.lower():
                 return (stat_types, display_name)
@@ -209,6 +211,7 @@ class CmdInfo(MuxCommand):
             table.reformat_column(1, width=18, align="l")
             table.reformat_column(2, width=12, align="l")
             table.reformat_column(3, width=18, align="l")
+
             for result in results:
                 formatted_values = "None" if not result.values else str(result.values[0]) if len(result.values) == 1 else ", ".join(map(str, result.values[:-1])) + f", or {result.values[-1]}"
                 table.add_row(result.name, result.splat or "Any", result.stat_type.title(), formatted_values)
@@ -250,6 +253,7 @@ class CmdInfo(MuxCommand):
         if only_splat:
             string += f" for {only_splat}"
         string += ".\r\n"
+
         string += self.format_footer(width=78)
         self.caller.msg(string)
 
@@ -305,6 +309,7 @@ class CmdInfo(MuxCommand):
                 string += f"  |wPrerequisites:|n {prereqs}\r\n"
         
         # Description and system
+
         string += "\r\n"
         if subject.description:
             string += f"{subject.description}\r\n"
@@ -322,6 +327,7 @@ class CmdInfo(MuxCommand):
         
         # Remove ignored categories
         valid_stat_types = [st for st in valid_stat_types if st not in self.ignore_categories]
+
         
         # First try exact name match
         exact_matches = Stat.objects.filter(
@@ -373,6 +379,7 @@ class CmdInfo(MuxCommand):
         if len(matches) > 10:
             matches_string += " (showing first 10)"
         string += matches_string + "\r\n"
+
         string += self.format_footer(width=78)
         self.caller.msg(string)
                     

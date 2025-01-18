@@ -1296,3 +1296,56 @@ class CmdSubmit(MuxCommand):
         except Exception as e:
             caller.msg("|rError submitting character: {0}|n".format(e))
 
+def node_select_ability_category(caller):
+    text = "Select priority for ability categories (Primary: 13 points, Secondary: 9 points, Tertiary: 5 points)"
+    remaining_categories = [cat for cat in ABILITY_CATEGORIES if cat not in caller.db.chargen.get('ability_order', [])]
+    
+    if not remaining_categories:
+        return "node_distribute_ability_points"
+        
+    options = [{"key": str(i+1), "desc": category, "goto": (_set_ability_category, {"category": category})} 
+               for i, category in enumerate(remaining_categories)]
+    return text, options
+
+def _set_ability_category(caller, raw_string, **kwargs):
+    category = kwargs.get("category")
+    if 'ability_order' not in caller.db.chargen:
+        caller.db.chargen['ability_order'] = []
+    caller.db.chargen['ability_order'].append(category)
+    caller.msg(f"Added {category} to ability priority order")
+    return "node_abilities"
+
+def setup_mortalplus_character(character, mortalplus_type):
+    """
+    Set up initial stats and powers for Mortal+ characters
+    """
+    if mortalplus_type not in MORTALPLUS_TYPES:
+        raise ValueError(f"Invalid Mortal+ type: {mortalplus_type}")
+
+    # Set basic identity stats
+    character.set_stat('identity', 'personal', 'Splat', 'Mortal Plus')
+    character.set_stat('identity', 'personal', 'Mortal Plus Type', mortalplus_type)
+
+    # Set up power categories based on type
+    for power_category in MORTALPLUS_TYPES[mortalplus_type]:
+        character.setup_power_category(power_category)
+
+    # Special handling for each type
+    if mortalplus_type == 'Ghoul':
+        # Initialize Blood pool
+        character.set_stat('pools', 'temporary', 'Blood', {'perm': 1, 'temp': 1})
+    
+    elif mortalplus_type == 'Kinfolk':
+        # Kinfolk start with no special powers - they're merit-gated
+        pass
+    
+    elif mortalplus_type == 'Kinain':
+        # Initialize Glamour pool based on Fae Blood Merit
+        merits = character.db.stats.get('merits', {}).get('merit', {})
+        fae_blood = next((value.get('perm', 0) for merit, value in merits.items() 
+                         if merit.lower() == 'fae blood'), 0)
+        if fae_blood:
+            max_glamour = fae_blood // 2
+            character.set_stat('pools', 'temporary', 'Glamour', 
+                             {'perm': max_glamour, 'temp': max_glamour})
+

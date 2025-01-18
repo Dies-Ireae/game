@@ -4,6 +4,7 @@ from world.wod20th.models import Stat, SHIFTER_IDENTITY_STATS, SHIFTER_RENOWN, C
     TRADITION, TRADITION_SUBFACTION, CONVENTION, METHODOLOGIES, NEPHANDI_FACTION, SEEMING, KITH, SEELIE_LEGACIES, \
     UNSEELIE_LEGACIES, ARTS, REALMS, calculate_willpower, calculate_road, MORTALPLUS_TYPES, MORTALPLUS_POWERS, \
     MORTALPLUS_POOLS
+
 from evennia.utils.ansi import ANSIString
 from world.wod20th.utils.damage import format_damage, format_status, format_damage_stacked
 from world.wod20th.utils.formatting import format_stat, header, footer, divider
@@ -203,6 +204,7 @@ class CmdSheet(MuxCommand):
                 splat_specific_stats.extend(['Kith', 'Seeming'])
             # Initialize powers list at the start of the function
             powers = []
+
             # Add powers section based on type
             if mortalplus_type in MORTALPLUS_TYPES:
                 power_types = MORTALPLUS_TYPES[mortalplus_type]
@@ -233,6 +235,7 @@ class CmdSheet(MuxCommand):
                 self.pools_list.append(format_stat('Blood', format_pool_value(character, 'Blood'), width=25))
             elif mortalplus_type == 'Kinfolk':
                 # Check for Gnosis Merit
+
                 merits = character.db.stats.get('merits', {}).get('merit', {})
                 gnosis_merit = next((value.get('perm', 0) for merit, value in merits.items() 
                                    if merit.lower() == 'gnosis'), 0)
@@ -253,6 +256,7 @@ class CmdSheet(MuxCommand):
                 self.pools_list.append(format_stat('Glamour', format_pool_value(character, 'Glamour'), width=25))
             
             self.pools_list.append(format_stat('Willpower', format_pool_value(character, 'Willpower'), width=25))
+
         else:
             splat_specific_stats = []
 
@@ -643,6 +647,7 @@ class CmdSheet(MuxCommand):
             combo_disciplines = character.db.stats.get('powers', {}).get('combodiscipline', {})
             if combo_disciplines:
                 powers.append(" " * 38)  # Add blank line for spacing
+
                 powers.append(divider("Combo Disciplines", width=38, color="|b"))
                 for combo, values in combo_disciplines.items():
                     combo_value = values.get('perm', 0)
@@ -728,6 +733,7 @@ class CmdSheet(MuxCommand):
         health_status = format_damage_stacked(character)
         self.status_list.extend(health_status)
 
+
         # Process pools based on splat
         if splat.lower() == 'vampire':
             # Get generation for blood pool calculation
@@ -789,6 +795,7 @@ class CmdSheet(MuxCommand):
             
             self.pools_list.append(format_stat('Willpower', format_pool_value(character, 'Willpower'), width=25))
 
+
         # Handle virtues with adjusted positioning
         if splat.lower() == 'shifter':
             shifter_type = character.get_stat('identity', 'lineage', 'Type')
@@ -842,6 +849,7 @@ class CmdSheet(MuxCommand):
 
         # Display the pools, virtues and status in columns with adjusted spacing
         for pool, virtue, status in zip(self.pools_list, self.virtues_list, self.status_list):
+
             # Use fixed widths for each column and add consistent spacing
             string += f"{pool:<25}  {virtue:>25}  {status}\n"
 
@@ -911,3 +919,4 @@ def format_pool_value(character, pool_name):
         temp = perm
 
     return f"{perm}({temp})" if temp != perm else str(perm)
+

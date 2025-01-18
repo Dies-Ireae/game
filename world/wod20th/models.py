@@ -38,6 +38,7 @@ STAT_TYPES = [
     ('lineage', 'Lineage'),
     ('discipline', 'Discipline'),
     ('combodiscipline', 'Combo Discipline'),
+    ('thaumaturgy', 'Thaumaturgy'),
     ('gift', 'Gift'),
     ('rite', 'Rite'),
     ('sphere', 'Sphere'),
@@ -45,11 +46,15 @@ STAT_TYPES = [
     ('art', 'Art'),
     ('splat', 'Splat'),
     ('edge', 'Edge'),
+    ('bygone_power', 'Bygone Power'),
     ('discipline', 'Discipline'),
     ('realm', 'Realm'),
     ('sphere', 'Sphere'),
     ('art', 'Art'),
     ('path', 'Path'),
+    ('sorcery', 'Sorcery'),
+    ('faith', 'Faith'),
+    ('numina', 'Numina'),
     ('enlightenment', 'Enlightenment'),
     ('power', 'Power'),
     ('other', 'Other'),
@@ -87,10 +92,10 @@ STAT_TYPES = [
     ('seelie-legacy', 'Seelie Legacy'),
     ('unseelie-legacy', 'Unseelie Legacy'),
     ('court', 'Court'),
+    ('mortalplus_type', 'Mortal+ Type'),
+    ('varna', 'Varna'),
 ]
 
-<<<<<<< Updated upstream
-=======
 SHIFTER_TYPE_CHOICES = [
     ('garou', 'Garou'),
     ('gurahl', 'Gurahl'),
@@ -113,6 +118,37 @@ AUSPICE_CHOICES = [
     ('philodox', 'Philodox'),
     ('galliard', 'Galliard'),
     ('ahroun', 'Ahroun'),
+    ('brightwater', 'Brightwater'),
+    ('dimwater', 'Dimwater'),
+    ('darkwater', 'Darkwater'), 
+    ('arcas', 'Arcas'),
+    ('uzmati', 'Uzmati'),
+    ('kojubat', 'Kojubat'),
+    ('kieh', 'Kieh'),
+    ('rishi', 'Rishi'),
+    ('rising sun', 'Rising Sun'),
+    ('noonday sun', 'Noonday Sun'),
+    ('shrouded sun', 'Shrouded Sun'),
+    ('midnight sun', 'Midnight Sun'),
+    ('decorated sun', 'Decorated Sun'),
+    ('solar eclipse', 'Solar Eclipse'),
+    ('kamakshi', 'Kamakshi'),
+    ('kartikeya', 'Kartikeya'),
+    ('kamsa', 'Kamsa'),
+    ('kali', 'Kali'),
+    ('none', 'None')
+]
+
+BASTET_TRIBE_CHOICES = [
+    ('qualmi', 'Qualmi'),
+    ('swara', 'Swara'),
+    ('khan', 'Khan'),
+    ('simba', 'Simba'),
+    ('pumonca', 'Pumonca'),
+    ('balam', 'Balam'),
+    ('bubasti', 'Bubasti'),
+    ('ceilican', 'Ceilican'),
+    ('bagheera', 'Bagheera'),
     ('none', 'None')
 ]
 
@@ -120,6 +156,10 @@ BREED_CHOICES = [
     ('homid', 'Homid'),
     ('metis', 'Metis'),
     ('lupus', 'Lupus'),
+    ('feline', 'Feline'),
+    ('squamus', 'Squamus'),
+    ('ursa', 'Ursa'),
+    ('animal-born', 'Animal-Born'),
     ('none', 'None')
 ]
 
@@ -156,13 +196,12 @@ MORTALPLUS_POOLS = {
         'Gnosis': {'default': 0, 'max': 3}
     },
     'Kinain': {
-        'Glamour': {'default': 0, 'max': 3}
+        'Glamour': {'default': 2, 'max': 2}
     },
     'Sorcerer': {
         'Quintessence': {'default': 0, 'max': 10}
     },
 }
->>>>>>> Stashed changes
 class Stat(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(default='')  # Changed to non-nullable with default empty string
@@ -172,6 +211,15 @@ class Stat(models.Model):
     values = JSONField(default=list, blank=True, null=True)
     lock_string = models.CharField(max_length=255, blank=True, null=True)
     splat = models.CharField(max_length=100, blank=True, null=True, default=None)
+    xp_cost = models.IntegerField(default=0, blank=True, null=True)
+    prerequisites = models.CharField(max_length=100, blank=True, null=True)
+    notes = models.CharField(max_length=100, blank=True, null=True)
+    shifter_type = models.CharField(
+        max_length=100, 
+        choices=SHIFTER_TYPE_CHOICES,
+        default='none',
+        blank=True
+    )    
     hidden = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
     instanced = models.BooleanField(default=False, null=True)
@@ -279,6 +327,7 @@ class Stat(models.Model):
 
     class Meta:
         app_label = 'wod20th'
+        unique_together = ('name', 'stat_type')
 
 class CharacterSheet(SharedMemoryModel):
     account = models.OneToOneField(AccountDB, related_name='character_sheet', on_delete=models.CASCADE, null=True)
@@ -291,35 +340,6 @@ class CharacterSheet(SharedMemoryModel):
 
 from django.db import models
 from evennia.utils.idmapper.models import SharedMemoryModel
-
-class Note(models.Model):
-    owner = models.ForeignKey('objects.ObjectDB', related_name='notes', on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    text = models.TextField()
-    category = models.CharField(max_length=50, default='General')
-    is_public = models.BooleanField(default=False)
-    is_approved = models.BooleanField(default=False)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
-    approved_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    character_note_id = models.IntegerField(default=1)
-
-    class Meta:
-        unique_together = ('owner', 'character_note_id')
-
-    def save(self, *args, **kwargs):
-        if not self.pk:  # Only for new notes
-            # Get the highest character_note_id for this owner
-            highest = Note.objects.filter(owner=self.owner).aggregate(
-                models.Max('character_note_id'))['character_note_id__max']
-            self.character_note_id = (highest or 0) + 1
-        super().save(*args, **kwargs)
-
-    @property
-    def id(self):
-        """Override to return character-specific ID"""
-        return self.character_note_id
 
 def calculate_willpower(character):
     """Calculate Willpower based on virtues."""
@@ -398,6 +418,7 @@ class ShapeshifterForm(models.Model):
     lock_string = models.CharField(max_length=255, default='examine:all();control:perm(Admin)')
 
     class Meta:
+        app_label = 'wod20th'
         unique_together = ('name', 'shifter_type')
 
     def __str__(self):
@@ -668,4 +689,164 @@ ARTS = {
 REALMS = {
     'Actor', 'Fae', 'Nature', 'Prop', 'Scene', 'Time'
 }
+
+MORTALPLUS_TYPES = {
+    'Ghoul': ['Disciplines'],
+    'Kinfolk': ['Gifts'],
+    'Sorcerer': ['Sorcery'],
+    'Psychic': ['Numina'],
+    'Faithful': ['Faith'],
+    'Kinain': ['Arts', 'Realms']
+}
+
+MORTALPLUS_POWERS = {
+    'Ghoul': {
+        'Disciplines': ['Potence', 'Fortitude', 'Celerity', 'Animalism', 'Auspex', 'Dominate', 
+                       'Presence', 'Obfuscate', 'Protean']
+    },
+    'Kinfolk': {
+        'Gifts': []
+    },
+    'Sorcerer': {
+        'Sorcery': []
+    },
+    'Psychic': {
+        'Numina': []
+    },
+    'Faithful': {
+        'Faith': []
+    },
+    'Kinain': {
+        'Arts': [],
+        'Realms': []
+    }
+}
+
+def validate_mortalplus_powers(character, power_type, value):
+    """
+    Validate power selections for Mortal+ characters.
+    Returns (bool, str) tuple - (is_valid, error_message)
+    """
+    mortalplus_type = character.get_stat('identity', 'personal', 'Mortal Plus Type')
+    if not mortalplus_type:
+        return False, "Character is not a Mortal+ type"
+
+    # Validate Ghoul powers
+    if mortalplus_type == 'Ghoul':
+        if power_type == 'Disciplines':
+            domitor = character.get_stat('identity', 'personal', 'Domitor')
+            if not domitor:
+                return False, "Ghouls must have a domitor set to learn disciplines"
+            
+            # Get domitor's clan disciplines
+            clan_disciplines = get_clan_disciplines(domitor.get_stat('identity', 'personal', 'Clan'))
+            if value not in clan_disciplines:
+                return False, f"Ghouls can only learn disciplines from their domitor's clan: {', '.join(clan_disciplines)}"
+
+    # Validate Kinfolk powers
+    elif mortalplus_type == 'Kinfolk':
+        if power_type == 'Gifts':
+            # Check for Gift Merit
+            merits = character.db.stats.get('merits', {}).get('merit', {})
+            has_gift_merit = any(merit.lower() == 'gift of the spirits' 
+                               for merit in merits.keys())
+            if not has_gift_merit:
+                return False, "Kinfolk must have the 'Gift of the Spirits' Merit to learn Gifts"
+
+        if power_type == 'Gnosis':
+            # Check for Gnosis Merit level
+            merits = character.db.stats.get('merits', {}).get('merit', {})
+            gnosis_merit = next((merit_value.get('perm', 0) 
+                               for merit, merit_value in merits.items() 
+                               if merit.lower() == 'gnosis'), 0)
+            
+            max_gnosis = (gnosis_merit - 4) if gnosis_merit >= 5 else 0
+            if int(value) > max_gnosis:
+                return False, f"Character can only have up to {max_gnosis} Gnosis with current Merit level"
+
+    # Validate Kinain powers
+    elif mortalplus_type == 'Kinain':
+        if power_type in ['Arts', 'Realms']:
+            # Get Kinain Merit level
+            merits = character.db.stats.get('merits', {}).get('merit', {})
+            kinain_merit = next((merit_value.get('perm', 0) 
+                               for merit, merit_value in merits.items() 
+                               if merit.lower() == 'fae blood'), 0)
+            
+            # Calculate maximums based on Merit level
+            max_arts = kinain_merit // 2
+            max_art_dots = min(3, kinain_merit // 2)
+            
+            if power_type == 'Arts' and len(character.get_all_powers('Arts')) >= max_arts:
+                return False, f"Kinain can only learn {max_arts} Arts with current Merit level"
+            
+            if int(value) > max_art_dots:
+                return False, f"Kinain can only have up to {max_art_dots} dots in {power_type}"
+
+    return True, ""
+
+def get_clan_disciplines(clan):
+    """Helper function to get clan disciplines."""
+    CLAN_DISCIPLINES = {
+        'Ahrimes': ['Animalism', 'Presence', 'Spiritus'],
+        'Assamite': ['Celerity', 'Obfuscate', 'Quietus'],
+        'Assamite Antitribu': ['Celerity', 'Obfuscate', 'Quietus'],
+        'Baali': ['Daimoinon', 'Obfuscate', 'Presence'],
+        'Blood Brothers': ['Celerity', 'Potence', 'Sanguinus'],
+        'Brujah': ['Celerity', 'Potence', 'Presence'],
+        'Brujah Antitribu': ['Celerity', 'Potence', 'Presence'],
+        'Bushi': ['Celerity', 'Kai', 'Presence'],
+        'Caitiff': [],
+        'Cappadocians': ['Auspex', 'Fortitude', 'Mortis'],
+        'Children of Osiris': ['Bardo'],
+        'Harbingers of Skulls': ['Auspex', 'Fortitude', 'Necromancy'],
+        'Daughters of Cacophony': ['Fortitude', 'Melpominee', 'Presence'],
+        'Followers of Set': ['Obfuscate', 'Presence', 'Serpentis'],
+        'Gangrel': ['Animalism', 'Fortitude', 'Protean'],
+        'City Gangrel': ['Celerity', 'Obfuscate', 'Protean'],
+        'Country Gangrel': ['Animalism', 'Fortitude', 'Protean'],
+        'Gargoyles': ['Fortitude', 'Potence', 'Visceratika'],
+        'Giovanni': ['Dominate', 'Necromancy', 'Potence'],
+        'Kiasyd': ['Mytherceria', 'Dominate', 'Obtenebration'],
+        'Laibon': ['Abombwe', 'Animalism', 'Fortitude'],
+        'Lamia': ['Deimos', 'Necromancy', 'Potence'],
+        'Lasombra': ['Dominate', 'Obtenebration', 'Potence'],
+        'Lasombra Antitribu': ['Dominate', 'Obtenebration', 'Potence'],
+        'Lhiannan': ['Animalism', 'Ogham', 'Presence'],
+        'Malkavian': ['Auspex', 'Dominate', 'Obfuscate'],
+        'Malkavian Antitribu': ['Auspex', 'Dementation', 'Obfuscate'],
+        'Nagaraja': ['Auspex', 'Necromancy', 'Dominate'],
+        'Nosferatu': ['Animalism', 'Obfuscate', 'Potence'],
+        'Nosferatu Antitribu': ['Animalism', 'Obfuscate', 'Potence'],
+        'Old Clan Tzimisce': ['Animalism', 'Auspex', 'Dominate'],
+        'Panders': [],
+        'Ravnos': ['Animalism', 'Chimerstry', 'Fortitude'],
+        'Ravnos Antitribu': ['Animalism', 'Chimerstry', 'Fortitude'],
+        'Salubri': ['Auspex', 'Fortitude', 'Obeah'],
+        'Samedi': ['Necromancy', 'Obfuscate', 'Thanatosis'],
+        'Serpents of the Light': ['Obfuscate', 'Presence', 'Serpentis'],
+        'Toreador': ['Auspex', 'Celerity', 'Presence'],
+        'Toreador Antitribu': ['Auspex', 'Celerity', 'Presence'],
+        'Tremere': ['Auspex', 'Dominate', 'Thaumaturgy'],
+        'Tremere Antitribu': ['Auspex', 'Dominate', 'Thaumaturgy'],
+        'True Brujah': ['Potence', 'Presence', 'Temporis'],
+        'Tzimisce': ['Animalism', 'Auspex', 'Vicissitude'],
+        'Ventrue': ['Dominate', 'Fortitude', 'Presence'],
+        'Ventrue Antitribu': ['Auspex', 'Dominate', 'Fortitude'],
+    }
+    return CLAN_DISCIPLINES.get(clan, [])
+
+def can_learn_power(character, power_category, power_name, value):
+    """
+    Check if a character can learn or increase a power.
+    Returns (bool, str) tuple - (can_learn, reason)
+    """
+    # Get character's splat type
+    splat = character.get_stat('identity', 'personal', 'Splat')
+    
+    # Handle Mortal+ validation
+    if splat == 'Mortal Plus':
+        return validate_mortalplus_powers(character, power_category, value)
+        
+    return True, ""
 

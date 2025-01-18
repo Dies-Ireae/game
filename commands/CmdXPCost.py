@@ -242,5 +242,4 @@ class CmdXPCost(default_cmds.MuxCommand):
         msg += "\n|yUsage:|n\n"
         msg += "  Use the switches above to view detailed costs for each category.\n"
         msg += f"|b{'-' * total_width}|n"
-        
         character.msg(msg) 
